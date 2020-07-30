@@ -1,0 +1,37 @@
+.answer-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 30%;
+  background-color: #f8f9fa;
+  border-radius: 2px;
+  margin: 10px;
+  font-size: 18px;
+  padding: 10px 10px 10px 10px;
+  &:hover {
+    background-color: grey;
+    cursor: pointer;
+    color: white;
+  }
+}
+
+.selected {
+  background-color: red;
+}
+
+.answer-data {
+  display: flex;
+}
+
+.hidden {
+  text-decoration: line-through;
+}
+
+.disabled {
+  text-decoration: line-through;
+}
+
+.answer-code {
+  font-size: 12px;
+  padding-top: 5px;
+}

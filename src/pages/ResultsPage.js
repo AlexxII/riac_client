@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import Container from '@material-ui/core/Container';
 
 import SettingBar from '../components/SettingBar'
+import PollResults from '../modules/PollResults'
 
 const Results = () => {
   let { id, code } = useParams();
@@ -10,10 +11,11 @@ const Results = () => {
   return (
     <Fragment>
       <SettingBar title={`Результаты ` + code} />
-      <Container maxWidth="md">
-        <h2>Страница результатов</h2>
-        <h4>ID опроса: {id}</h4>
-      </Container>
+      <div style={{ paddingTop: '10px' }}>
+        <Container maxWidth="xl">
+          <PollResults id={id} />
+        </Container>
+      </div>
     </Fragment>
   )
 }

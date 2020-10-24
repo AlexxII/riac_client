@@ -14,7 +14,15 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import PieChartIcon from '@material-ui/icons/PieChart';
+import AlarmOnIcon from '@material-ui/icons/AlarmOn';
 import { NavLink } from 'react-router-dom'
+import Tooltip from '@material-ui/core/Tooltip';
+
+import ServeiceMenu from '../ServiceMenu'
+import { useQuery, useMutation } from '@apollo/react-hooks';
+import { CURRENT_USER_QUERY } from '../../containers/App/queries'
+import { GET_USER_INFO } from './queries';
+import { LOGOUT_MUTATION } from './mutations'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -55,6 +63,21 @@ const HomeBar = ({ title }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [menuOpen, setMenuOpen] = React.useState(false)
+
+  const [logout] = useMutation(
+    LOGOUT_MUTATION,
+    {
+      update: (cache) => cache.writeQuery({
+        query: CURRENT_USER_QUERY,
+        data: { currentUser: null },
+      }),
+    },
+  );
+
+  const { loading, error, user } = useQuery(GET_USER_INFO, {
+    onCompleted: (data) => console.log(data)
+  });
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -77,6 +100,11 @@ const HomeBar = ({ title }) => {
     handleMobileMenuClose();
   };
 
+  const handleProfileExit = () => {
+    logout()
+    handleMenuClose()
+  }
+
   const handleAppMenuClose = () => {
     setAppAnchorEl(null);
     handleMobileMenuClose();
@@ -85,6 +113,14 @@ const HomeBar = ({ title }) => {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+
+  const openServiceMenu = (e) => {
+    setMenuOpen(true)
+  }
+
+  const closeServiceMenu = (e) => {
+    setMenuOpen(false)
+  }
 
   const menuId = 'primary-account-menu';
   const appsMenuId = 'primary-apps-menu';
@@ -99,8 +135,8 @@ const HomeBar = ({ title }) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {/* <MenuItem onClick={handleMenuClose}>Профиль</MenuItem> */}
+      <MenuItem onClick={handleProfileExit}>Выход</MenuItem>
     </Menu>
   );
 
@@ -114,8 +150,8 @@ const HomeBar = ({ title }) => {
       open={isAppMenuOpen}
       onClose={handleAppMenuClose}
     >
-      <MenuItem onClick={handleAppMenuClose}>Приложение_1</MenuItem>
-      <MenuItem onClick={handleAppMenuClose}>Приложение_2</MenuItem>
+      <MenuItem onClick={handleAppMenuClose}>ПУСТО_1</MenuItem>
+      <MenuItem onClick={handleAppMenuClose}>ПУСТО_2</MenuItem>
     </Menu>
   )
 
@@ -140,14 +176,6 @@ const HomeBar = ({ title }) => {
           <p>XML</p>
         </MenuItem>
       </NavLink>
-      <MenuItem>
-        <IconButton color="inherit">
-          <Badge badgeContent={0} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Сообщения</p>
-      </MenuItem>
       <MenuItem>
         <IconButton color="inherit">
           <Badge badgeContent={0} color="secondary">
@@ -188,6 +216,7 @@ const HomeBar = ({ title }) => {
             edge="start"
             className={classes.menuButton}
             color="inherit"
+            onClick={openServiceMenu}
             aria-label="open drawer"
           >
             <MenuIcon />
@@ -197,6 +226,13 @@ const HomeBar = ({ title }) => {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
+            <NavLink to="tester">
+              <IconButton color="inherit">
+                <Badge badgeContent={0} color="secondary">
+                  <AlarmOnIcon className={classes.link} />
+                </Badge>
+              </IconButton>
+            </NavLink>
             <NavLink to="analyze">
               <IconButton color="inherit">
                 <Badge badgeContent={0} color="secondary">
@@ -204,11 +240,6 @@ const HomeBar = ({ title }) => {
                 </Badge>
               </IconButton>
             </NavLink>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="secondary">
-                <MailIcon />
-              </Badge>
-            </IconButton>
             <IconButton color="inherit">
               <Badge badgeContent={0} color="secondary">
                 <NotificationsIcon />
@@ -233,7 +264,14 @@ const HomeBar = ({ title }) => {
               color="inherit"
             >
               <Badge badgeContent={0} color="secondary">
-                <AccountCircle />
+                <Tooltip title=
+                  {!!user ?
+                    user.currentUser.userName
+                    :
+                    ''
+                  }>
+                  <AccountCircle />
+                </Tooltip>
               </Badge>
             </IconButton>
           </div>
@@ -250,6 +288,7 @@ const HomeBar = ({ title }) => {
           </div>
         </Toolbar>
       </AppBar>
+      <ServeiceMenu open={menuOpen} close={closeServiceMenu}/>
       {renderMobileMenu}
       {renderMenu}
       {renderAppsMenu}

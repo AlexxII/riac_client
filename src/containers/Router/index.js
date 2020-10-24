@@ -1,18 +1,23 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
-import { Home, Drive, Results, Analyze, Tester } from '../../pages'
+import {
+  HomePage, DrivePage, ResultsPage, AnalyzePage, SettingsPage, TesterPage, AttachmentPage, WikiPage
+} from '../../pages'
 
 const Router = () => {
 
   return (
     <BrowserRouter>
       <Switch>
-        <Route path={"/"} exact component={Home} />
-        <Route path={"/results/:id/:code"} component={Results} />
-        <Route path={"/drive/:id/:code"} component={Drive} />
-        <Route path={"/analyze"} component={Analyze} />
-        <Route path={"/tester"} component={Tester} />
+        <Route path={"/"} exact component={HomePage} />
+        <Route path={"/results/:id/:code"} component={ResultsPage} />
+        <Route path={"/poll-settings/:id/:code"} component={SettingsPage} />
+        <Route path={"/drive/:id/:code"} component={DrivePage} />
+        <Route path={"/analyze"} component={AnalyzePage} />
+        <Route path={"/attachment/:id/:code"} component={AttachmentPage} />
+        <Route path={"/poll-wiki/:id/:code"} component={WikiPage} />
+        <Route path={"/tester"} component={TesterPage} />
       </Switch>
     </BrowserRouter>
   )

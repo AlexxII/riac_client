@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import SettingBar from '../components/SettingBar'
 import DriveWrap from "../containers/DriveWrap";
 
-const Drive = () => {
+const DrivePage = () => {
   let { id, code } = useParams();
 
   return (
@@ -15,4 +15,4 @@ const Drive = () => {
   )
 }
 
-export default Drive
+export default DrivePage

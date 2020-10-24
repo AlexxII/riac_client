@@ -3,18 +3,19 @@ import { useParams } from 'react-router-dom'
 import Container from '@material-ui/core/Container'
 
 import SettingBar from '../components/SettingBar'
-// import XmlAnalyzer from '../components/XmlAnalyzer'
+import DataAnalyzer from '../modules/DataAnalyzer'
 
 const Analyze = () => {
   let { id } = useParams();
 
   return (
     <Fragment>
-      <SettingBar title={`Анализ XML`} />
-      <Container maxWidth="md">
-        <h2>Анализ XML</h2>
-        {/* <XmlAnalyzer /> */}
-      </Container>
+      <SettingBar title={`Анализатор данных`} />
+      <div style={{ paddingTop: '10px' }}>
+        <Container maxWidth="xl">
+          <DataAnalyzer />
+        </Container>
+      </div>
     </Fragment>
   )
 }

@@ -1,20 +1,37 @@
-import React, { Fragment } from 'react'
-
+import React, { Fragment, useState } from 'react'
 import Answer from "../Answer";
+import Tags from '../MultipleAnswers'
 
-const Question = ({ question, clickHandler, focusHandler, blurHandler }) => {
+const Question = ({ count, question, clickHandler, focusHandler, blurHandler, multipleHandler, settings }) => {
+  function FlatAnswer() {
+    return (
+      question.answers.map((answer, i) => (
+        <Answer key={i} answer={answer}
+          clickHandler={clickHandler}
+          focusHandler={focusHandler}
+          blurHandler={blurHandler}
+          settings={settings}
+        />
+      )))
+  }
 
   return (
     <Fragment>
-      <h3>{question.title}</h3>
-      <div>
-        {question.newAnswers.map((answer, i) => (
-          <Answer key={i} answer={answer}
-            clickHandler={clickHandler}
-            focusHandler={focusHandler}
-            blurHandler={blurHandler}
-          />
-        ))}
+      <h3 className={"question-title"} >
+        <span className={"question-number"}>{count + 1}</span>
+        <span> - </span>
+        {question.title}</h3>
+      <div>{
+        !question.mega ?
+          question.answers.map((answer, i) => (
+            <Answer key={i} answer={answer}
+              clickHandler={clickHandler}
+              focusHandler={focusHandler}
+              blurHandler={blurHandler}
+              settings={settings}
+            />
+          )) : <Tags data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
+      }
       </div>
     </Fragment>
   )

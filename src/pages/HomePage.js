@@ -3,7 +3,7 @@ import React, { Fragment } from 'react'
 import HomeBar from '../components/HomeBar'
 import HomeWrap from '../containers/HomeWrap'
 
-const Drive = () => {
+const HomePage = () => {
 
   return (
     <Fragment>
@@ -13,4 +13,4 @@ const Drive = () => {
   )
 }
 
-export default Drive
+export default HomePage

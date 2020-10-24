@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const pollsQuery = gql`
   query pollsQuery {
-    pollInfo {
+    polls {
       id
       title
       code

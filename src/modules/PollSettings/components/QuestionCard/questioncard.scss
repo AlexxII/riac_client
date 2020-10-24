@@ -1,0 +1,33 @@
+.question-item {
+  color: rgba(0, 0, 0, 0.54);
+  padding: 8px;
+  text-align: center;
+  cursor: grab;
+  max-height: 120px;
+  min-height: 120px;
+}
+
+.question-title {
+  font-size: 14px !important;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow-y: hidden;
+}
+
+.question-limit-input {
+  max-width: 15px;
+  text-align: center;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

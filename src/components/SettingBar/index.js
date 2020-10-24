@@ -66,8 +66,8 @@ const SettingBar = ({ title }) => {
       open={isAppMenuOpen}
       onClose={handleAppMenuClose}
     >
-      <MenuItem onClick={handleAppMenuClose}>Приложение_1</MenuItem>
-      <MenuItem onClick={handleAppMenuClose}>Приложение_2</MenuItem>
+      <MenuItem onClick={handleAppMenuClose}>ПУСТО_1</MenuItem>
+      <MenuItem onClick={handleAppMenuClose}>ПУСТО_2</MenuItem>
     </Menu>
   )
 

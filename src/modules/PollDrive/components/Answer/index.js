@@ -1,16 +1,18 @@
 import React, { Fragment, useRef } from 'react'
-
 import FreeAnswer from '../FreeAnswer'
+import FlashOnSharpIcon from '@material-ui/icons/FlashOnSharp';
+import EditIcon from '@material-ui/icons/Edit';
 
-const Answer = ({ answer, clickHandler, focusHandler, blurHandler }) => {
+const Answer = ({ answer, clickHandler, focusHandler, blurHandler, settings }) => {
   const answerRef = useRef(null)
 
   let answerCls = ['answer-wrap']
+  let answerTitle = ['answer-title']
   if (answer.selected) {
     answerCls.push('selected')
   }
   if (answer.disabled) {
-    answerCls.push('disabled')
+    answerTitle.push('disabled')
   }
 
   const click = () => {
@@ -23,15 +25,17 @@ const Answer = ({ answer, clickHandler, focusHandler, blurHandler }) => {
         className={answerCls.join(' ')}
         ref={answerRef}
         data-code={answer.keyCode} >
-        <h4 >
-          <span>{answer.showIndex}</span>
+        <div className={"answer-title"}>
+          <span className={"answer-key"}>{answer.showIndex}</span>
           <span> </span>
-          {answer.codeShow &&
-            <span style={{ fontSize: '10px' }}>{answer.code}</span>
+          {settings.codesShow &&
+            <span className={"answer-code"} >{answer.code}</span>
           }
           <span> - </span>
-          <span>{answer.title}</span>
-        </h4>
+          <span className={answerTitle.join(' ')}>{answer.title}</span>
+          <span className="free-answer-icon">{answer.freeAnswer ? <EditIcon fontSize="small" /> : null}</span>
+          <span className="answer-exclude-message">{answer.excludeM}</span>
+        </div>
         <div>
           {answer.showFreeAnswer && (
             <FreeAnswer

@@ -6,6 +6,8 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
+import Generation from './Generation'
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -73,6 +75,7 @@ const PollResults = ({ id }) => {
         <Tab label="Сравнения" {...a11yProps(3)} />
         <Tab label="Графики" {...a11yProps(4)} />
         <Tab label="Пакетный" {...a11yProps(5)} />
+        <Tab label="Тестирование" {...a11yProps(6)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         Результаты опроса ID - {id}
@@ -92,6 +95,10 @@ const PollResults = ({ id }) => {
       <TabPanel value={value} index={5}>
         Пакетный ВВод данных
       </TabPanel>
+      <TabPanel value={value} index={6}>
+        <Generation id={id}/>
+      </TabPanel>
+
     </div>
   );
 }

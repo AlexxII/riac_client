@@ -3,15 +3,27 @@ import Container from '@material-ui/core/Container'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import PollDrive from "../../modules/PollDrive";
 import CityDialog from '../../components/CityDialog';
-import { useQuery } from '@apollo/client'
+import Backdrop from '@material-ui/core/Backdrop';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { useQuery, useMutation } from '@apollo/client'
 import { useHistory } from "react-router-dom";
 import { pollDataQuery, citiesQuery } from "./queries"
+import { saveNewResult, saveResult } from './mutaions'
 import { parseIni, normalizeLogic } from './lib/utils'
 
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}));
+
 const DriveWrap = ({ id }) => {
-  const mainDiv = useRef(null);
+  const classes = useStyles();
   const history = useHistory();
   const [poll, setPoll] = useState(null)
+  const [backOpen, setBackOpen] = useState(false)
   const [poolOfCities, setPoolOfCities] = useState(null)
   const [openCityDialog, setOpenCityDialog] = useState(true);
   const [logic, setPollLogic] = useState(null)
@@ -31,10 +43,11 @@ const DriveWrap = ({ id }) => {
       .then(text => {
         const logic = parseIni(text)
         // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const ttt = normalizeLogic(logic)
-        setPollLogic(ttt)
+        const normLogic = normalizeLogic(logic)
+        setPollLogic(normLogic)
       })
   }
+  const [saveResult] = useMutation(saveNewResult)
 
   useEffect(() => {
     // исключение вопросов, ответы которых полностью исключены полем [invisible] ВНЕШНЕЙ ЛОГИКИ
@@ -84,20 +97,45 @@ const DriveWrap = ({ id }) => {
 
   const saveCity = (city) => {
     setCurrentCity(city)
+    console.log(city);
     setOpenCityDialog(false)
   }
 
   const closeDialog = () => {
     setOpenCityDialog(false)
-    history.push("/");
+    history.push("/")
+  }
+
+  const saveAndGoBack = (data) => {
+    setBackOpen(true)
+
+    saveResult({
+      variables: {
+        poll: poll.id,
+        city: currentCity.id,
+        // user: user,
+        data
+      }
+    })
+    // history.push("/")
+    // setBackOpen(false)
+  }
+
+  const saveWorksheet = (data) => {
+    setBackOpen(true)
+    setBackOpen(false)
   }
 
   return (
     <Fragment>
+      <Backdrop className={classes.backdrop} open={backOpen}>
+        <CircularProgress color="inherit" />
+        <p>Подождите, сохранение результатов</p>
+      </Backdrop>
       <div style={{ backgroundColor: currentQuestion.multiple ? 'rgb(208 226 252)' : '#fff' }}>
         <Container maxWidth="md">
           <CityDialog open={openCityDialog} cities={poolOfCities} save={saveCity} handleClose={closeDialog} />
-          <PollDrive poll={poll} logics={logic} mainDiv={mainDiv} setCurrentQuestion={setCurrentQuestion} />
+          <PollDrive poll={poll} logics={logic} setCurrentQuestion={setCurrentQuestion} saveAndGoBack={saveAndGoBack} saveWorksheet={saveWorksheet} />
         </Container>
       </div>
     </Fragment>

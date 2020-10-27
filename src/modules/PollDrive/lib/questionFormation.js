@@ -4,6 +4,7 @@ import { keycodes } from './keycodes'
 const questionFormation = (poll, count, result, logic, setResults) => {
   const question = poll.questions[count]
   let keyCodesPool = []
+  let codesPool = []
 
   // проверка на видимость ответа в перечне (ВНЕШНЯЯ ЛОГИКА - видимость)
   const visibleAnswers = logic.invisible ? question.answers.filter(obj => !logic.invisible.includes(obj.code))
@@ -27,6 +28,7 @@ const questionFormation = (poll, count, result, logic, setResults) => {
       exclude: [],
       excludeM: ''
     }
+    codesPool.push(answer.code)
     // устанавливаем исключения
     if (exclude) {
       // заполняем поле exclude, в котором указаны все коды, которые будут исключены при выборе данного ответа
@@ -50,7 +52,7 @@ const questionFormation = (poll, count, result, logic, setResults) => {
           suffix = {
             ...suffix,
             disabled: true,
-            excludeM: `запрещен кодом ${code}`
+            excludeM: `противоречит коду ${code}`
           }
         }
       })
@@ -147,7 +149,8 @@ const questionFormation = (poll, count, result, logic, setResults) => {
       ...prevState,
       [question.id]: {
         data: [],
-        skip: true
+        codesPool,
+        count
       }
     }))
     return {
@@ -160,7 +163,8 @@ const questionFormation = (poll, count, result, logic, setResults) => {
       ...prevState,
       [question.id]: {
         data: [],
-        skip: false
+        codesPool,
+        count
       }
     }))
   }

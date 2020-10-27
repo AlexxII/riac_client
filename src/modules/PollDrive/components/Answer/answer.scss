@@ -3,16 +3,14 @@
   text-align: justify;
   align-items: center;
   justify-content: space-between;
-  // width: 100%;
   background-color: #f8f9fa;
   border-radius: 2px;
-  margin: 10px;
+  margin: 10px 0 10px 0;
   font-size: 16px;
   padding: 12px 12px 12px 12px;
   &:hover {
     background-color: rgba(224, 224, 224, 0.856);
     cursor: pointer;
-    // color: white;
   }
   box-shadow: 0.2em 0.2em 5px rgba(122, 122, 122, 0.5);
   position: relative;

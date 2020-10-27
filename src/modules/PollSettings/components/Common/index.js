@@ -111,7 +111,6 @@ const CommonSetting = ({ id }) => {
 
   useEffect(() => {
     if (logic) {
-      console.log(logic);
       const modQuestions = data.poll.questions.map((question, index) => {
         const newAnswers = question.answers.map((answer, index) => {
           let suffix = {}
@@ -157,7 +156,6 @@ const CommonSetting = ({ id }) => {
           ...question,
           answers: newAnswers
         }
-        console.log(newQuestion);
         return newQuestion
       })
       setQuestions(modQuestions)

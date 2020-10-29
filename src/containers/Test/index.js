@@ -18,8 +18,18 @@ const Test = observer(() => {
     }
   }, [])
 
+
+  const Border = ({ children, color }) => {
+    return (
+      <div className={"test-nested-" + color}>{children}</div>
+    )
+
+  }
+
   return (
-    <span>Seconds passed: {timerData.secondsPassed} </span>
+    <Border color="green">
+      <span>Seconds passed: {timerData.secondsPassed} </span>
+    </Border>
   )
 })
 

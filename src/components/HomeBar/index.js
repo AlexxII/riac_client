@@ -24,6 +24,8 @@ import { CURRENT_USER_QUERY } from '../../containers/App/queries'
 import { GET_USER_INFO } from './queries';
 import { LOGOUT_MUTATION } from './mutations'
 
+// ЧЕРЕЗ Композицию
+
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,

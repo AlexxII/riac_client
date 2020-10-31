@@ -97,7 +97,6 @@ const DriveWrap = ({ id }) => {
 
   const saveCity = (city) => {
     setCurrentCity(city)
-    console.log(city);
     setOpenCityDialog(false)
   }
 
@@ -106,23 +105,53 @@ const DriveWrap = ({ id }) => {
     history.push("/")
   }
 
+  const prepareResultData = (data) => {
+    let result = []
+    for (let key in data) {
+      if (key !== 'pool') {
+        result.push({
+          id: key,
+          data: data[key].data.map(answer => {
+            return {
+              code: answer.answerCode,
+              text: answer.freeAnswerText
+            }
+          })
+        })
+      }
+    }
+    return result
+  }
+
   const saveAndGoBack = (data) => {
     setBackOpen(true)
-
+    const result = prepareResultData(data)
     saveResult({
       variables: {
         poll: poll.id,
         city: currentCity.id,
-        // user: user,
-        data
+        user: '5f73207d34750a3be7865de7',
+        pool: data.pool,
+        data: result
       }
     })
+    setBackOpen(false)
+    // return setBackOpen(0)
     // history.push("/")
-    // setBackOpen(false)
   }
 
   const saveWorksheet = (data) => {
     setBackOpen(true)
+    const result = prepareResultData(data)
+    saveResult({
+      variables: {
+        poll: poll.id,
+        city: currentCity.id,
+        user: '5f73207d34750a3be7865de7',
+        pool: data.pool,
+        data: result
+      }
+    })
     setBackOpen(false)
   }
 

@@ -2,7 +2,8 @@ import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import {
-  HomePage, DrivePage, ResultsPage, AnalyzePage, SettingsPage, TesterPage, AttachmentPage, WikiPage
+  HomePage, DrivePage, ResultsPage, AnalyzePage, SettingsPage, 
+  TesterPage, AttachmentPage, WikiPage, PollAppSettingsPage
 } from '../../pages'
 
 const Router = () => {
@@ -17,6 +18,7 @@ const Router = () => {
         <Route path={"/analyze"} component={AnalyzePage} />
         <Route path={"/attachment/:id/:code"} component={AttachmentPage} />
         <Route path={"/poll-wiki/:id/:code"} component={WikiPage} />
+        <Route path={"/pollappsetting"} component={PollAppSettingsPage} />
         <Route path={"/tester"} component={TesterPage} />
       </Switch>
     </BrowserRouter>

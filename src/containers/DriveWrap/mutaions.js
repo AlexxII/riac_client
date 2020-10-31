@@ -1,10 +1,12 @@
 import { gql } from '@apollo/client'
 
 export const saveNewResult = gql`
-mutation saveResult($pollId: ID!, $city: ID!, $data: [String]) {
+mutation saveResult($poll: String!, $city: String!, $user: String!, $pool: [String], $data: [ResultData]) {
   saveResult(
-    poll: $pollId,
-    city: $city
+    poll: $poll,
+    city: $city,
+    user: $user,
+    pool: $pool,
     data: $data
   )
 }

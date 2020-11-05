@@ -12,8 +12,12 @@ const FreeAnswer = ({ answer, focusHandler, blurHandler }) => {
   }, [])
 
   const handlerInput = (e) => {
+    // замена запятой на ";"
+    const regRex = /,/gi
     let keyCode = e.keyCode
     if (keyCode === 13) {
+      const val = textInput.current.value.replaceAll(regRex, ';')
+      textInput.current.value = val
       e.currentTarget.blur()
       return
     } else if (keyCode === 27) {
@@ -25,20 +29,21 @@ const FreeAnswer = ({ answer, focusHandler, blurHandler }) => {
       return
     }
   }
-
   if (answer.showFreeAnswer) {
     return (
-      <input
-        className="free-answer"
-        type="text"
-        ref={textInput}
-        data-code={answer.code}
-        data-keycode={answer.keyCode}
-        placeholder="Введите свободный ответ"
-        onKeyUp={handlerInput}
-        onFocus={focusHandler}
-        onBlur={blurHandler}
-      />
+      <span>
+        <input
+          className="free-answer"
+          type="text"
+          ref={textInput}
+          data-code={answer.code}
+          data-keycode={answer.keyCode}
+          placeholder="Введите свободный ответ"
+          onKeyUp={handlerInput}
+          onFocus={focusHandler}
+          onBlur={blurHandler}
+        />
+      </span>
     )
   }
   return null

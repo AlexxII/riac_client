@@ -9,6 +9,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PhoneIcon from '@material-ui/icons/Phone';
+import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles({
   list: {
@@ -36,10 +37,12 @@ export default function ServiceMenu({ open, close }) {
       </List>
       <Divider />
       <List>
-        <ListItem button key={1}>
-          <ListItemIcon><SettingsIcon /></ListItemIcon>
-          <ListItemText primary="Настройки" />
-        </ListItem>
+        <NavLink to='pollappsetting'>
+          <ListItem button key={1}>
+            <ListItemIcon><SettingsIcon /></ListItemIcon>
+            <ListItemText primary="Настройки" />
+          </ListItem>
+        </NavLink>
       </List>
     </div>
   );

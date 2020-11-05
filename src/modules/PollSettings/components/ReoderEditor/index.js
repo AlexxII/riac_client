@@ -13,7 +13,7 @@ import { pollQuery, saveNewLimit, saveNewOrder } from "./queries"
 const ReoderEditor = ({ id }) => {
   const [questions, setQuestions] = useState(null)
   const [prevOrder, setPrevOrder] = useState(null)
-  const { loading, error, data, refetch } = useQuery(pollQuery, {
+  const { loading, error, data } = useQuery(pollQuery, {
     variables: { id },
     onCompleted: () => setQuestions(data.poll.questions)
   })

@@ -1,4 +1,6 @@
 import React, { Fragment, useState, useRef } from 'react'
+import { mainUrl } from '../../../../mainconfig'
+
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import SaveIcon from '@material-ui/icons/Save';
@@ -24,7 +26,7 @@ const ConfigEditor = ({ id }) => {
 
   const handleConfigFile = (filePath) => {
     setFilePath(filePath)
-    fetch(`http://localhost:4000${filePath}`)
+    fetch(mainUrl + filePath)
       .then((r) => r.text())
       .then(text => {
         setConfig(text)

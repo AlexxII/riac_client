@@ -5,7 +5,6 @@ export const GET_ALL_CITIES = gql`
     cities{
       id
       title
-      order
       population
       category
     }

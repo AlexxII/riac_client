@@ -123,9 +123,6 @@ const Cities = () => {
             <Typography variant="overline" display="block" gutterBottom>
               Население: {city.population}
             </Typography>
-            <Typography variant="overline" display="block" gutterBottom>
-              Порядок: {city.order}
-            </Typography>
             <Grid container item justify="space-between" className="card-service-buttons">
               <IconButton className="card-button" aria-label="delete" onClick={handleDelete}>
                 <DeleteIcon fontSize="small" />

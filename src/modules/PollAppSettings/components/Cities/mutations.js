@@ -6,7 +6,6 @@ mutation saveNewCity($title: String!, $population: Int!, $category: String!) {
     id
     title
     category
-    order
     population
   }
 }
@@ -18,7 +17,6 @@ mutation saveCityEdit($id: String!, $title: String!, $population: Int!, $categor
     id
     title
     category
-    order
     population
   }
 }

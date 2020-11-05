@@ -1,0 +1,54 @@
+.cities-service-zone {
+  text-align: left;
+  margin: 0 0 15px 0;
+  .header {
+    padding: 10px 10px 10px 0;
+  }
+}
+
+.city-card {
+  position: relative;
+  min-height: 205px;
+  padding: 5px 10px 0 10px;
+  .card-button {
+    padding: 12px;
+  }
+}
+.add-city-title {
+  width: 100%;
+}
+
+.add-city-card {
+  position: relative;
+  min-height: 195px;
+  padding: 15px 10px 10px 10px;
+}
+
+.add-city-population {
+  width: 100%;
+}
+
+.add-city-button-group {
+  margin: 5px 0 5px 0;
+  button {
+    margin: 0 4px 0 4px;
+  }
+}
+
+.add-dialog-close {
+  position: absolute !important;
+  top: 0;
+  right: 0px;
+}
+
+.city-dialog-save {
+  position: absolute !important;
+  bottom: 10px;
+  right: 10px;
+}
+
+.card-service-buttons {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

@@ -1,14 +1,17 @@
 import React from 'react';
+import { mainUrl } from './mainconfig'
+
 import ReactDOM from 'react-dom';
-import { ApolloClient, InMemoryCache } from '@apollo/client'
-import { ApolloProvider } from '@apollo/client';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import * as serviceWorker from './serviceWorker';
-import { cache } from './cache'
+// import { cache } from './cache'
 
 import App from './containers/App/App';
 
+const cache = new InMemoryCache()
+
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/graphql',
+  uri: mainUrl + '/graphql',
   cache,
   credentials: 'include'
 })

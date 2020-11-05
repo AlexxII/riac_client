@@ -1,4 +1,6 @@
 import React, { Fragment, useState, useRef, useEffect } from 'react'
+
+import { mainUrl } from "../../mainconfig";
 import Container from '@material-ui/core/Container'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import PollDrive from "../../modules/PollDrive";
@@ -38,7 +40,7 @@ const DriveWrap = ({ id }) => {
     }
   })
   const handleConfigFile = (filePath) => {
-    fetch(`http://localhost:4000${filePath}`)
+    fetch(mainUrl + filePath)
       .then((r) => r.text())
       .then(text => {
         const logic = parseIni(text)

@@ -2,10 +2,10 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import Cities from './components/Cities'
+import Sample from './components/Sample'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -19,8 +19,8 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box>
-          <Typography>{children}</Typography>
+        <Box className="app-setting-right-pannel">
+          {children}
         </Box>
       )}
     </div>
@@ -65,9 +65,13 @@ const PollAppSettings = () => {
         className={classes.tabs}
       >
         <Tab label="Города" {...allProps(0)} />
+        <Tab label="Выборка" {...allProps(1)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <Cities />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <Sample />
       </TabPanel>
     </div>
   );

@@ -20,7 +20,6 @@ const SignInWrap = () => {
         query: CURRENT_USER_QUERY,
         data: { currentUser: signin.user },
       }),
-
     }
   )
 

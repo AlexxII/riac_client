@@ -1,4 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react'
+import {mainUrl} from '../../../../mainconfig'
+
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -99,7 +101,7 @@ const CommonSetting = ({ id }) => {
   })
 
   const handleConfigFile = (filePath) => {
-    fetch(`http://localhost:4000${filePath}`)
+    fetch(mainUrl + filePath)
       .then((r) => r.text())
       .then(text => {
         const logic = parseIni(text)

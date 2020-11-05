@@ -94,7 +94,9 @@ const CommonSetting = ({ id }) => {
         questionsCount: data.poll.questionsCount,
         answersCount: data.poll.answersCount
       })
-      handleConfigFile(data.poll.logic.path)
+      if (data.poll.logic) {
+        handleConfigFile(data.poll.logic.path)
+      }
     }
   })
 

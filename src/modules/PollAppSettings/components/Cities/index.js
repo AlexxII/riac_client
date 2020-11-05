@@ -379,10 +379,10 @@ const ConfirmDelDialog = ({ open, confirm, close }) => {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">{"Удалить город проведения опросов?"}</DialogTitle>
+      <DialogTitle id="alert-dialog-title">{"Удалить населенный пункт?"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Внимание! Результаты опросов учитывают города в которых они проводились, удаление
+          Внимание! Результаты опросов учитывают н.п. в которых они проводились, удаление
           приведет к потере части статистики и некорректности ее отображения.
           </DialogContentText>
       </DialogContent>

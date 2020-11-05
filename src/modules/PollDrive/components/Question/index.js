@@ -17,22 +17,24 @@ const Question = ({ count, question, clickHandler, focusHandler, blurHandler, mu
 
   return (
     <Fragment>
-      <h3 className={"question-title"} >
-        <span className={"question-number"}>{count + 1}</span>
-        <span> - </span>
-        {question.title}</h3>
-      <div>{
-        !question.mega ?
-          question.answers.map((answer, i) => (
-            <Answer key={i} answer={answer}
-              clickHandler={clickHandler}
-              focusHandler={focusHandler}
-              blurHandler={blurHandler}
-              settings={settings}
-            />
-          )) : <Tags data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
-      }
-      </div>
+      <span className="drive-question-card">
+        <h3 className="question-title-card" >
+          <span className={"question-number"}>{count + 1}</span>
+          <span> - </span>
+          {question.title}</h3>
+        <div>{
+          !question.mega ?
+            question.answers.map((answer, i) => (
+              <Answer key={i} answer={answer}
+                clickHandler={clickHandler}
+                focusHandler={focusHandler}
+                blurHandler={blurHandler}
+                settings={settings}
+              />
+            )) : <Tags data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
+        }
+        </div>
+      </span>
     </Fragment>
   )
 }

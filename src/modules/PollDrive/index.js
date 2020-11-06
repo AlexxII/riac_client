@@ -39,7 +39,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   const [finishDialog, setFinishDialog] = useState(false)
   const [inlineMessage, setInlineMessage] = useState('')
   const keyUpHandler = ({ target, keyCode }) => {
-    if (target.nodeName == 'BODY') {
+    if (target.nodeName === 'BODY') {
       const nextStep = defineSelectedAnswer(keyCode)
       switch (nextStep.do) {
         case ANSWER_SELECTED: {
@@ -56,6 +56,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         }
         case SKIP: {
           return                                                    // нажата системная клавиша, не относящаяся к опросу
+        }
+        default: {
+          return
         }
       }
     }

@@ -4,7 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import { parseIni, normalizeLogic } from '../../../containers/DriveWrap/lib/utils'
+import { parseIni, normalizeLogic } from '../../../../containers/DriveWrap/lib/utils'
 import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
@@ -15,7 +15,7 @@ const Generation = ({ id }) => {
   const [questions, setQuestions] = useState(null)
   const [logic, setLogic] = useState(null)
   const [count, setCount] = useState(null)
-  const { loading, error, data } = useQuery(GET_POLL_DATA, {
+  const { loading, data } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: () => {
       setPoll({

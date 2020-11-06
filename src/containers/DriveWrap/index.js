@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useRef, useEffect } from 'react'
-
+import React, { Fragment, useState, useEffect } from 'react'
 import { mainUrl } from "../../mainconfig";
+
 import Container from '@material-ui/core/Container'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import PollDrive from "../../modules/PollDrive";
@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useQuery, useMutation } from '@apollo/client'
 import { useHistory } from "react-router-dom";
 import { pollDataQuery, citiesQuery } from "./queries"
-import { saveNewResult, saveResult } from './mutaions'
+import { saveNewResult } from './mutaions'
 import { parseIni, normalizeLogic } from './lib/utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -68,6 +68,7 @@ const DriveWrap = ({ id }) => {
           if (count !== lAnswers) {
             return true
           }
+          return false
         })
         setPoll({
           id: data.poll.id,

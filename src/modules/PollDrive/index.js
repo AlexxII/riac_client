@@ -254,8 +254,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         }
       )
     }))
-    const arrayOfCodes = question.answers.reduce((acum, val) => [...acum, val.code], [])
-    // если ответы сброшены, значит и финишировать мы не можем
     setFinish(false)
     // обновить логику и проверить запрещенные ответы для данного вопроса для их перерисовки!!!!!!
   }

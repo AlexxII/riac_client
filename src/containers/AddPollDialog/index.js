@@ -1,5 +1,8 @@
-import React, { Component, useState } from "react";
+import React from "react";
+
 import { Formik, Field } from "formik";
+import * as yup from "yup";
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -8,10 +11,23 @@ import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
-import XmlInput from "../../components/XmlInput";
-import { pollTypes, pollWays } from '../../lib/selects'
 
-import * as yup from "yup";
+
+import XmlInput from "../../components/XmlInput";
+
+const pollTypes = [
+  {
+    value: 1,
+    title: '11111'
+  },
+]
+
+const pollWays = [
+  {
+    value: 1,
+    title: '11111'
+  }
+]
 
 const TextInputComponent = ({ field, ...props }) => {
   const { errorMessage, label, type, touched } = props;

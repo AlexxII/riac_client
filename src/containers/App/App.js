@@ -1,14 +1,16 @@
 import React, { Fragment } from 'react';
-import './App.scss';
-import Router from '../Router'
+
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 
-import { useQuery } from '@apollo/react-hooks';
+import './App.scss';
+import Router from '../Router'
 import SignInWrap from '../SignInWrap'
 
+import { useQuery } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';
 import { userVar } from '../../cache'
+
 
 const App = () => {
   const { loading, error, data } = useQuery(CURRENT_USER_QUERY, {

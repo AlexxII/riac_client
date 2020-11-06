@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react'
-import CircularProgress from '@material-ui/core/CircularProgress';
 import AddPollDialog from '../AddPollDialog';
 import { useMutation } from '@apollo/react-hooks'
 import { addNewPoll } from "./queries"

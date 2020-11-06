@@ -36,8 +36,6 @@ const SignInWrap = () => {
   return (
     <Fragment>
       <SignInForm onLogin={handleLogin} userError={userError} passwordError={passwordError} />
-      {/* { mutationLoading && <p>Loading...</p>} */}
-      {/* { mutationError && <p>Error :( Please try again</p>} */}
     </Fragment>
   )
 

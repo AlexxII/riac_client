@@ -1,0 +1,7 @@
+// jsconfig.js
+{
+  "compilerOptions": {
+    "baseUrl": "src"
+  },
+  "include": ["src"]
+}

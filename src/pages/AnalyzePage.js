@@ -6,8 +6,6 @@ import SettingBar from '../components/SettingBar'
 import DataAnalyzer from '../modules/DataAnalyzer'
 
 const Analyze = () => {
-  let { id } = useParams();
-
   return (
     <Fragment>
       <SettingBar title={`Анализатор данных`} />

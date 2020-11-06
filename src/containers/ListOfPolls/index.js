@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PollCard from '../../components/PollCard'
 
 const ListOfPolls = ({ data }) => {

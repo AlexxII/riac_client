@@ -8,7 +8,7 @@ const HomePage = () => {
   return (
     <Fragment>
       <HomeBar title={"Опросы"} />
-      <HomeWrap />
+      {/* <HomeWrap /> */}
     </Fragment>
   )
 }

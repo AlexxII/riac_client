@@ -13,13 +13,16 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import ActiveAvatar from '../../components/ActiveAvatar'
 import PassiveAvatar from '../../components/PassiveAvatar/'
-import DelConfirm from '../DelConfirm'
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SettingsIcon from '@material-ui/icons/Settings';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 
-import {pollWays} from '../../lib/selects'
+const pollWays = [
+  {
+    value: 1,
+    title: '1111'
+  }
+]
 
 const useStyles = makeStyles((theme) => ({
   root: {

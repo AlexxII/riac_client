@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 
 import SettingBar from '../components/SettingBar'
-import DriveWrap from "../containers/DriveWrap";
+import PollDrive from "../modules/PollDrive";
 
 const DrivePage = () => {
   let { id, code } = useParams();
@@ -10,7 +10,7 @@ const DrivePage = () => {
   return (
     <Fragment>
       <SettingBar title={`Опрос ` + code + ` - вбивание`} />
-      <DriveWrap id={id}/>
+      <PollDrive id={id}/>
     </Fragment>
   )
 }

@@ -60,7 +60,6 @@ const UserProfile = ({ close }) => {
     </Menu>
   );
 
-
   return (
     <Fragment>
       <IconButton

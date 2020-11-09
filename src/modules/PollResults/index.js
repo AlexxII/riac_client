@@ -6,7 +6,8 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
-import Generation from './components/Generation'
+import Generation from './containers/Generation'
+import OverallResults from './containers/OverallResults'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -34,7 +35,7 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired,
 };
 
-function a11yProps(index) {
+function allProps(index) {
   return {
     id: `vertical-tab-${index}`,
     'aria-controls': `vertical-tabpanel-${index}`,
@@ -48,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
   },
   tabs: {
+    minWidth: '160px',
     borderRight: `1px solid ${theme.palette.divider}`,
   },
 }));
@@ -69,16 +71,15 @@ const PollResults = ({ id }) => {
         onChange={handleChange}
         className={classes.tabs}
       >
-        <Tab label="Общие" {...a11yProps(0)} />
-        <Tab label="По Н.П." {...a11yProps(1)} />
-        <Tab label="Линейка" {...a11yProps(2)} />
-        <Tab label="Сравнения" {...a11yProps(3)} />
-        <Tab label="Графики" {...a11yProps(4)} />
-        <Tab label="Пакетный" {...a11yProps(5)} />
-        <Tab label="Тестирование" {...a11yProps(6)} />
+        <Tab label="Общие" {...allProps(0)} />
+        <Tab label="По Н.П." {...allProps(1)} />
+        <Tab label="Линейка" {...allProps(2)} />
+        <Tab label="Графики" {...allProps(3)} />
+        <Tab label="Пакетный" {...allProps(4)} />
+        <Tab label="Тестирование" {...allProps(5)} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        Результаты опроса ID - {id}
+        <OverallResults id={id} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         Распределение по населенным пунктам
@@ -87,16 +88,13 @@ const PollResults = ({ id }) => {
         Линейное распределение ответов
       </TabPanel>
       <TabPanel value={value} index={3}>
-        Сравнения с аналогичными опросами
-      </TabPanel>
-      <TabPanel value={value} index={4}>
         Графики
       </TabPanel>
-      <TabPanel value={value} index={5}>
+      <TabPanel value={value} index={4}>
         Пакетный ВВод данных
       </TabPanel>
-      <TabPanel value={value} index={6}>
-        <Generation id={id}/>
+      <TabPanel value={value} index={5}>
+        <Generation id={id} />
       </TabPanel>
 
     </div>

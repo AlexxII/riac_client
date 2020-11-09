@@ -1,9 +1,10 @@
-@import "./components/CityDialog/citydialog.scss";
-@import "./components/PollCard/pollcard.scss";
+// стили компонентов
+@import "./components/DialogWithSelect/dialogwithselect.scss";
 
+
+@import "./modules/PollHome/pollhome.scss";
 @import "./modules/PollDrive/polldrive.scss";
 @import "./modules/DataAnalyzer/analyser.scss";
 @import "./modules/PollSettings/pollsettings.scss";
 @import "./modules/PollResults/pollresults.scss";
-
-@import "./modules/PollAppSettings/pollappsetting.scss"
+@import "./modules/PollAppSettings/pollappsetting.scss";

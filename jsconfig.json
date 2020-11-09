@@ -1,4 +1,3 @@
-// jsconfig.js
 {
   "compilerOptions": {
     "baseUrl": "src"

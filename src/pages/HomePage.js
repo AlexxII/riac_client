@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react'
 
 import HomeBar from '../components/HomeBar'
-import HomeWrap from '../containers/HomeWrap'
+import PollHome from '../modules/PollHome'
 
 const HomePage = () => {
 
   return (
     <Fragment>
       <HomeBar title={"Опросы"} />
-      {/* <HomeWrap /> */}
+      <PollHome />
     </Fragment>
   )
 }

@@ -6,10 +6,10 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
-import CommonSetting from './components/Common'
-import ConfigEditor from './components/ConfigEditor'
-import ReoderEditor from './components/ReoderEditor';
-import DeletePoll from './components/DeletePoll'
+import CommonSetting from './containers/Common'
+import ConfigEditor from './containers/ConfigEditor'
+import ReoderEditor from './containers/ReoderEditor';
+import DeletePoll from './containers/DeletePoll'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

@@ -20,8 +20,6 @@ import { NavLink } from 'react-router-dom'
 import UserProfile from '../../containers/UserProfile'
 import ServiceMenu from '../ServiceMenu'
 
-// ЧЕРЕЗ Композицию
-
 const useStyles = makeStyles((theme) => ({
   grow: {
     flexGrow: 1,

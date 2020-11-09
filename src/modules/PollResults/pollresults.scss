@@ -3,4 +3,8 @@
 @import "./containers/OverallResults/overallresults.scss";
 
 @import "./components/AnswersCard/answercard.scss";
-@import "./components/QuestionCard/questioncard.scss"
+@import "./components/QuestionCard/questioncard.scss";
+
+.result-right-pannel {
+  padding: 0 10px 0 10px;
+}

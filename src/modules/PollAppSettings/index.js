@@ -5,7 +5,7 @@ import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
 
 import Cities from './containers/Cities'
-import Sample from './components/Sample'
+import Sample from './containers/Sample'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

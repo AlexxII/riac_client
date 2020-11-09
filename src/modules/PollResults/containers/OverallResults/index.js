@@ -3,6 +3,8 @@ import React, { Fragment, useState } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid';
 import MuiAlert from '@material-ui/lab/Alert';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import QuestionCard from '../../components/QuestionCard'
@@ -16,6 +18,7 @@ import { GET_POLL_RESULTS } from './queries'
 
 const OverallResults = ({ id }) => {
   const [selectPool, setSelectPool] = useState([])
+  const [delConfirm, setDelConfirm] = useState(false)
   const [message, setMessage] = useState({
     show: false,
     type: 'error',
@@ -66,25 +69,39 @@ const OverallResults = ({ id }) => {
 
   }
 
-  const handleSelect = (id) => {
-    setSelectPool(prevState => ([
-      ...prevState,
-      id
-    ]))
-    console.log(id);
+  const handleSelect = (data) => {
+    console.log(pollResults);
+    // console.log(data.event.nativeEvent.ctrlKey);
+    // console.log(data.event.nativeEvent.shiftKey);
+    if (selectPool.includes(data.id)) {
+      const newState = selectPool.filter(id => {
+        return id !== data.id
+      })
+      setSelectPool(newState)
+    } else {
+      setSelectPool(prevState => ([
+        ...prevState,
+        data.id
+      ]))
+    }
   }
 
   return (
     <Fragment>
+      <div className="result-service-zone">
+        <Typography className="header">Общие результаты опроса</Typography>
+        <Button variant="contained" color="primary" size="small">
+          Добавить
+      </Button>
+      </div>
       <ConfirmDialog
-        open={selectPool.length}
+        open={delConfirm}
         confirm={handleDialogConfirm}
         close={handleDialogClose}
         data={
           {
             title: 'Удалить населенный пункт?',
-            text: 'Внимание! Результаты опросов учитывают н.п. в которых они проводились, удаление\
-            приведет к потере части статистики и некорректности ее отображения.'
+            text: 'Внимание! Результаты опросов учитывают н.п. в которых они проводились, удаление приведет к потере части статистики и некорректности ее отображения.'
           }
         }
       />

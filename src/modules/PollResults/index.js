@@ -16,12 +16,13 @@ function TabPanel(props) {
     <div
       role="tabpanel"
       hidden={value !== index}
+      className="right-pannel"
       id={`vertical-tabpanel-${index}`}
       aria-labelledby={`vertical-tab-${index}`}
       {...other}
     >
       {value === index && (
-        <Box p={3}>
+        <Box className="result-right-pannel">
           <Typography>{children}</Typography>
         </Box>
       )}

@@ -20,7 +20,11 @@ const RespondentCard = ({ result, index, show, edit, selected, select }) => {
           </Typography>
           <Checkbox
             checked={selected}
-            onChange={() => select(result.id)}
+            onChange={(e) => select({
+              id : result.id,
+              index,
+              event: e
+            })}
             inputProps={{ 'aria-label': 'primary checkbox' }}
           />
         </Grid>

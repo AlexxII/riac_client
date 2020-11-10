@@ -65,20 +65,42 @@ const PollResults = ({ id }) => {
 
   return (
     <div className={classes.root}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        className={classes.tabs}
-      >
-        <Tab label="Общие" {...allProps(0)} />
-        <Tab label="По Н.П." {...allProps(1)} />
-        <Tab label="Линейка" {...allProps(2)} />
-        <Tab label="Графики" {...allProps(3)} />
-        <Tab label="Пакетный" {...allProps(4)} />
-        <Tab label="Тестирование" {...allProps(5)} />
-      </Tabs>
+      {/* <div display={'none'}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="scrollable auto tabs example"
+        >
+          <Tab label="Item One" {...allProps(0)} />
+          <Tab label="Item Two" {...allProps(1)} />
+          <Tab label="Item Three" {...allProps(2)} />
+          <Tab label="Item Four" {...allProps(3)} />
+          <Tab label="Item Five" {...allProps(4)} />
+          <Tab label="Item Six" {...allProps(5)} />
+          <Tab label="Item Seven" {...allProps(6)} />
+        </Tabs>
+      </div> */}
+      
+      <span display={{ xs: 'none', sm: 'block' }}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value}
+          onChange={handleChange}
+          className={classes.tabs}
+        >
+          <Tab label="Общие" {...allProps(0)} />
+          <Tab label="По Н.П." {...allProps(1)} />
+          <Tab label="Линейка" {...allProps(2)} />
+          <Tab label="Графики" {...allProps(3)} />
+          <Tab label="Пакетный" {...allProps(4)} />
+          <Tab label="Тестирование" {...allProps(5)} />
+        </Tabs>
+      </span>
       <TabPanel value={value} index={0}>
         <OverallResults id={id} />
       </TabPanel>

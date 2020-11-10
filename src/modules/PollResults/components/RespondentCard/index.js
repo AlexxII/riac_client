@@ -31,9 +31,9 @@ const RespondentCard = ({ result, index, show, edit, selected, select }) => {
         <Typography variant="subtitle2" gutterBottom>
           н.п.: {result.city ? result.city.title : '-'}
         </Typography>
-        <Typography variant="overline" display="block" gutterBottom>
+        {/* <Typography variant="overline" display="block" gutterBottom>
           {result.city ? result.city.category.label : 'вероятно город стерли из БД'}
-        </Typography>
+        </Typography> */}
         <Grid container item justify="space-between" className="card-service-buttons">
           <IconButton className="card-button" aria-label="delete" onClick={() => edit(result.id)}>
             <EditIcon fontSize="small" />

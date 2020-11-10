@@ -10,7 +10,6 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 import QuestionCard from '../../components/QuestionCard'
 import AnswerCard from '../../components/AnswersCard'
 import RespondentCard from '../../components/RespondentCard'
-import ResultTable from '../../components/ResultTable'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -18,11 +17,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { GET_POLL_RESULTS_EX } from './queries'
 
 const OverallResults = ({ id }) => {
-  const [selectPool, setSelectPool] = useState([])
+  const [selectPool, setSelectPool] = useState([''])
+  const [lastSelectedIndex, setLastSelectedIndex] = useState()
   const [delConfirm, setDelConfirm] = useState(false)
-
-  const [lastSelected, setLastSelected] = useState()
-
   const [message, setMessage] = useState({
     show: false,
     type: 'error',
@@ -75,47 +72,40 @@ const OverallResults = ({ id }) => {
 
   const handleSelect = (data) => {
     // console.log(pollResults);
-    // console.log(data.event.nativeEvent.ctrlKey);
-    // console.log(data.event.nativeEvent.shiftKey);
-    setLastSelected(data.index)
+    setLastSelectedIndex(data.index)
 
     if (data.event.nativeEvent.ctrlKey) {
       if (selectPool.includes(data.id)) {
-        const newState = selectPool.filter(id => {
+        const n = selectPool.filter(id => {
           return id !== data.id
         })
-        setSelectPool(newState)
+        setSelectPool(n)
+        return
       } else {
         setSelectPool(prevState => ([
           ...prevState,
           data.id
         ]))
+        return
       }
-    } else if (data.event.nativeEvent.shiftKey) {
-      const arrr = pollResults.pollResults.slice(lastSelected, data.index + 1)
-      // const neww = arrr.filter(obj => {
-      //   return selectPool.includes(obj.id) ? false : true
-      // })
-      const neww = arrr.map(obj => {
+    }
+    if (data.event.nativeEvent.shiftKey) {
+      const ar = pollResults.pollResults.slice(lastSelectedIndex, data.index + 1)
+      const rr = ar.map(obj => {
         if (!selectPool.includes(obj.id)) {
-          return obj.id 
+          return obj.id
         }
       })
-      console.log(neww);
-      setSelectPool(neww)
-      return
-    } else {
-      if (selectPool.includes(data.id)) {
-        const newState = selectPool.filter(id => {
-          return id !== data.id
-        })
-        setSelectPool(newState)
-      } else {
-        setSelectPool(prevState => ([
-          ...prevState,
-          data.id
-        ]))
+    }
+    // при простом клике мышью
+    if (selectPool.includes(data.id)) {
+      if (selectPool.length > 1) {
+        setSelectPool([data.id])
+        return
       }
+      setSelectPool([''])
+    } else {
+      setSelectPool([data.id])
     }
   }
 
@@ -155,5 +145,6 @@ const OverallResults = ({ id }) => {
     </Fragment>
   )
 }
+
 
 export default OverallResults

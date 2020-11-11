@@ -17,6 +17,10 @@ export const GET_ALL_ACTIVE_POLLS = gql`
       questionsCount
       answersCount
       active
+      cities {
+        id
+        title
+      }
     }
   }
 `

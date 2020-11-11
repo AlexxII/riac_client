@@ -100,7 +100,7 @@ const PollCard = ({ data }) => {
 
   const Settings = () => {
     return (
-      <Tooltip title="Настройки">
+      <Tooltip title="Настройки опроса">
         <NavLink to={`/poll-settings/${data.id}/${data.code}`}>
           <IconButton>
             <SettingsIcon />
@@ -152,7 +152,15 @@ const PollCard = ({ data }) => {
         <CardActions disableSpacing>
           <Grid container item xs={12}>
             <Results />
-            <Drive />
+            {data.cities.length ?
+              <Drive /> :
+              <Tooltip title="Города устанавливаются в настройках опроса">
+                <Typography variant="overline" display="block" gutterBottom className="empty-cities-warning">
+                  настройте города
+              </Typography>
+              </Tooltip>
+            }
+
           </Grid>
           <Grid container item xs={12} justify="flex-end">
             <Attachment />

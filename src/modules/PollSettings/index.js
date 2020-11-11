@@ -9,7 +9,8 @@ import Box from '@material-ui/core/Box';
 import CommonSetting from './containers/Common'
 import ConfigEditor from './containers/ConfigEditor'
 import ReoderEditor from './containers/ReoderEditor';
-import DeletePoll from './containers/DeletePoll'
+import DeletePoll from './containers/DeletePoll';
+import CititesEditor from './containers/CitiesEditor';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -24,7 +25,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -77,7 +78,8 @@ const PollSettings = ({ id, code }) => {
         <Tab label="Общие" {...allProps(0)} />
         <Tab label="Порядок отображения" {...allProps(1)} />
         <Tab label="Конфиг" {...allProps(2)} />
-        <Tab label="Удаление" {...allProps(3)} />
+        <Tab label="Города" {...allProps(3)} />
+        <Tab label="Удаление" {...allProps(4)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <CommonSetting id={id} />
@@ -89,6 +91,9 @@ const PollSettings = ({ id, code }) => {
         <ConfigEditor id={id} />
       </TabPanel>
       <TabPanel value={value} index={3}>
+        <CititesEditor id={id} />
+      </TabPanel>
+      <TabPanel value={value} index={4}>
         <DeletePoll id={id} code={code} />
       </TabPanel>
     </div>

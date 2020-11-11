@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from "react-router-dom";
 import { useQuery, useMutation } from '@apollo/client'
 
-import { GET_POLL_DATE, GET_ACTIVE_CITITES } from "./queries"
+import { GET_POLL_DATA } from "./queries"
 
 import { SAVE_NEW_RESULT } from './mutaions'
 import { parseIni, normalizeLogic } from './lib/utils'
@@ -43,10 +43,11 @@ const PollDrive = ({ id }) => {
   const [currentQuestion, setCurrentQuestion] = useState({
     'multiple': false
   })
-  const { pollLoading, error, data } = useQuery(GET_POLL_DATE, {
+  const { pollLoading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: (data) => {
       handleConfigFile(data.poll.logic.path)
+      setPoolOfCities(data.poll.cities)
     }
   })
   const handleConfigFile = (filePath) => {
@@ -101,12 +102,6 @@ const PollDrive = ({ id }) => {
     }
   }, [logic])
 
-  const { citiesLoading, cError, cData } = useQuery(GET_ACTIVE_CITITES, {
-    onCompleted: (cData) => {
-      setPoolOfCities(cData.cities)
-    }
-  })
-
   if (!poll || !poolOfCities || !logic) return (
     <Fragment>
       <CircularProgress />
@@ -114,7 +109,7 @@ const PollDrive = ({ id }) => {
     </Fragment>
   )
 
-  if (error || cError) return <p>Error :(</p>;
+  if (error ) return <p>Error :(</p>;
 
   const saveCity = (city) => {
     setCurrentCity(city)

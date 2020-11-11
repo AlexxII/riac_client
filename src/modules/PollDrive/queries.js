@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-export const GET_POLL_DATE = gql`
+export const GET_POLL_DATA = gql`
   query pollsQuery($id: ID!) {
     poll(id: $id) {
       id
@@ -14,18 +14,13 @@ export const GET_POLL_DATE = gql`
           title
         }
       }
+      cities {
+        id
+        title
+      }
       logic {
         path
       }
-    }
-  }
-`
-
-export const GET_ACTIVE_CITITES = gql`
-  query citiesQ {
-    cities {
-      id
-      title
     }
   }
 `

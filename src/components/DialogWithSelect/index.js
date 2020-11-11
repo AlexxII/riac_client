@@ -7,7 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Select from '@material-ui/core/Select';
 
-const DialogWithSelect = ({ open, handleClose, save, header, text, options }) => {
+const DialogWithSelect = ({ open, handleClose, save, header, text, options, component }) => {
   const [state, setState] = useState("")
   const handleChange = (e) => {
     const { options, selectedIndex, value } = e.target;
@@ -29,8 +29,9 @@ const DialogWithSelect = ({ open, handleClose, save, header, text, options }) =>
         <DialogTitle id="form-dialog-title">{header}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-           {text}
+            {text}
           </DialogContentText>
+          {component}
           <Select
             fullWidth
             native

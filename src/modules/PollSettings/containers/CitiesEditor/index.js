@@ -10,10 +10,13 @@ import MuiAlert from '@material-ui/lab/Alert';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import Select from 'react-select'
+import Checkbox from '@material-ui/core/Checkbox';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
-import DialogWithSelect from '../../../../components/DialogWithSelect';
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -28,9 +31,11 @@ const CitiesEditor = ({ id }) => {
     message: '',
     duration: 6000
   })
+  const [clear, setClear] = useState(0)
   const [poolOfCities, setPoolOfCities] = useState()
+  const [poolOfAvaiableCitites, setPoolOfAvaiableCitites] = useState()
   const [delId, setDelId] = useState(false)
-  const [openCityDialog, setOpenCityDialog] = useState(false);
+  const [selected, setSelected] = useState([])
   const {
     data: citiesData,
     loading: citiesLoading,
@@ -39,6 +44,14 @@ const CitiesEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       setPoolOfCities(citiesData.poll.cities)
+      const pollCities = citiesData.poll.cities
+      const avaiableCitites = citiesData.cities.filter(city => {
+        for (let i = 0; i < pollCities.length; i++) {
+          if (city.id === pollCities[i].id) return false
+        }
+        return true
+      })
+      setPoolOfAvaiableCitites(avaiableCitites)
     }
   })
   const [
@@ -50,7 +63,7 @@ const CitiesEditor = ({ id }) => {
     { loading: deleteCityLoading, error: deleteCityError }
   ] = useMutation(DELETE_CITY_FROM_ACTIVE)
 
-  if (citiesLoading || !citiesData || !poolOfCities) return (
+  if (citiesLoading || !citiesData || !poolOfCities || !poolOfAvaiableCitites) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
@@ -84,17 +97,83 @@ const CitiesEditor = ({ id }) => {
     }))
   }
 
-  const saveCity = () => {
-    setOpenCityDialog()
+  async function handleAdd() {
+    const cities = selected.map(obj => {
+      return obj.id
+    })
+    try {
+      await setCityActive({
+        variables: {
+          id,
+          cities
+        },
+        update: (cache, { data }) => {
+          cache.modify({
+            fields: {
+              cities: (existingFieldData) => {
+                console.log(existingFieldData);
+                console.log(data);
+                return [...existingFieldData, data.setPollCity]
+              },
+              poll: (existingFieldData) => {
+                console.log(existingFieldData);
+              }
+            }
+          })
+        }
+      })
+
+      // await saveCity({
+      //   variables: { ...newData },
+      //   update: (cache, { data }) => {
+      //     cache.modify({
+      //       fields: {
+      //         cities: (existingFieldData) => {
+      //           return [...existingFieldData, data.newCity]
+      //         }
+      //       }
+      //     })
+      //   }
+      // })
+      // setCityAdd(false)
+    } catch (e) {
+      setMessage({
+        show: true,
+        type: 'error',
+        duration: 6000,
+        text: 'Что-то не так. См. консоль'
+      })
+      console.log('Не удалось сохранить новый город');
+    }
+    setClear(clear + 1)
   }
 
-  const handleAdd = () => {
-    setOpenCityDialog(true)
+
+  const hansdleAdd = () => {
+    const cities = selected.map(obj => {
+      return obj.id
+    })
+    setCityActive({
+      variables: {
+        id,
+        cities
+      }
+    }).then((data) => {
+      console.log(data);
+      // setPoolOfCities(prevSate => ([
+      //   ...prevSate,
+      //   data
+      // ]))
+    })
+    setClear(clear + 1)
   }
 
-  const closeDialog = () => {
-    setOpenCityDialog(false)
+  const handleChange = (_, value) => {
+    setSelected(value)
   }
+
+  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+  const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   async function deleteCityCompletely(id) {
     try {
@@ -161,32 +240,44 @@ const CitiesEditor = ({ id }) => {
   const Alert = (props) => {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
-  const CitySelect = () => {
-    return (
-      <Select
-        className="city-select"
-        closeMenuOnSelect={false}
-        isMulti
-      />
-    )
-  }
 
   return (
     <Fragment>
-      <DialogWithSelect
-        open={openCityDialog}
-        options={citiesData.cities}
-        header="Город"
-        text="Выберите город в котором будет проводится опрос"
-        save={saveCity}
-        component={<CitySelect />}
-        handleClose={closeDialog}
-      />
       <div className="cities-service-zone">
         <Typography className="header">Города в которых проводится опрос</Typography>
-        <Button variant="contained" color="primary" size="small" onClick={handleAdd}>
-          Добавить
-        </Button>
+        <Grid container justify="flex-start" alignItems="center" spacing={2}>
+          <Grid item xs={12} sm={6} md={6} lg={5}>
+            <Autocomplete
+              multiple
+              key={clear}
+              limitTags={3}
+              options={poolOfAvaiableCitites}
+              disableCloseOnSelect
+              clearOnEscape
+              onChange={handleChange}
+              getOptionLabel={(option) => option.title}
+              renderOption={(option, { selected }) => (
+                <React.Fragment>
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  {option.title}
+                </React.Fragment>
+              )}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label="Добавьте город" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={6} lg={5} alignItems="center">
+            <Button variant="contained" color="primary" size="small" onClick={handleAdd} disabled={!selected.length}>
+              Добавить
+            </Button>
+          </Grid>
+        </Grid>
       </div>
       <ConfirmDialog
         open={delId}

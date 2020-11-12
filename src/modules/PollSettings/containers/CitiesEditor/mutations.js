@@ -7,10 +7,13 @@ export const DELETE_CITY_FROM_ACTIVE = gql`
 `
 
 export const SET_ACTIVE_CITITES = gql`
-  mutation setPollCity($id: String!) {
-    setPollCity(id: $id) {
+  mutation ($id: ID!, $cities: [String]) {
+    setPollCity(id: $id, cities: $cities) {
       id
+      title
+      category {
+        label
+      }
     }
   }
-
 `

@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 
 export const GET_ALL_CITIES_AND_ACTIVE = gql`
-  query cities($id: ID!) {
+  query ($id: ID!) {
     poll(id: $id) {
       cities {
         id

@@ -1,14 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import DevTools from 'mobx-react-devtools'
-import { observable } from 'mobx'
-import { observer } from 'mobx-react'
 
-const Test = observer(() => {
-  const [timerData] = useState(() =>
-    observable({
-      secondsPassed: 0,
-    })
-  )
+const Test = () => {
+  const [timerData] = useState()
   useEffect(() => {
     const handle = setInterval(() => {
       timerData.secondsPassed++
@@ -31,6 +24,6 @@ const Test = observer(() => {
       <span>Seconds passed: {timerData.secondsPassed} </span>
     </Border>
   )
-})
+}
 
 export default Test

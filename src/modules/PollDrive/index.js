@@ -11,7 +11,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useHistory } from "react-router-dom";
-import { useQuery, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 
@@ -26,11 +26,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PollDrive = ({ id }) => {
+  const client = useApolloClient();
   const [message, setMessage] = useState({
     show: false,
     type: 'error',
     message: '',
     duration: 6000
+  })
+  const { currentUser } = client.readQuery({
+    query: gql`
+    query CurrentUserQuery {
+      currentUser {
+        id
+        username
+      }
+    }
+    `,
   })
   const classes = useStyles();
   const history = useHistory();
@@ -102,7 +113,7 @@ const PollDrive = ({ id }) => {
     }
   }, [logic])
 
-  if (!poll || !poolOfCities || !logic) return (
+  if (!poll || !poolOfCities || !logic || !currentUser) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
@@ -146,7 +157,7 @@ const PollDrive = ({ id }) => {
       variables: {
         poll: poll.id,
         city: currentCity.id,
-        user: '5f73207d34750a3be7865de7',
+        user: currentUser.id,
         pool: data.pool,
         data: result
       }

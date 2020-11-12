@@ -18,22 +18,34 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
-import { useQuery } from '@apollo/client'
+import { gql, useApolloClient, useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_ALL_CITIES_AND_ACTIVE } from './queries'
-import { SET_ACTIVE_CITITES, DELETE_CITY_FROM_ACTIVE } from './mutations'
+import { SET_ACTIVE_CITIES, DELETE_CITY_FROM_ACTIVE } from './mutations'
 
 const CitiesEditor = ({ id }) => {
+  const client = useApolloClient();
   const [message, setMessage] = useState({
     show: false,
     type: 'error',
     message: '',
     duration: 6000
   })
+
+  const { currentUser } = client.readQuery({
+    query: gql`
+    query CurrentUserQuery {
+      currentUser {
+        id
+        username
+      }
+    }
+    `,
+  })
+
   const [clear, setClear] = useState(0)
   const [poolOfCities, setPoolOfCities] = useState()
-  const [poolOfAvaiableCitites, setPoolOfAvaiableCitites] = useState()
   const [delId, setDelId] = useState(false)
   const [selected, setSelected] = useState([])
   const {
@@ -51,19 +63,19 @@ const CitiesEditor = ({ id }) => {
         }
         return true
       })
-      setPoolOfAvaiableCitites(avaiableCitites)
+      client.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id }, data: { cities: avaiableCitites } })
     }
   })
   const [
     setCityActive,
     { loading: cityActivationLoading, error: cityActivationError }
-  ] = useMutation(SET_ACTIVE_CITITES)
+  ] = useMutation(SET_ACTIVE_CITIES)
   const [
     deleteCity,
     { loading: deleteCityLoading, error: deleteCityError }
   ] = useMutation(DELETE_CITY_FROM_ACTIVE)
 
-  if (citiesLoading || !citiesData || !poolOfCities || !poolOfAvaiableCitites) return (
+  if (citiesLoading || !citiesData || !poolOfCities || !currentUser) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
@@ -77,6 +89,7 @@ const CitiesEditor = ({ id }) => {
   )
 
   const handleCityDelete = (id) => {
+    console.log(id);
     setDelId(id)
   }
 
@@ -107,35 +120,30 @@ const CitiesEditor = ({ id }) => {
           id,
           cities
         },
-        update: (cache, { data }) => {
-          cache.modify({
-            fields: {
-              cities: (existingFieldData) => {
-                console.log(existingFieldData);
-                console.log(data);
-                return [...existingFieldData, data.setPollCity]
-              },
-              poll: (existingFieldData) => {
-                console.log(existingFieldData);
-              }
-            }
-          })
-        }
-      })
+        // refetchQueries: [{ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } }],
+        update: (cache, data) => {
+          const { poll } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
+          const cities = data.data.setPollCity
+          const updatePool = [...poll.cities, ...cities]
+          const updAvaiablePool = []
+          cache.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id }, data: { poll: { cities: updatePool } } })
 
-      // await saveCity({
-      //   variables: { ...newData },
-      //   update: (cache, { data }) => {
-      //     cache.modify({
-      //       fields: {
-      //         cities: (existingFieldData) => {
-      //           return [...existingFieldData, data.newCity]
-      //         }
-      //       }
-      //     })
-      //   }
-      // })
-      // setCityAdd(false)
+        }
+        // update: (cache, { data }) => {
+        //   cache.modify({
+        //     fields: {
+        //       cities: (existingFieldData, { readField }) => {
+        //         console.log(existingFieldData);
+        //         console.log(cities);
+        //         return []
+        //         return existingFieldData.filter(
+        //           cityRef => !cities.includes(readField('id', cityRef))
+        //         )
+        //       }
+        //     }
+        //   })
+        // }
+      })
     } catch (e) {
       setMessage({
         show: true,
@@ -144,27 +152,8 @@ const CitiesEditor = ({ id }) => {
         text: 'Что-то не так. См. консоль'
       })
       console.log('Не удалось сохранить новый город');
+      console.log(e);
     }
-    setClear(clear + 1)
-  }
-
-
-  const hansdleAdd = () => {
-    const cities = selected.map(obj => {
-      return obj.id
-    })
-    setCityActive({
-      variables: {
-        id,
-        cities
-      }
-    }).then((data) => {
-      console.log(data);
-      // setPoolOfCities(prevSate => ([
-      //   ...prevSate,
-      //   data
-      // ]))
-    })
     setClear(clear + 1)
   }
 
@@ -175,17 +164,20 @@ const CitiesEditor = ({ id }) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-  async function deleteCityCompletely(id) {
+  async function deleteCityCompletely(city) {
     try {
       await deleteCity({
-        variables: { id },
+        variables: {
+          id,
+          cities: [city]
+        },
         update: (cache, { data }) => {
           if (data.deleteCity) {
             cache.modify({
               fields: {
                 cities: (existingFieldData, { readField }) => {
                   return existingFieldData.filter(
-                    cityRef => id !== readField('id', cityRef)
+                    cityRef => city !== readField('id', cityRef)
                   )
                 }
               }
@@ -245,13 +237,14 @@ const CitiesEditor = ({ id }) => {
     <Fragment>
       <div className="cities-service-zone">
         <Typography className="header">Города в которых проводится опрос</Typography>
+        <p>{currentUser.id}</p>
         <Grid container justify="flex-start" alignItems="center" spacing={2}>
           <Grid item xs={12} sm={6} md={6} lg={5}>
             <Autocomplete
               multiple
               key={clear}
               limitTags={3}
-              options={poolOfAvaiableCitites}
+              options={citiesData.cities}
               disableCloseOnSelect
               clearOnEscape
               onChange={handleChange}
@@ -291,7 +284,7 @@ const CitiesEditor = ({ id }) => {
         }
       />
       <Grid container spacing={3}>
-        {poolOfCities.map((city, index) => (
+        {citiesData.poll.cities.map((city, index) => (
           <Grid item xs={12} md={2} key={index} >
             <CityCard city={city} deleteCity={handleCityDelete} />
           </Grid>

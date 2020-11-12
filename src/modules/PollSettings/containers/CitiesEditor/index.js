@@ -122,9 +122,10 @@ const CitiesEditor = ({ id }) => {
         },
         // refetchQueries: [{ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } }],
         update: (cache, data) => {
-          const { poll } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
-          const cities = data.data.setPollCity
-          const updatePool = [...poll.cities, ...cities]
+          const { poll, cities } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
+          console.log(cities);
+          const citiess = data.data.setPollCity
+          const updatePool = [...poll.cities, ...citiess]
           const updAvaiablePool = []
           cache.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id }, data: { poll: { cities: updatePool } } })
 

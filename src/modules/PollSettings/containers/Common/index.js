@@ -94,9 +94,14 @@ const CommonSetting = ({ id }) => {
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
-    onCompleted: () => {
-      const { polls } = client.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
+    onCompleted: ({ poll }) => {
       console.log(poll);
+      try {
+        const dd = client.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+        console.log(dd);
+      } catch (e) {
+        console.log(e);
+      }
     },
     // update: (cache, data) => {
     //   const { poll } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })

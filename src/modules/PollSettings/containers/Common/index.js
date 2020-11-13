@@ -13,7 +13,7 @@ import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
-import { useQuery } from '@apollo/client'
+import { gql, useApolloClient, useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
@@ -84,6 +84,7 @@ const QuestionCard = ({ question, index }) => {
 }
 
 const CommonSetting = ({ id }) => {
+  const client = useApolloClient()
   const [poll, setPoll] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [logic, setLogic] = useState(null)
@@ -91,35 +92,39 @@ const CommonSetting = ({ id }) => {
     loading,
     error,
     data: pollData
-   } = useQuery(GET_POLL_DATA, {
-      variables: { id },
-      update: (cache, data) => {
-        const { poll } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
-        console.log(poll);
-        cache.writeQuery({
-          query: GET_ALL_ACTIVE_POLLS, variables: { id },
-          data: {
-            poll:
-            {
-              questions: data.poll.questions,
-              logic: data.poll.logic
-            }
-          }
-        })
-        console.log(cache);
-      },
-      // onCompleted: () => {
-      //   setPoll({
-      //     id: data.poll.id,
-      //     title: data.poll.title,
-      //     questionsCount: data.poll.questionsCount,
-      //     answersCount: data.poll.answersCount
-      //   })
-      //   if (data.poll.logic) {
-      //     handleConfigFile(data.poll.logic.path)
-      //   }
-      // }
-    })
+  } = useQuery(GET_POLL_DATA, {
+    variables: { id },
+    onCompleted: () => {
+      const { polls } = client.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
+      console.log(poll);
+    },
+    // update: (cache, data) => {
+    //   const { poll } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
+    //   console.log(poll);
+    //   cache.writeQuery({
+    //     query: GET_ALL_ACTIVE_POLLS, variables: { id },
+    //     data: {
+    //       poll:
+    //       {
+    //         questions: data.poll.questions,
+    //         logic: data.poll.logic
+    //       }
+    //     }
+    //   })
+    //   console.log(cache);
+    // },
+    // onCompleted: () => {
+    //   setPoll({
+    //     id: data.poll.id,
+    //     title: data.poll.title,
+    //     questionsCount: data.poll.questionsCount,
+    //     answersCount: data.poll.answersCount
+    //   })
+    //   if (data.poll.logic) {
+    //     handleConfigFile(data.poll.logic.path)
+    //   }
+    // }
+  })
 
   const handleConfigFile = (filePath) => {
     fetch(mainUrl + filePath)

@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import {mainUrl} from '../../../../mainconfig'
+import { mainUrl } from '../../../../mainconfig'
 
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -16,6 +16,7 @@ import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
+import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
 
 const ServiceIcons = ({ answer }) => {
   const edit = (
@@ -86,20 +87,39 @@ const CommonSetting = ({ id }) => {
   const [poll, setPoll] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [logic, setLogic] = useState(null)
-  const { loading, error, data } = useQuery(GET_POLL_DATA, {
-    variables: { id },
-    onCompleted: () => {
-      setPoll({
-        id: data.poll.id,
-        title: data.poll.title,
-        questionsCount: data.poll.questionsCount,
-        answersCount: data.poll.answersCount
-      })
-      if (data.poll.logic) {
-        handleConfigFile(data.poll.logic.path)
-      }
-    }
-  })
+  const {
+    loading,
+    error,
+    data: pollData
+   } = useQuery(GET_POLL_DATA, {
+      variables: { id },
+      update: (cache, data) => {
+        const { poll } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
+        console.log(poll);
+        cache.writeQuery({
+          query: GET_ALL_ACTIVE_POLLS, variables: { id },
+          data: {
+            poll:
+            {
+              questions: data.poll.questions,
+              logic: data.poll.logic
+            }
+          }
+        })
+        console.log(cache);
+      },
+      // onCompleted: () => {
+      //   setPoll({
+      //     id: data.poll.id,
+      //     title: data.poll.title,
+      //     questionsCount: data.poll.questionsCount,
+      //     answersCount: data.poll.answersCount
+      //   })
+      //   if (data.poll.logic) {
+      //     handleConfigFile(data.poll.logic.path)
+      //   }
+      // }
+    })
 
   const handleConfigFile = (filePath) => {
     fetch(mainUrl + filePath)
@@ -114,7 +134,7 @@ const CommonSetting = ({ id }) => {
 
   useEffect(() => {
     if (logic) {
-      const modQuestions = data.poll.questions.map((question, index) => {
+      const modQuestions = pollData.poll.questions.map((question, index) => {
         const newAnswers = question.answers.map((answer, index) => {
           let suffix = {}
           if (logic.invisible) {
@@ -166,17 +186,19 @@ const CommonSetting = ({ id }) => {
   }, [logic])
 
 
-  if (loading || !logic || !questions) return (
+  if (loading) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
     </Fragment>
   )
 
+  return (<p>23123</p>)
+
   return (
     <Fragment>
       <Grid container>
-        <h3>{poll.title}</h3>
+        <h3>{pollData.title}</h3>
         <Grid
           className="poll-info"
           container
@@ -185,10 +207,10 @@ const CommonSetting = ({ id }) => {
           alignItems="center"
         >
           <Box m={1}>
-            <div> Вопросов: {poll.questionsCount}</div>
+            <div> Вопросов: {pollData.questionsCount}</div>
           </Box>
           <Box m={1}>
-            <div> Ответов: {poll.answersCount}</div>
+            <div> Ответов: {pollData.answersCount}</div>
           </Box>
         </Grid>
         {questions.map((question, index) => (

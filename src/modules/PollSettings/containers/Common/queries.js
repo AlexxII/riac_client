@@ -1,7 +1,28 @@
 import { gql } from '@apollo/client'
 
 export const GET_POLL_DATA = gql`
-  query pollQuery($id: ID!) {
+  query ($id: ID!) {
+    poll(id: $id) {
+      questions {
+        id
+        title
+        limit
+        order
+        answers {
+          id
+          title
+          order
+          code
+        }
+      }
+      logic {
+        path
+      }
+    }
+  }
+`
+export const GET_POLL_DATA_EX = gql`
+  query ($id: ID!) {
     poll(id: $id) {
       id
       title

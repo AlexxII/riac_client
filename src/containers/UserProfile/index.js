@@ -7,16 +7,26 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { useQuery, useMutation } from '@apollo/react-hooks';
-import { GET_USER_INFO } from './queries';
+import { gql, useApolloClient } from '@apollo/client'
+import { useMutation } from '@apollo/react-hooks'
+
 import { LOGOUT_MUTATION } from './mutations'
 import { CURRENT_USER_QUERY } from '../../containers/App/queries'
 
-
 const UserProfile = ({ close }) => {
+  const client = useApolloClient();
+  const { currentUser } = client.readQuery({
+    query: gql`
+    query {
+      currentUser {
+        id
+        username
+      }
+    }
+    `,
+  })
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
-
   const [logout] = useMutation(
     LOGOUT_MUTATION,
     {
@@ -26,25 +36,17 @@ const UserProfile = ({ close }) => {
       }),
     },
   );
-  const { loading, error, user } = useQuery(GET_USER_INFO, {
-    onCompleted: (user) => console.log(user)
-  });
-
   const menuId = 'account-menu';
-
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
   const handleProfileExit = () => {
     logout()
     handleMenuClose()
   }
-
   const handleProfileMenuOpen = (e) => {
     setAnchorEl(e.currentTarget)
   }
-
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -59,7 +61,6 @@ const UserProfile = ({ close }) => {
       <MenuItem onClick={handleProfileExit}>Выход</MenuItem>
     </Menu>
   );
-
   return (
     <Fragment>
       <IconButton
@@ -71,12 +72,9 @@ const UserProfile = ({ close }) => {
         color="inherit"
       >
         <Badge badgeContent={0} color="secondary">
-          <Tooltip title=
-            {!!user ?
-              user.currentUser.userName
-              :
-              ''
-            }>
+          <Tooltip
+            title={currentUser.username}
+          >
             <AccountCircle />
           </Tooltip>
         </Badge>

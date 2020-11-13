@@ -28,7 +28,6 @@ const AddPollLogic = ({ addPoll }) => {
           way: data.way,
           comment: data.comment
         }
-        const xmlFile = data.xmlfile
         addPoll({
           variables: {
             newPoll: {

@@ -125,11 +125,15 @@ const CitiesEditor = ({ id }) => {
           const updatedAvaiablePool = cities.filter(city => {
             return selectedCities.includes(city.id) ? false : true
           })
-          console.log(updatedAvaiablePool);
           cache.writeQuery({
             query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
             data: {
-              poll: { cities: updatePool },
+              poll: { cities: updatePool }
+            }
+          })
+          cache.writeQuery({
+            query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
+            data: {
               cities: updatedAvaiablePool
             }
           })
@@ -165,15 +169,15 @@ const CitiesEditor = ({ id }) => {
         },
         update: (cache, { data }) => {
           if (data.deleteCity) {
-            cache.modify({
-              fields: {
-                cities: (existingFieldData, { readField }) => {
-                  return existingFieldData.filter(
-                    cityRef => city !== readField('id', cityRef)
-                  )
-                }
-              }
-            })
+            // cache.modify({
+            //   fields: {
+            //     cities: (existingFieldData, { readField }) => {
+            //       return existingFieldData.filter(
+            //         cityRef => city !== readField('id', cityRef)
+            //       )
+            //     }
+            //   }
+            // })
           } else {
             setMessage({
               show: true,

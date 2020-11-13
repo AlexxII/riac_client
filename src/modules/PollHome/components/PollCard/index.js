@@ -97,7 +97,6 @@ const PollCard = ({ data }) => {
       </Tooltip>
     )
   }
-
   const Settings = () => {
     return (
       <Tooltip title="Настройки опроса">
@@ -109,7 +108,6 @@ const PollCard = ({ data }) => {
       </Tooltip>
     )
   }
-
   const Wiki = () => {
     return (
       <Tooltip title="Заметки">

@@ -12,11 +12,14 @@ import { GET_ALL_ACTIVE_POLLS } from "./queries"
 import { ADD_NEW_POLL } from './mutations'
 
 const PollHome = () => {
-  const { loading, error, data, refetch } = useQuery(GET_ALL_ACTIVE_POLLS)
-  // TODO: Надо просто обновить КЭЭЭЭЭЭЭЭЭШ
-  const [addPoll, { newPoll }] = useMutation(ADD_NEW_POLL, {
-    onCompleted: () => refetch()
+  const { loading, error, data } = useQuery(GET_ALL_ACTIVE_POLLS)
+  const [addPoll] = useMutation(ADD_NEW_POLL, {
+    update: (cache, { data }) => {
+      const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+      cache.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: [...polls, data.addPoll] } })
+    }
   })
+
   if (loading) return (
     <Fragment>
       <CircularProgress />
@@ -24,14 +27,16 @@ const PollHome = () => {
     </Fragment>
   )
 
-  if (error) return <p>Error :(</p>;
+  if (error) return (
+    <p>Error :(</p>
+  );
 
   return (
     <Fragment>
       <Container maxWidth="md">
         <ListOfPolls data={data} />
       </Container>
-      <AddPollLogic refetch={refetch} addPoll={addPoll}/>
+      <AddPollLogic addPoll={addPoll} />
     </Fragment>
   )
 }

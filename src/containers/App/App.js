@@ -1,41 +1,47 @@
 import React, { Fragment } from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Container from '@material-ui/core/Container';
 
 import './App.scss';
 import Router from '../Router'
 import SignInWrap from '../SignInWrap'
 
+import EmptyState from '../../components/EmptyState'
+
 import { useQuery } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';
 import { userVar } from '../../cache'
 
+// import { ReactComponent as ErrorIllustration } from "../../illustrations/error.svg";
 
 const App = () => {
   const { loading, error, data } = useQuery(CURRENT_USER_QUERY, {
-    onCompleted: (data) => userVar(data.currentUser)
+    onCompleted: (data) => { userVar(data.currentUser) }
   });
 
   if (loading) return (
     <Fragment>
-      <Container component="main" maxWidth="xs">
-        <div className="loading-circle">
-          <CircularProgress />
-          <p>Загрузка. Подождите пожалуйста</p>
-        </div>
-      </Container>
+      <EmptyState
+        image={<CircularProgress />}
+        title="Пожалуйста подождите"
+        description="Идет загрузка необходимых данных" />
     </Fragment>
   )
 
-  if (error) return <div>Error: {JSON.stringify(error)}</div>;
+  if (error) {
+    console.log(JSON.stringify(error));
+    return (
+      <EmptyState
+        title="Что-пошло не так"
+        description="Приложение не хочет стартовать, проверьте серверную часть!" />
+    )
+  };
 
   if (!!data.currentUser) {
-
     return (
       <Fragment>
         <div className="App">
-          <Router user={data.currentUser} />
+          <Router />
         </div>
       </Fragment>
     );

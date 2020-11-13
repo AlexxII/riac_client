@@ -32,7 +32,6 @@ const CitiesEditor = ({ id }) => {
     message: '',
     duration: 6000
   })
-
   const { currentUser } = client.readQuery({
     query: gql`
     query CurrentUserQuery {
@@ -43,7 +42,6 @@ const CitiesEditor = ({ id }) => {
     }
     `,
   })
-
   const [clear, setClear] = useState(0)
   const [poolOfCities, setPoolOfCities] = useState()
   const [delId, setDelId] = useState(false)
@@ -111,39 +109,32 @@ const CitiesEditor = ({ id }) => {
   }
 
   async function handleAdd() {
-    const cities = selected.map(obj => {
+    const selectedCities = selected.map(obj => {
       return obj.id
     })
     try {
       await setCityActive({
         variables: {
           id,
-          cities
+          cities: selectedCities
         },
-        // refetchQueries: [{ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } }],
         update: (cache, data) => {
           const { poll, cities } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
-          console.log(cities);
-          const citiess = data.data.setPollCity
-          const updatePool = [...poll.cities, ...citiess]
-          const updAvaiablePool = []
-          cache.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id }, data: { poll: { cities: updatePool } } })
-
+          const addedCities = data.data.setPollCity
+          const updatePool = [...poll.cities, ...addedCities]
+          const updatedAvaiablePool = cities.filter(city => {
+            return selectedCities.includes(city.id) ? false : true
+          })
+          console.log(updatedAvaiablePool);
+          cache.writeQuery({
+            query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
+            data: {
+              poll: { cities: updatePool },
+              cities: updatedAvaiablePool
+            }
+          })
+          console.log(cache);
         }
-        // update: (cache, { data }) => {
-        //   cache.modify({
-        //     fields: {
-        //       cities: (existingFieldData, { readField }) => {
-        //         console.log(existingFieldData);
-        //         console.log(cities);
-        //         return []
-        //         return existingFieldData.filter(
-        //           cityRef => !cities.includes(readField('id', cityRef))
-        //         )
-        //       }
-        //     }
-        //   })
-        // }
       })
     } catch (e) {
       setMessage({

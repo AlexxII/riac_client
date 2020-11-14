@@ -17,6 +17,7 @@ import { gql, useApolloClient, useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
+import { cli } from 'webpack';
 
 const ServiceIcons = ({ answer }) => {
   const edit = (
@@ -94,15 +95,19 @@ const CommonSetting = ({ id }) => {
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
-    onCompleted: ({ poll }) => {
-      console.log(poll);
-      try {
-        const dd = client.readQuery({ query: GET_ALL_ACTIVE_POLLS })
-        console.log(dd);
-      } catch (e) {
-        console.log(e);
-      }
-    },
+    // onCompleted: ({ poll }) => {
+    //   console.log(poll);
+    //   try {
+    //     const oldPoolOfPolls = client.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+    //     const res = updatePoll({
+    //       newData: poll,
+    //       oldPoolOfPolls,
+    //     })
+
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // },
     // update: (cache, data) => {
     //   const { poll } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
     //   console.log(poll);
@@ -130,6 +135,19 @@ const CommonSetting = ({ id }) => {
     //   }
     // }
   })
+
+  const updatePoll = (data) => {
+    const { newData, oldPoolOfPolls } = data
+    const newPoolFoPolls = oldPoolOfPolls.polls.map(poll =>
+      poll.id === id ? {
+        ...poll,
+        questions: newData.questions
+      } : poll
+    )
+    console.log(newPoolFoPolls);
+    // const res = client.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: newPoolFoPolls } })
+    // console.log(res);
+  }
 
   const handleConfigFile = (filePath) => {
     fetch(mainUrl + filePath)

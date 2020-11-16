@@ -2,19 +2,19 @@ import React, { Fragment } from 'react'
 import Container from '@material-ui/core/Container';
 
 import SettingBar from '../components/SettingBar'
-import Test from '../containers/Test'
+// import Test from '../containers/Test'
 
 // const Tester = observer(
-const Tester = () => {
+const TesterPage = () => {
 
   return (
     <Fragment>
       <SettingBar title='Тестирование инерфейса' />
       <Container maxWidth="lg">
-        <Test />
+        {/* <Test /> */}
       </Container>
     </Fragment>
   )
 }
 
-export default Tester
+export default TesterPage

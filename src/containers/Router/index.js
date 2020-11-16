@@ -2,8 +2,15 @@ import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import {
-  HomePage, DrivePage, ResultsPage, AnalyzePage, SettingsPage, 
-  TesterPage, AttachmentPage, WikiPage, PollAppSettingsPage
+  HomePage,
+  DrivePage,
+  ResultsPage,
+  AnalyzePage,
+  SettingsPage,
+  TesterPage,
+  AttachmentPage,
+  WikiPage,
+  PollAppSettingsPage
 } from '../../pages'
 
 const Router = () => {

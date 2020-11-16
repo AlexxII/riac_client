@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-export const GET_POLL_DATA = gql`
+export const GET_POLL_DATA_MIN = gql`
   query ($id: ID!) {
     poll(id: $id) {
       id
@@ -22,7 +22,7 @@ export const GET_POLL_DATA = gql`
     }
   }
 `
-export const GET_POLL_DATA_EX = gql`
+export const GET_POLL_DATA = gql`
   query ($id: ID!) {
     poll(id: $id) {
       id

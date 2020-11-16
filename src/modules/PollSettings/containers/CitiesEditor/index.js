@@ -34,7 +34,7 @@ const CitiesEditor = ({ id }) => {
   })
   const { currentUser } = client.readQuery({
     query: gql`
-    query CurrentUserQuery {
+    query {
       currentUser {
         id
         username

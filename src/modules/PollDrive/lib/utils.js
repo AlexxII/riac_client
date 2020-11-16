@@ -104,7 +104,6 @@ function rangeToArray(data) {
 
 export const normalizeLogic = (logic) => {
   let normalizedLogic = {}
-  console.log(logic);
   for (let key in logic) {
     switch (key) {
       case 'difficult':
@@ -163,6 +162,5 @@ export const normalizeLogic = (logic) => {
         break
     }
   }
-  console.log(normalizedLogic);
   return normalizedLogic
 }

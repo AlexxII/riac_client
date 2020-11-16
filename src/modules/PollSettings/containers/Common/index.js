@@ -13,11 +13,10 @@ import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
-import { gql, useApolloClient, useQuery } from '@apollo/client'
+import { useApolloClient, useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
-import { cli } from 'webpack';
 
 const ServiceIcons = ({ answer }) => {
   const edit = (
@@ -86,147 +85,124 @@ const QuestionCard = ({ question, index }) => {
 
 const CommonSetting = ({ id }) => {
   const client = useApolloClient()
-  const [poll, setPoll] = useState(null)
-  const [questions, setQuestions] = useState(null)
-  const [logic, setLogic] = useState(null)
+  const [ready, setReady] = useState(false)
   const {
     loading,
     error,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
-    // onCompleted: ({ poll }) => {
-    //   console.log(poll);
-    //   try {
-    //     const oldPoolOfPolls = client.readQuery({ query: GET_ALL_ACTIVE_POLLS })
-    //     const res = updatePoll({
-    //       newData: poll,
-    //       oldPoolOfPolls,
-    //     })
-
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    // },
-    // update: (cache, data) => {
-    //   const { poll } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS, variables: { id } })
-    //   console.log(poll);
-    //   cache.writeQuery({
-    //     query: GET_ALL_ACTIVE_POLLS, variables: { id },
-    //     data: {
-    //       poll:
-    //       {
-    //         questions: data.poll.questions,
-    //         logic: data.poll.logic
-    //       }
-    //     }
-    //   })
-    //   console.log(cache);
-    // },
-    // onCompleted: () => {
-    //   setPoll({
-    //     id: data.poll.id,
-    //     title: data.poll.title,
-    //     questionsCount: data.poll.questionsCount,
-    //     answersCount: data.poll.answersCount
-    //   })
-    //   if (data.poll.logic) {
-    //     handleConfigFile(data.poll.logic.path)
-    //   }
-    // }
+    onCompleted: ({ poll }) => {
+      try {
+        handleConfigFileAndUpdateCache(poll)
+      } catch (e) {
+        console.log(e);
+      }
+    }
   })
 
-  const updatePoll = (data) => {
-    const { newData, oldPoolOfPolls } = data
-    const newPoolFoPolls = oldPoolOfPolls.polls.map(poll =>
-      poll.id === id ? {
-        ...poll,
-        questions: newData.questions
-      } : poll
-    )
-    console.log(newPoolFoPolls);
-    // const res = client.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: newPoolFoPolls } })
-    // console.log(res);
-  }
-
-  const handleConfigFile = (filePath) => {
+  const handleConfigFileAndUpdateCache = (poll) => {
+    const filePath = poll.logic.path
     fetch(mainUrl + filePath)
       .then((r) => r.text())
       .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const mainLogic = normalizeLogic(logic)
-        setLogic(mainLogic)
+        const normalizedLogic = normalizeLogic(parseIni(text))
+        const updatedQuestions = modulateQuestionsWithLogic(normalizedLogic)
+        console.log(updatedQuestions);
+
+        const newPoll = {
+          ...poll,
+          questions: updatedQuestions,
+          types: '2222222'
+        }
+
+        const res = client.writeQuery({
+          query: GET_POLL_DATA,
+          variables: { id },
+          data: {
+            poll: newPoll
+          }
+        })
+
+        const ID = client.cache.identify({
+          __typename: "Poll",
+          id: poll.id
+        })
+        console.log(ID);
+        /*
+        client.cache.modify({
+          const id = 
+        })
+        */
+        console.log(res);
+        console.log(client);
+        setReady(true)
       })
   }
 
-  useEffect(() => {
-    if (logic) {
-      const modQuestions = pollData.poll.questions.map((question, index) => {
-        const newAnswers = question.answers.map((answer, index) => {
-          let suffix = {}
-          if (logic.invisible) {
-            if (logic.invisible.includes(answer.code)) {
-              suffix = {
-                ...suffix,
-                disabled: true
-              }
+  const modulateQuestionsWithLogic = (logic) => {
+    const modQuestions = pollData.poll.questions.map(question => {
+      const newAnswers = question.answers.map(answer => {
+        let suffix = {}
+        if (logic.invisible) {
+          if (logic.invisible.includes(answer.code)) {
+            suffix = {
+              ...suffix,
+              disabled: true
             }
           }
-          if (logic.freeAnswers) {
-            if (logic.freeAnswers.includes(answer.code)) {
-              suffix = {
-                ...suffix,
-                freeAnswer: true
-              }
-            }
-          }
-          if (logic.unique) {
-            if (logic.unique.includes(answer.code)) {
-              suffix = {
-                ...suffix,
-                unique: true
-              }
-            }
-          }
-          if (logic.difficult) {
-            if (logic.difficult.includes(answer.code)) {
-              suffix = {
-                ...suffix,
-                difficult: true
-              }
-            }
-          }
-          const newAnswer = {
-            ...answer,
-            ...suffix
-          }
-          return newAnswer
-        })
-        const newQuestion = {
-          ...question,
-          answers: newAnswers
         }
-        return newQuestion
+        if (logic.freeAnswers) {
+          if (logic.freeAnswers.includes(answer.code)) {
+            suffix = {
+              ...suffix,
+              freeAnswer: true
+            }
+          }
+        }
+        if (logic.unique) {
+          if (logic.unique.includes(answer.code)) {
+            suffix = {
+              ...suffix,
+              unique: true
+            }
+          }
+        }
+        if (logic.difficult) {
+          if (logic.difficult.includes(answer.code)) {
+            suffix = {
+              ...suffix,
+              difficult: true
+            }
+          }
+        }
+        const newAnswer = {
+          ...answer,
+          ...suffix
+        }
+        return newAnswer
       })
-      setQuestions(modQuestions)
-    }
-  }, [logic])
+      const newQuestion = {
+        ...question,
+        answers: newAnswers,
+        ffffuck: true
+      }
+      return newQuestion
+    })
+    return modQuestions
+  }
 
-
-  if (loading) return (
+  if (loading || !ready) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
     </Fragment>
   )
 
-  return (<p>23123</p>)
-
   return (
     <Fragment>
       <Grid container>
-        <h3>{pollData.title}</h3>
+        <h3>{pollData.poll.title}</h3>
         <Grid
           className="poll-info"
           container
@@ -235,13 +211,13 @@ const CommonSetting = ({ id }) => {
           alignItems="center"
         >
           <Box m={1}>
-            <div> Вопросов: {pollData.questionsCount}</div>
+            <div> Вопросов: {pollData.poll.questionsCount}</div>
           </Box>
           <Box m={1}>
-            <div> Ответов: {pollData.answersCount}</div>
+            <div> Ответов: {pollData.poll.answersCount}</div>
           </Box>
         </Grid>
-        {questions.map((question, index) => (
+        {pollData.poll.questions.map((question, index) => (
           <QuestionCard question={question} key={index} index={index} />
         ))}
       </Grid>

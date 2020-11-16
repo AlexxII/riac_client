@@ -13,7 +13,7 @@ import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
-import { useApolloClient, useQuery } from '@apollo/client'
+import { gql, useApolloClient, useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
@@ -88,54 +88,65 @@ const CommonSetting = ({ id }) => {
   const [ready, setReady] = useState(false)
   const {
     loading,
-    error,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
-    onCompleted: ({ poll }) => {
-      try {
-        handleConfigFileAndUpdateCache(poll)
-      } catch (e) {
-        console.log(e);
+    onCompleted: () => {
+      const newPoll = {
+        ...pollData.poll,
+        tesst: 'eeeeeeeeee'
       }
+      const result = client.writeQuery({
+        query: GET_POLL_DATA,
+        variables: { id },
+        data: {
+          poll: newPoll
+        }
+      })
+      console.log(result);
+      console.log(client.cache.data.data);
+      setReady(true)
     }
   })
 
   const handleConfigFileAndUpdateCache = (poll) => {
     const filePath = poll.logic.path
+    const pollId = poll.id
     fetch(mainUrl + filePath)
       .then((r) => r.text())
       .then(text => {
         const normalizedLogic = normalizeLogic(parseIni(text))
         const updatedQuestions = modulateQuestionsWithLogic(normalizedLogic)
-        console.log(updatedQuestions);
-
         const newPoll = {
           ...poll,
           questions: updatedQuestions,
-          types: '2222222'
+          test: '2222222'
         }
-
-        const res = client.writeQuery({
+        console.log(newPoll === poll);
+        client.writeQuery({
           query: GET_POLL_DATA,
           variables: { id },
           data: {
             poll: newPoll
           }
         })
+        console.log(client.cache.data.data);
 
-        const ID = client.cache.identify({
-          __typename: "Poll",
-          id: poll.id
-        })
-        console.log(ID);
-        /*
-        client.cache.modify({
-          const id = 
-        })
-        */
-        console.log(res);
-        console.log(client);
+        // const ID = client.cache.identify({
+        //   __typename: "Poll",
+        //   id: poll.id
+        // })
+        // console.log(ID);
+
+        // client.cache.modify({
+        //   id: ID,
+        //   fields: {
+        //     poll(existing, { readField }) {
+        //       return { ...newPoll, teststst: '222222222222 ' }
+        //     }  
+        //   }
+        // })
+        // console.log(client.cache.data.data);
         setReady(true)
       })
   }

@@ -43,7 +43,6 @@ const CitiesEditor = ({ id }) => {
     `,
   })
   const [clear, setClear] = useState(0)
-  const [poolOfCities, setPoolOfCities] = useState()
   const [delId, setDelId] = useState(false)
   const [selected, setSelected] = useState([])
   const {
@@ -53,7 +52,6 @@ const CitiesEditor = ({ id }) => {
   } = useQuery(GET_ALL_CITIES_AND_ACTIVE, {
     variables: { id },
     onCompleted: () => {
-      setPoolOfCities(citiesData.poll.cities)
       const pollCities = citiesData.poll.cities
       const avaiableCitites = citiesData.cities.filter(city => {
         for (let i = 0; i < pollCities.length; i++) {
@@ -61,7 +59,9 @@ const CitiesEditor = ({ id }) => {
         }
         return true
       })
-      client.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id }, data: { cities: avaiableCitites } })
+      client.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, data: { cities: avaiableCitites } })
+      // client.writeQuery({query: GET_ALL_CITIES_AND_ACTIVE, data: { poll: [] }})
+      console.log(client.cache.data.data);
     }
   })
   const [
@@ -73,7 +73,7 @@ const CitiesEditor = ({ id }) => {
     { loading: deleteCityLoading, error: deleteCityError }
   ] = useMutation(DELETE_CITY_FROM_ACTIVE)
 
-  if (citiesLoading || !citiesData || !poolOfCities || !currentUser) return (
+  if (citiesLoading || !citiesData || !currentUser) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>

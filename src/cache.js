@@ -1,17 +1,15 @@
-import { InMemoryCache, makeVar } from '@apollo/client'
+import { InMemoryCache } from '@apollo/client'
 
 export const cache = new InMemoryCache({
   typePolicies: {
-    Query: {
+    Poll: {
       fields: {
-        activeUser: {
-          read() {
-            return userVar()
+        question: {
+          read(question) {
+            return question
           }
         }
       }
     }
   }
 })
-
-export const userVar = makeVar();

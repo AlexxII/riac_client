@@ -10,14 +10,11 @@ import EmptyState from '../../components/EmptyState'
 
 import { useQuery } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';
-import { userVar } from '../../cache'
 
 // import { ReactComponent as ErrorIllustration } from "../../illustrations/error.svg";
 
 const App = () => {
-  const { loading, error, data } = useQuery(CURRENT_USER_QUERY, {
-    onCompleted: (data) => { userVar(data.currentUser) }
-  });
+  const { loading, error, data } = useQuery(CURRENT_USER_QUERY);
 
   if (loading) return (
     <Fragment>

@@ -4,11 +4,11 @@ import { mainUrl } from './mainconfig'
 import ReactDOM from 'react-dom';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import * as serviceWorker from './serviceWorker';
-// import { cache } from './cache'
+import { cache } from './cache'
 
 import App from './containers/App/App';
 
-const cache = new InMemoryCache()
+// const cache = new InMemoryCache()
 
 const client = new ApolloClient({
   uri: mainUrl + '/graphql',

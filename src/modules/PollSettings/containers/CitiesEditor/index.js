@@ -53,15 +53,20 @@ const CitiesEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       const pollCities = citiesData.poll.cities
-      const avaiableCitites = citiesData.cities.filter(city => {
-        for (let i = 0; i < pollCities.length; i++) {
-          if (city.id === pollCities[i].id) return false
+      client.cache.modify({
+        fields: {
+          cities(existingFieldData, { readField }) {
+            return existingFieldData.filter(
+              cityRef => {
+                for (let i = 0; i < pollCities.length; i++) {
+                  if (readField('id', cityRef) === pollCities[i].id) return false
+                }
+                return true
+              }
+            )
+          }
         }
-        return true
       })
-      client.writeQuery({ query: GET_ALL_CITIES_AND_ACTIVE, data: { cities: avaiableCitites } })
-      // client.writeQuery({query: GET_ALL_CITIES_AND_ACTIVE, data: { poll: [] }})
-      console.log(client.cache.data.data);
     }
   })
   const [

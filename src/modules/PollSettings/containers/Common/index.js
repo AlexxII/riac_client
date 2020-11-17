@@ -92,61 +92,61 @@ const CommonSetting = ({ id }) => {
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: () => {
-      const newPoll = {
-        ...pollData.poll,
-        tesst: 'eeeeeeeeee'
-      }
-      const result = client.writeQuery({
+      // client.cache.modify({
+      //   id: client.cache.identify({
+      //     __typename: 'Poll',
+      //     id: pollData.poll.id
+      //   }),
+      //   fields: {
+      //     questions(_, __){
+      //       console.log(_);
+      //     }
+      //   }
+      // })
+      // client.cache.modify({
+      //   id: client.cache.identify({
+      //     __typename: 'Answer',
+      //     id: '0b3fb25e-6c2c-479c-9521-9e407b1e6633'
+      //   }),
+      //   fields: {
+
+
+      //   }
+      // })
+      // // handleConfigFileAndUpdateCache(pollData.poll)
+
+      const r = client.writeQuery({
         query: GET_POLL_DATA,
         variables: { id },
         data: {
-          poll: newPoll
+          poll: {
+            id: pollData.poll.id,
+            __typeName: 'Poll',
+            tester: '22222222'
+          }
         }
       })
-      console.log(result);
+      console.log(r);
       console.log(client.cache.data.data);
+
       setReady(true)
     }
   })
 
   const handleConfigFileAndUpdateCache = (poll) => {
     const filePath = poll.logic.path
-    const pollId = poll.id
     fetch(mainUrl + filePath)
       .then((r) => r.text())
       .then(text => {
         const normalizedLogic = normalizeLogic(parseIni(text))
         const updatedQuestions = modulateQuestionsWithLogic(normalizedLogic)
-        const newPoll = {
-          ...poll,
-          questions: updatedQuestions,
-          test: '2222222'
-        }
-        console.log(newPoll === poll);
-        client.writeQuery({
-          query: GET_POLL_DATA,
-          variables: { id },
-          data: {
-            poll: newPoll
+        client.cache.modify({
+          fields: {
+            answer(existingPollRef, { readField }) {
+              console.log(existingPollRef);
+            }
           }
         })
-        console.log(client.cache.data.data);
-
-        // const ID = client.cache.identify({
-        //   __typename: "Poll",
-        //   id: poll.id
-        // })
-        // console.log(ID);
-
-        // client.cache.modify({
-        //   id: ID,
-        //   fields: {
-        //     poll(existing, { readField }) {
-        //       return { ...newPoll, teststst: '222222222222 ' }
-        //     }  
-        //   }
-        // })
-        // console.log(client.cache.data.data);
         setReady(true)
       })
   }
@@ -168,6 +168,7 @@ const CommonSetting = ({ id }) => {
             suffix = {
               ...suffix,
               freeAnswer: true
+
             }
           }
         }

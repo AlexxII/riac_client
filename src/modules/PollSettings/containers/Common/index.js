@@ -92,37 +92,13 @@ const CommonSetting = ({ id }) => {
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: () => {
-      // client.cache.modify({
-      //   id: client.cache.identify({
-      //     __typename: 'Poll',
-      //     id: pollData.poll.id
-      //   }),
-      //   fields: {
-      //     questions(_, __){
-      //       console.log(_);
-      //     }
-      //   }
-      // })
-      // client.cache.modify({
-      //   id: client.cache.identify({
-      //     __typename: 'Answer',
-      //     id: '0b3fb25e-6c2c-479c-9521-9e407b1e6633'
-      //   }),
-      //   fields: {
-
-
-      //   }
-      // })
-      // // handleConfigFileAndUpdateCache(pollData.poll)
-
       const r = client.writeQuery({
         query: GET_POLL_DATA,
         variables: { id },
         data: {
           poll: {
-            id: pollData.poll.id,
-            __typeName: 'Poll',
-            tester: '22222222'
+            ...pollData.poll,
+            reeeed: 'wewewewe'
           }
         }
       })
@@ -228,6 +204,7 @@ const CommonSetting = ({ id }) => {
           <Box m={1}>
             <div> Ответов: {pollData.poll.answersCount}</div>
           </Box>
+          {pollData.poll.reeeed ? pollData.poll.reeeed : <p>ХУЙ</p>}
         </Grid>
         {pollData.poll.questions.map((question, index) => (
           <QuestionCard question={question} key={index} index={index} />

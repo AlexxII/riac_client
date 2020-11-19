@@ -124,25 +124,42 @@ const CitiesEditor = ({ id }) => {
           cities: selectedCities
         },
         update: (cache, data) => {
-          const { poll, cities } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
+          const { poll } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
           const addedCities = data.data.setPollCity
           const updatePool = [...poll.cities, ...addedCities]
-          const updatedAvaiablePool = cities.filter(city => {
-            return selectedCities.includes(city.id) ? false : true
-          })
-          cache.writeQuery({
-            query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
-            data: {
-              poll: { cities: updatePool }
+          cache.modify({
+            fields: {
+              cities(existingFieldData, { readField }) {
+                return existingFieldData.filter(
+                  cityRef => {
+                    for (let i = 0; i < updatePool.length; i++) {
+                      if (readField('id', cityRef) === updatePool[i].id) return false
+                    }
+                    return true
+                  }
+                )
+              }
             }
           })
-          cache.writeQuery({
-            query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
-            data: {
-              cities: updatedAvaiablePool
+          cache.modify({
+            id: cache.identify({
+              __typename: 'Poll',
+              id: id
+            }),
+            fields: {
+              poll: {
+                cities(ext) {
+                  console.log(ext);
+                }
+              }
             }
           })
-          console.log(cache);
+          // cache.writeQuery({
+          //   query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
+          //   data: {
+          //     poll: { cities: updatePool }
+          //   }
+          // })
         }
       })
     } catch (e) {

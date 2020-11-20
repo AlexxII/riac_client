@@ -86,28 +86,17 @@ const QuestionCard = ({ question, index }) => {
 const CommonSetting = ({ id }) => {
   const client = useApolloClient()
   const [ready, setReady] = useState(false)
+  const [questions, setQuestions] = useState()
   const {
     loading,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: () => {
-      const r = client.writeQuery({
-        query: GET_POLL_DATA,
-        variables: { id },
-        data: {
-          poll: {
-            ...pollData.poll,
-            reeeed: 'wewewewe'
-          }
-        }
-      })
-      console.log(r);
-      console.log(client.cache.data.data);
-
-      setReady(true)
+      handleConfigFileAndUpdateCache(pollData.poll)
     }
   })
+
 
   const handleConfigFileAndUpdateCache = (poll) => {
     const filePath = poll.logic.path
@@ -116,13 +105,7 @@ const CommonSetting = ({ id }) => {
       .then(text => {
         const normalizedLogic = normalizeLogic(parseIni(text))
         const updatedQuestions = modulateQuestionsWithLogic(normalizedLogic)
-        client.cache.modify({
-          fields: {
-            answer(existingPollRef, { readField }) {
-              console.log(existingPollRef);
-            }
-          }
-        })
+        setQuestions(updatedQuestions)
         setReady(true)
       })
   }
@@ -180,7 +163,7 @@ const CommonSetting = ({ id }) => {
     return modQuestions
   }
 
-  if (loading || !ready) return (
+  if (loading || !questions || !ready) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
@@ -204,9 +187,8 @@ const CommonSetting = ({ id }) => {
           <Box m={1}>
             <div> Ответов: {pollData.poll.answersCount}</div>
           </Box>
-          {pollData.poll.reeeed ? pollData.poll.reeeed : <p>ХУЙ</p>}
         </Grid>
-        {pollData.poll.questions.map((question, index) => (
+        {questions.map((question, index) => (
           <QuestionCard question={question} key={index} index={index} />
         ))}
       </Grid>

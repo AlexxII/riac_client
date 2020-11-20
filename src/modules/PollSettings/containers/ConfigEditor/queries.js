@@ -8,9 +8,3 @@ export const logicQuery = gql`
     }
   }
 `
-
-export const saveConfigChanges = gql`
-mutation saveConfigChanges($path: String!, $text: String!) {
-  saveConfig(path: $path, text: $text)
-}
-`

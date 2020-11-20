@@ -32,18 +32,20 @@ const CitiesEditor = ({ id }) => {
     message: '',
     duration: 6000
   })
-  const { currentUser } = client.readQuery({
-    query: gql`
-    query {
-      currentUser {
-        id
-        username
-      }
-    }
-    `,
-  })
+  // const { currentUser } = client.readQuery({
+  //   query: gql`
+  //   query {
+  //     currentUser {
+  //       id
+  //       username
+  //     }
+  //   }
+  //   `,
+  // })
   const [clear, setClear] = useState(0)
   const [delId, setDelId] = useState(false)
+  const [allCities, setAllCitites] = useState()
+  const [availableCities, setAvailableCities] = useState()
   const [selected, setSelected] = useState([])
   const {
     data: citiesData,
@@ -53,20 +55,17 @@ const CitiesEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       const pollCities = citiesData.poll.cities
-      client.cache.modify({
-        fields: {
-          cities(existingFieldData, { readField }) {
-            return existingFieldData.filter(
-              cityRef => {
-                for (let i = 0; i < pollCities.length; i++) {
-                  if (readField('id', cityRef) === pollCities[i].id) return false
-                }
-                return true
-              }
-            )
+      setAllCitites(citiesData.cities)
+      setAvailableCities(citiesData.cities.filter(
+        city => {
+          for (let i = 0; i < pollCities.length; i++) {
+            if (city.id === pollCities[i].id) {
+              return false
+            }
           }
+          return true
         }
-      })
+      ))
     }
   })
   const [
@@ -78,7 +77,7 @@ const CitiesEditor = ({ id }) => {
     { loading: deleteCityLoading, error: deleteCityError }
   ] = useMutation(DELETE_CITY_FROM_ACTIVE)
 
-  if (citiesLoading || !citiesData || !currentUser) return (
+  if (citiesLoading || !citiesData || !availableCities) return (
     <Fragment>
       <CircularProgress />
       <p>Загрузка. Подождите пожалуйста</p>
@@ -92,12 +91,11 @@ const CitiesEditor = ({ id }) => {
   )
 
   const handleCityDelete = (id) => {
-    console.log(id);
     setDelId(id)
   }
 
   const handleDelConfirm = () => {
-    deleteCityCompletely(delId)
+    deleteCityCompletely([delId])
     setDelId(false)
   }
 
@@ -124,42 +122,9 @@ const CitiesEditor = ({ id }) => {
           cities: selectedCities
         },
         update: (cache, data) => {
-          const { poll } = cache.readQuery({ query: GET_ALL_CITIES_AND_ACTIVE, variables: { id } })
-          const addedCities = data.data.setPollCity
-          const updatePool = [...poll.cities, ...addedCities]
-          cache.modify({
-            fields: {
-              cities(existingFieldData, { readField }) {
-                return existingFieldData.filter(
-                  cityRef => {
-                    for (let i = 0; i < updatePool.length; i++) {
-                      if (readField('id', cityRef) === updatePool[i].id) return false
-                    }
-                    return true
-                  }
-                )
-              }
-            }
-          })
-          cache.modify({
-            id: cache.identify({
-              __typename: 'Poll',
-              id: id
-            }),
-            fields: {
-              poll: {
-                cities(ext) {
-                  console.log(ext);
-                }
-              }
-            }
-          })
-          // cache.writeQuery({
-          //   query: GET_ALL_CITIES_AND_ACTIVE, variables: { id },
-          //   data: {
-          //     poll: { cities: updatePool }
-          //   }
-          // })
+          setAvailableCities(availableCities.filter(city => {
+            return !selectedCities.includes(city.id)
+          }))
         }
       })
     } catch (e) {
@@ -182,32 +147,22 @@ const CitiesEditor = ({ id }) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-  async function deleteCityCompletely(city) {
+  async function deleteCityCompletely(cities) {
     try {
       await deleteCity({
         variables: {
           id,
-          cities: [city]
+          cities: cities
         },
         update: (cache, { data }) => {
-          if (data.deleteCity) {
-            // cache.modify({
-            //   fields: {
-            //     cities: (existingFieldData, { readField }) => {
-            //       return existingFieldData.filter(
-            //         cityRef => city !== readField('id', cityRef)
-            //       )
-            //     }
-            //   }
-            // })
-          } else {
-            setMessage({
-              show: true,
-              type: 'error',
-              duration: 6000,
-              text: 'Удалить город не удалось.'
-            })
-          }
+          const pollCities = data.deleteCityFromActive.cities
+          const aCitites = allCities.filter(city => {
+            for (let i = 0; i < pollCities.length; i++) {
+              if (city.id === pollCities[i].id) return false
+            }
+            return true
+          })
+          setAvailableCities(aCitites)
         }
       })
     } catch (e) {
@@ -217,7 +172,7 @@ const CitiesEditor = ({ id }) => {
         duration: 6000,
         text: 'Что-то не так. См. консоль'
       })
-      console.log('Что-то пошло не так с удалением города', e)
+      console.log('Что-то пошло не так с удалением города. Вот ошибка -> ', e)
     }
   }
 
@@ -255,14 +210,13 @@ const CitiesEditor = ({ id }) => {
     <Fragment>
       <div className="cities-service-zone">
         <Typography className="header">Города в которых проводится опрос</Typography>
-        <p>{currentUser.id}</p>
         <Grid container justify="flex-start" alignItems="center" spacing={2}>
           <Grid item xs={12} sm={6} md={6} lg={5}>
             <Autocomplete
               multiple
               key={clear}
               limitTags={3}
-              options={citiesData.cities}
+              options={availableCities}
               disableCloseOnSelect
               clearOnEscape
               onChange={handleChange}

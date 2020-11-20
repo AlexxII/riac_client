@@ -7,8 +7,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
-import { logicQuery, saveConfigChanges } from "./queries"
-
+import { logicQuery } from "./queries"
+import { saveConfigChanges } from "./mutations"
 
 const ConfigEditor = ({ id }) => {
   const [config, setConfig] = useState(null)
@@ -18,7 +18,13 @@ const ConfigEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       handleConfigFile(data.pollLogic.path)
-    }
+    },
+    refetchQueries: () => [{
+      query: GET_TASKS_BY_STATUS,
+      variables: {
+        status: id
+      }
+    }]
   })
 
   const [saveConfig] = useMutation(saveConfigChanges, {

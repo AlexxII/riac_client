@@ -6,11 +6,13 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
+import PublishIcon from '@material-ui/icons/Publish';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
 
 import Select from 'react-select'
 
@@ -128,15 +130,15 @@ const OverallResults = ({ id }) => {
 
   }
 
-  const showDetails = (result) => {
-    const data = result.result
-    const res = data.map(obj => {
+  const showDetails = ({ result }) => {
+    const oderedResults = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+    const datails = oderedResults.map(obj => {
       if (obj.text !== '') {
         return obj.code + ' ' + obj.text
       }
       return obj.code
     })
-    console.log(res);
+    console.log(datails);
   }
 
   const handleEdit = () => {
@@ -202,13 +204,46 @@ const OverallResults = ({ id }) => {
       update: (cache, { data }) => {
         const deletedPool = data.deleteResults.map(del => del.id)
         setActiveResults(activeResults.filter(result => !deletedPool.includes(result.id)))
-        // обновить КЭШ, а то удаленные вновь встают с молгиыва
+        console.log(cache.data.data);
         cache.modify({
-          id
+          fields: {
+            pollResults(existingRefs, { readField }) {
+              console.log(existingRefs);
+              return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
+            }
+          }
         })
       }
     })
     setDelOpen(false)
+  }
+
+  const downloadIt = (data) => {
+    const element = document.createElement('a')
+    const file = new Blob([data], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = "myFile.txt";
+    document.body.appendChild(element);
+    element.click();
+  }
+
+  const handleResultsExport = () => {
+    const resultsPool = activeResults.filter(result =>
+      selectPool.includes(result.id)
+    ).map(obj => obj.result)
+    const lResults = resultsPool.length
+    let allResults = ''
+    for (let i = 0; i < lResults; i++) {
+      const oderedResults = resultsPool[i].slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+      const details = oderedResults.map(obj => {
+        if (obj.text !== '') {
+          return obj.code + ' ' + obj.text
+        }
+        return obj.code
+      })
+      allResults += details + '\n'
+    }
+    downloadIt(allResults)
   }
 
   const handleResultsDelete = () => {
@@ -233,17 +268,30 @@ const OverallResults = ({ id }) => {
       />
       <div className="result-service-zone">
         {/* <Typography className="header">Общие результаты опроса</Typography> */}
-        <div className="service-buttons">
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleResultsDelete}
-            disabled={!selectPool.length}
-            startIcon={<DeleteIcon />}
-          >
-            Удалить
-          </Button>
-        </div>
+        <Grid container justify="space-between" className="service-buttons">
+          <Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleResultsExport}
+              disabled={!selectPool.length}
+              startIcon={<PublishIcon />}
+            >
+              Выгрузить
+            </Button>
+          </Box>
+          <Box>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleResultsDelete}
+              disabled={!selectPool.length}
+              startIcon={<DeleteIcon />}
+            >
+              Удалить
+            </Button>
+          </Box>
+        </Grid>
         <Grid container justify="flex-start" alignItems="center" spacing={2}>
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <Autocomplete

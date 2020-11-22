@@ -21,15 +21,3 @@ export const pollQuery = gql`
     }
   }
 `
-
-export const saveNewLimit = gql`
-mutation saveNewLimit($id: ID!, $limit: Int!) {
-  newLimit(id: $id, limit: $limit)
-}
-`
-
-export const saveNewOrder = gql`
-mutation saveNewOrder($questions: [ReorderedArray]) {
-  newOrder(neworder: $questions)
-}
-`

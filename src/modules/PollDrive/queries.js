@@ -8,6 +8,7 @@ export const GET_POLL_DATA = gql`
         id
         title
         limit
+        order
         answers {
           id
           code

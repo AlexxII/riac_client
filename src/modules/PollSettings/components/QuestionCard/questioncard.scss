@@ -5,15 +5,14 @@
   cursor: grab;
   max-height: 120px;
   min-height: 120px;
-}
-
-.question-title {
-  font-size: 14px !important;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow-y: hidden;
+  .question-title {
+    font-size: 12px !important;
+    overflow: hidden;
+    // -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
 }
 
 .question-limit-input {
@@ -28,6 +27,6 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }

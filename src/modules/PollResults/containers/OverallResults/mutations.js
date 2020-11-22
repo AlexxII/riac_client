@@ -22,7 +22,9 @@ mutation saveCityEdit($id: String!, $title: String!, $population: Int!, $categor
 }
 `
 export const DELETE_RESULTS = gql`
-mutation deleteCity($id: [String]!) {
-  deleteResults(id: $id)
+mutation ($results: [String]!) {
+  deleteResults(results: $results) {
+    id
+  }
 }
 `

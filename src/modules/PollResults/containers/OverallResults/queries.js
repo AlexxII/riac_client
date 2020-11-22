@@ -22,7 +22,7 @@ import { gql } from '@apollo/client'
 // `
 
 export const GET_FILTER_SELECTS = gql`
-  query filterSelects {
+  query {
     cities {
       id
       title
@@ -31,14 +31,23 @@ export const GET_FILTER_SELECTS = gql`
         label
       }
     }
+    intervievers {
+      id
+      username
+    }
   }
 `
 
-export const GET_POLL_RESULTS_EX = gql`
-  query pollResults($id: String!) {
+export const GET_POLL_RESULTS = gql`
+  query ($id: String!) {
     pollResults(id: $id) {
       id
+      user {
+        id
+        username
+      }
       city {
+        id
         title
         category {
           label

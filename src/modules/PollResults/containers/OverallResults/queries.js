@@ -53,6 +53,9 @@ export const GET_POLL_RESULTS = gql`
           label
         }
       }
+      created
+      lastModified
+      processed
       result {
         question {
           title

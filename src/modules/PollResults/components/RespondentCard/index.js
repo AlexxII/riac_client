@@ -17,16 +17,20 @@ const RespondentCard = ({ result, index, show, edit, selected, select }) => {
           <Typography variant="h6" gutterBottom>
             {index + 1}
           </Typography>
+          {result.processed ? <p>dd</p> : ''}
           <Checkbox
             checked={selected}
             onChange={(e) => select({
-              id : result.id,
+              id: result.id,
               index,
               event: e
             })}
             inputProps={{ 'aria-label': 'primary checkbox' }}
           />
         </Grid>
+        <Typography variant="subtitle2" gutterBottom>
+          сохранен: {result.created}
+        </Typography>
         <Typography variant="subtitle2" gutterBottom>
           н.п.: {result.city ? result.city.title : '-'}
         </Typography>

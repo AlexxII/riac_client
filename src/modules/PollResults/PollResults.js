@@ -94,29 +94,21 @@ const PollResults = ({ id }) => {
           className={classes.tabs}
         >
           <Tab label="Общие" {...allProps(0)} />
-          <Tab label="По Н.П." {...allProps(1)} />
-          <Tab label="Линейка" {...allProps(2)} />
-          <Tab label="Графики" {...allProps(3)} />
-          <Tab label="Пакетный" {...allProps(4)} />
-          <Tab label="Тестирование" {...allProps(5)} />
+          <Tab label="Линейка" {...allProps(1)} />
+          <Tab label="Пакетный" {...allProps(2)} />
+          <Tab label="Тестирование" {...allProps(3)} />
         </Tabs>
       </span>
       <TabPanel value={value} index={0}>
         <OverallResults id={id} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Распределение по населенным пунктам
-      </TabPanel>
-      <TabPanel value={value} index={2}>
         Линейное распределение ответов
       </TabPanel>
-      <TabPanel value={value} index={3}>
-        Графики
-      </TabPanel>
-      <TabPanel value={value} index={4}>
+      <TabPanel value={value} index={2}>
         Пакетный ВВод данных
       </TabPanel>
-      <TabPanel value={value} index={5}>
+      <TabPanel value={value} index={3}>
         <Generation id={id} />
       </TabPanel>
 

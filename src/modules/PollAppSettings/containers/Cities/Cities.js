@@ -12,6 +12,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import Divider from '@material-ui/core/Divider';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
@@ -339,6 +340,10 @@ const Cities = () => {
           {message.text}
         </Alert>
       </Snackbar>
+      <p></p>
+      <span>Статус</span>
+      <Divider />
+
     </Fragment>
   )
 }

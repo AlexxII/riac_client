@@ -34,7 +34,7 @@ const QuestionCard = ({ question, handleLimitInput }) => {
   }
 
   return (
-    <Grid item xs={12} sm={6} lg={3} xl={2}>
+    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} spacing={2}>
       <Paper className="question-item" elevation={2}>
         <Grid item xs={12} sm container>
           <Grid item xs container direction="column" spacing={2} alignItems="flex-start">
@@ -66,7 +66,12 @@ const QuestionCard = ({ question, handleLimitInput }) => {
             </Tooltip>
           </Grid>
         </Grid>
-        <Typography className="question-title">{question.title}</Typography>
+        <Typography className="question-title">
+          {question.title.length > 160 ?
+            question.title.substring(0, 100) + ' ... ' + question.title.substring(question.title.length - 45) :
+            question.title
+          }
+        </Typography>
 
       </Paper>
     </Grid>

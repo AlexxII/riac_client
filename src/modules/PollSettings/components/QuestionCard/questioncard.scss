@@ -8,7 +8,7 @@
   .question-title {
     font-size: 12px !important;
     overflow: hidden;
-    // -webkit-line-clamp: 3;
+    -webkit-line-clamp: 3;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;

@@ -1,8 +1,10 @@
 import React, { Fragment, useState, useEffect } from 'react'
+
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { useQuery } from '@apollo/client'
@@ -145,21 +147,29 @@ const Generation = ({ id }) => {
   return (
     <Fragment>
       <Grid container>
-        <h3>{poll.title}</h3>
-        <TextField
-          id="outlined-number"
-          label="Number"
-          type="number"
-          value={count}
-          onChange={testPoolChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-        />
-        <Button variant="contained" color="primary" disabled={count ? false : true} onClick={generateTestPool}>
-          Генерировать
-        </Button>
+        <Box>
+          <h3>{poll.title}</h3>
+        </Box>
+        <Grid xs={12} item container justify="flex-start">
+          <Box>
+            <TextField
+              id="outlined-number"
+              label="Number"
+              type="number"
+              value={count}
+              onChange={testPoolChange}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="outlined"
+            />
+          </Box>
+          <Box p={1}>
+            <Button variant="contained" color="primary" disabled={count ? false : true} onClick={generateTestPool}>
+              Генерировать
+            </Button>
+          </Box>
+        </Grid>
       </Grid>
     </Fragment>
   )

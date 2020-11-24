@@ -27,14 +27,25 @@ import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
+import { LocalFlorist } from '@material-ui/icons';
 
 const OverallResults = ({ id }) => {
   const client = useApolloClient();
   const [delOpen, setDelOpen] = useState(false)
   const [activeResults, setActiveResults] = useState()
   const [filters, setFilters] = useState({
-    cities: [],
     intervievers: [],
+    status: [
+      {
+        value: 0,
+        title: 'Не обработано'
+      },
+      {
+        value: 1,
+        title: 'Обработано'
+      }
+    ],
+    cities: [],
     sex: [],
     age: []
   })
@@ -71,7 +82,8 @@ const OverallResults = ({ id }) => {
         cities: filtersResults.cities.map(city => {
           return {
             value: city.id,
-            title: city.title
+            title: city.title,
+            category: city.category.label
           }
         }),
         intervievers: filtersResults.intervievers.map(iViever => {
@@ -189,12 +201,6 @@ const OverallResults = ({ id }) => {
     }
   }
 
-  const handleCityChange = (_, values) => {
-    const cities = values.map(city => city.value)
-    setActiveFilters({
-      cities
-    })
-  }
 
   const deleteComplitely = () => {
     deleteResult({
@@ -218,13 +224,8 @@ const OverallResults = ({ id }) => {
     setDelOpen(false)
   }
 
-  const downloadIt = (data) => {
-    const element = document.createElement('a')
-    const file = new Blob([data], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = "myFile.txt";
-    document.body.appendChild(element);
-    element.click();
+  const handleResultsDelete = () => {
+    setDelOpen(true)
   }
 
   const handleResultsExport = () => {
@@ -241,13 +242,34 @@ const OverallResults = ({ id }) => {
         }
         return obj.code
       })
-      allResults += details + '\n'
+      allResults += details + ',999' + '\n'
     }
     downloadIt(allResults)
   }
 
-  const handleResultsDelete = () => {
-    setDelOpen(true)
+  const downloadIt = (data) => {
+    const element = document.createElement('a')
+    const file = new Blob([data], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = "myFile.txt";
+    document.body.appendChild(element);
+    element.click();
+  }
+
+  const handleCityChange = (_, values) => {
+    const cities = values.map(city => city.value)
+    setActiveFilters({
+      cities
+    })
+  }
+
+  const handleStatusChahge = (_, values) => {
+
+  }
+
+
+  const handleDataChange = () => {
+    
   }
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -297,32 +319,6 @@ const OverallResults = ({ id }) => {
             <Autocomplete
               multiple
               limitTags={1}
-              options={filters.cities}
-              disableCloseOnSelect
-              clearOnEscape
-              onChange={handleCityChange}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                  />
-                  {option.title}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Город" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              multiple
-              limitTags={1}
               options={filters.intervievers}
               disableCloseOnSelect
               clearOnEscape
@@ -342,6 +338,57 @@ const OverallResults = ({ id }) => {
               )}
               renderInput={(params) => (
                 <TextField {...params} variant="outlined" label="Интервьюер" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Autocomplete
+              options={filters.status}
+              onChange={handleStatusChahge}
+              noOptionsText={"Опции не настроены"}
+              getOptionLabel={(option) => option.title}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label="Статус" />
+              )}
+            />
+          </Grid>
+        </Grid>
+        <Grid container justify="flex-start" alignItems="center" spacing={2}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <TextField
+              style={{ width: '100%' }}
+              id="date"
+              type="date"
+              variant="outlined"
+              onChange={handleDataChange}
+              // InputLabelProps={{
+              //   shrink: true,
+              // }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Autocomplete
+              multiple
+              limitTags={1}
+              options={filters.age}
+              disableCloseOnSelect
+              clearOnEscape
+              onChange={handleChange}
+              noOptionsText={"Опции не настроены"}
+              getOptionLabel={(option) => option.title}
+              renderOption={(option, { selected }) => (
+                <React.Fragment>
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  {option.title}
+                </React.Fragment>
+              )}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label="Возраст" />
               )}
             />
           </Grid>
@@ -375,10 +422,11 @@ const OverallResults = ({ id }) => {
             <Autocomplete
               multiple
               limitTags={1}
-              options={filters.age}
+              options={filters.cities.sort((a, b) => a.category - b.category)}
+              groupBy={(option) => option.category}
               disableCloseOnSelect
               clearOnEscape
-              onChange={handleChange}
+              onChange={handleCityChange}
               noOptionsText={"Опции не настроены"}
               getOptionLabel={(option) => option.title}
               renderOption={(option, { selected }) => (
@@ -393,7 +441,7 @@ const OverallResults = ({ id }) => {
                 </React.Fragment>
               )}
               renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Возраст" />
+                <TextField {...params} variant="outlined" label="Город" />
               )}
             />
           </Grid>

@@ -29,10 +29,13 @@ const RespondentCard = ({ result, index, show, edit, selected, select }) => {
           />
         </Grid>
         <Typography variant="subtitle2" gutterBottom>
+          н.п.: {result.city ? result.city.title : '-'}
+        </Typography>
+        <Typography variant="caption" display="block" gutterBottom>
           сохранен: {result.created}
         </Typography>
-        <Typography variant="subtitle2" gutterBottom>
-          н.п.: {result.city ? result.city.title : '-'}
+        <Typography variant="caption" display="block" gutterBottom>
+          обновлен: {result.lastModified}
         </Typography>
         {/* <Typography variant="overline" display="block" gutterBottom>
           {result.city ? result.city.category.label : 'вероятно город стерли из БД'}

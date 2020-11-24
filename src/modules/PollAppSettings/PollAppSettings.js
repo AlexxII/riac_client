@@ -66,12 +66,28 @@ const PollAppSettings = () => {
       >
         <Tab label="Города" {...allProps(0)} />
         <Tab label="Выборка" {...allProps(1)} />
+        <Tab label="Пол" {...allProps(2)} />
+        <Tab label="Возраст" {...allProps(3)} />
+        <Tab label="Статус" {...allProps(4)} />
+        <Tab label="ТНП" {...allProps(5)} />
       </Tabs>
       <TabPanel value={value} index={0}>
         <Cities />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Sample />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        ПОЛ
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        Возраст
+      </TabPanel>
+      <TabPanel value={value} index={4}>
+        Статус
+      </TabPanel>
+      <TabPanel value={value} index={5}>
+        ТНП
       </TabPanel>
     </div>
   );

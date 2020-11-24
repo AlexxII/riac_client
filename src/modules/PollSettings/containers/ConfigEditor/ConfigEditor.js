@@ -5,11 +5,13 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress'
 import SaveIcon from '@material-ui/icons/Save';
 import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import { Box, Typography } from '@material-ui/core';
+
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 import { logicQuery } from "./queries"
 import { saveConfigChanges } from "./mutations"
-
 import { GET_POLL_DATA } from '../../containers/Common/queries'
 
 const ConfigEditor = ({ id }) => {
@@ -61,26 +63,24 @@ const ConfigEditor = ({ id }) => {
 
   return (
     <Fragment>
-      <Grid item xs={12} sm container>
-        <Grid container>
-          <Grid item xs container direction="column" spacing={2} alignItems="flex-start">
-            <Grid item xs={12}>
+      <Grid item container>
+        <Grid item container justify="space-between">
+          <Box p={1}>
+            <Typography variant="subtitle1" gutterBottom>
               Отображение и настройка конфигурационного файла
-            </Grid>
-          </Grid>
-          <Grid item xs container direction="column" spacing={1} alignItems="flex-end">
-            <Grid item xs={12}>
-              <Tooltip title="Сохранить">
+            </Typography>
+          </Box>
+          <Box>
+            <Tooltip title="Сохранить">
+              <IconButton>
                 <SaveIcon className="save-config" onClick={handleSave} />
-              </Tooltip>
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <textarea
-              ref={textRef}
-              defaultValue={config}
-            />
-          </Grid>
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <textarea
+            ref={textRef}
+            defaultValue={config}
+          />
         </Grid>
       </Grid>
     </Fragment>

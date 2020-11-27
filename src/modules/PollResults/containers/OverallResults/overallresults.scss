@@ -6,6 +6,14 @@
   }
   .service-buttons {
     margin-bottom: 15px;
+    .main-buttons {
+      button {
+        margin-right: 5px;
+      }
+    }
+    button {
+      margin-bottom: 5px;
+    }
   }
   .city-group-label {
     font-size: 10px;

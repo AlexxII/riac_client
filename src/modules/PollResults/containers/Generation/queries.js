@@ -9,6 +9,10 @@ export const GET_POLL_DATA = gql`
       liter
       questionsCount
       answersCount
+      cities {
+        id
+        title
+      }
       questions {
         id
         title

@@ -1,12 +1,11 @@
 import React, { Fragment } from 'react';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 import './App.scss';
 import Router from '../Router'
 import SignInWrap from '../SignInWrap'
-
 import EmptyState from '../../components/EmptyState'
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { useQuery } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';

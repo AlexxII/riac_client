@@ -13,7 +13,14 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
+import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
+import InputAdornment from "@material-ui/core/InputAdornment";
+import ClearIcon from '@material-ui/icons/Clear';
+import Tooltip from '@material-ui/core/Tooltip';
 
+import {
+  DatePicker
+} from '@material-ui/pickers';
 import Select from 'react-select'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
@@ -30,7 +37,11 @@ import { DELETE_RESULTS } from './mutations'
 import { LocalFlorist } from '@material-ui/icons';
 
 const OverallResults = ({ id }) => {
+
+  const [ddate, setDdate] = useState()
+
   const client = useApolloClient();
+  const [selectedDate, handleDateChange] = useState(new Date());
   const [delOpen, setDelOpen] = useState(false)
   const [activeResults, setActiveResults] = useState()
   const [filters, setFilters] = useState({
@@ -228,6 +239,10 @@ const OverallResults = ({ id }) => {
     setDelOpen(true)
   }
 
+  const handleResultsBatchUpdate = () => {
+
+  }
+
   const handleResultsExport = () => {
     const resultsPool = activeResults.filter(result =>
       selectPool.includes(result.id)
@@ -256,6 +271,7 @@ const OverallResults = ({ id }) => {
     element.click();
   }
 
+  // ФИЛЬТРЫ
   const handleCityChange = (_, values) => {
     const cities = values.map(city => city.value)
     setActiveFilters({
@@ -268,9 +284,11 @@ const OverallResults = ({ id }) => {
   }
 
 
-  const handleDataChange = () => {
-    
+  const handleDataChange = (e) => {
+    const date = e.target.value
+    setDdate(date)
   }
+
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -291,7 +309,7 @@ const OverallResults = ({ id }) => {
       <div className="result-service-zone">
         {/* <Typography className="header">Общие результаты опроса</Typography> */}
         <Grid container justify="space-between" className="service-buttons">
-          <Box>
+          <Box className="main-buttons">
             <Button
               variant="contained"
               color="primary"
@@ -300,6 +318,14 @@ const OverallResults = ({ id }) => {
               startIcon={<PublishIcon />}
             >
               Выгрузить
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleResultsBatchUpdate}
+              disabled={!selectPool.length}
+              startIcon={<DynamicFeedIcon />}
+            >
+              Обновить
             </Button>
           </Box>
           <Box>
@@ -316,54 +342,28 @@ const OverallResults = ({ id }) => {
         </Grid>
         <Grid container justify="flex-start" alignItems="center" spacing={2}>
           <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              multiple
-              limitTags={1}
-              options={filters.intervievers}
-              disableCloseOnSelect
-              clearOnEscape
-              onChange={handleChange}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                  />
-                  {option.title}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Интервьюер" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              options={filters.status}
-              onChange={handleStatusChahge}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Статус" />
-              )}
-            />
-          </Grid>
-        </Grid>
-        <Grid container justify="flex-start" alignItems="center" spacing={2}>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
             <TextField
               style={{ width: '100%' }}
               id="date"
               type="date"
               variant="outlined"
+              value={ddate}
               onChange={handleDataChange}
-              // InputLabelProps={{
-              //   shrink: true,
-              // }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {true ?
+                      <Tooltip title="Очистить">
+                        <ClearIcon style={{ cursor: "pointer" }}
+                          onClick={() => setDdate('')}
+                        />
+                      </Tooltip>
+                      :
+                      ""
+                    }
+                  </InputAdornment>
+                )
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -441,9 +441,66 @@ const OverallResults = ({ id }) => {
                 </React.Fragment>
               )}
               renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Город" />
+                <TextField {...params} variant="outlined" label="Город"
+                />
               )}
             />
+          </Grid>
+        </Grid>
+        <Grid container justify="flex-start" alignItems="center" spacing={2}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Autocomplete
+              multiple
+              limitTags={1}
+              options={filters.intervievers}
+              disableCloseOnSelect
+              clearOnEscape
+              onChange={handleChange}
+              noOptionsText={"Опции не настроены"}
+              getOptionLabel={(option) => option.title}
+              renderOption={(option, { selected }) => (
+                <React.Fragment>
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  {option.title}
+                </React.Fragment>
+              )}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label="Интервьюер" />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <Autocomplete
+              options={filters.status}
+              onChange={handleStatusChahge}
+              noOptionsText={"Опции не настроены"}
+              getOptionLabel={(option) => option.title}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label="Статус" />
+              )}
+            />
+          </Grid>
+          <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
+            <Button
+              variant="contained"
+              onClick={handleResultsExport}
+              disabled={!selectPool.length}
+            >
+              применить
+            </Button>
+          </Grid>
+          <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
+            <Box m={1}>
+              <a href="">Есть дубли</a>
+            </Box>
+            <Box m={1}>
+              <a href="">Есть проблемы</a>
+            </Box>
           </Grid>
         </Grid>
       </div>

@@ -10,7 +10,8 @@ import {
   TesterPage,
   AttachmentPage,
   WikiPage,
-  PollAppSettingsPage
+  PollAppSettingsPage,
+  UsersPage
 } from '../../pages'
 
 const Router = () => {
@@ -19,13 +20,14 @@ const Router = () => {
     <BrowserRouter>
       <Switch>
         <Route path={"/"} exact component={HomePage} />
+        <Route path={"/settings/users"} exact component={UsersPage} />
         <Route path={"/results/:id/:code"} component={ResultsPage} />
         <Route path={"/poll-settings/:id/:code"} component={SettingsPage} />
         <Route path={"/drive/:id/:code"} component={DrivePage} />
         <Route path={"/analyze"} component={AnalyzePage} />
         <Route path={"/attachment/:id/:code"} component={AttachmentPage} />
         <Route path={"/poll-wiki/:id/:code"} component={WikiPage} />
-        <Route path={"/pollappsetting"} component={PollAppSettingsPage} />
+        <Route path={"/poll-app-settings"} component={PollAppSettingsPage} />
         <Route path={"/tester"} component={TesterPage} />
       </Switch>
     </BrowserRouter>

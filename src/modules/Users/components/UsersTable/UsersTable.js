@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -16,9 +16,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import EditIcon from '@material-ui/icons/Edit';
+import Button from '@material-ui/core/Button';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+
+import ConfirmDialog from "../../../../components/ConfirmDialog";
+import UserAddDialog from "../UserAddDialog"
 
 const users = [
   {
@@ -40,7 +43,7 @@ const users = [
     username: 'Сидорова С.В.',
     login: 'SidorovaSV',
     status: 'гражданский служащий',
-    rights: 'Пользователь'
+    rights: 'Админ'
   },
 ]
 
@@ -71,11 +74,11 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'username', numeric: false, disablePadding: true, label: 'Пользователь' },
-  { id: 'login', numeric: false, disablePadding: false, label: 'Логин' },
-  { id: 'status', numeric: false, disablePadding: false, label: 'Статус' },
-  { id: 'rights', numeric: false, disablePadding: false, label: 'Права' },
-  { id: 'id', numeric: true, disablePadding: false, label: 'Action' }
+  { id: 'username', numeric: false, disablePadding: true, label: 'Пользователь', sort: true },
+  { id: 'login', numeric: false, disablePadding: false, label: 'Логин', sort: true },
+  { id: 'status', numeric: false, disablePadding: false, label: 'Статус', sort: true },
+  { id: 'rights', numeric: false, disablePadding: false, label: 'Права', sort: true },
+  { id: '', numeric: true, disablePadding: true, label: 'Action', sort: false }
 ];
 
 function EnhancedTableHead(props) {
@@ -100,12 +103,12 @@ function EnhancedTableHead(props) {
             key={headCell.id}
             align='center'
             padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
+          >{headCell.sort ? (
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              hideSortIcon={headCell.sort ? false : true}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -114,6 +117,8 @@ function EnhancedTableHead(props) {
                 </span>
               ) : null}
             </TableSortLabel>
+
+          ) : (<span>{headCell.label}</span>)}
           </TableCell>
         ))}
       </TableRow>
@@ -143,7 +148,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, deleteDelete } = props;
 
   return (
     <Toolbar
@@ -163,20 +168,23 @@ const EnhancedTableToolbar = (props) => {
       }
 
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+        <Tooltip title="Удалить">
+          <IconButton aria-label="delete" onClick={deleteDelete}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : ''}
+      ) : (
+          <Tooltip title="Добавить пользователя">
+            <Button variant="contained" color="primary">
+              Добавить
+            </Button>
+          </Tooltip>
+        )}
     </Toolbar>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
   paper: {
     width: '100%',
     marginBottom: theme.spacing(2),
@@ -197,13 +205,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EnhancedTable() {
+const UsersTable = () => {
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [deleteDialog, setDeleteDialog] = useState(false)
+
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('calories');
+  const [selected, setSelected] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -213,19 +224,19 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((n) => n.username);
+      const newSelecteds = users.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (_, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (_, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -240,12 +251,12 @@ export default function EnhancedTable() {
     setSelected(newSelected);
   };
 
-  const handleRowEdit = (_, name) => {
-
+  const handleRowEdit = (_, row) => {
+    console.log(row);
   }
 
-  const handleRowInfo = (_, name) => {
-
+  const handlePassReset = (_, row) => {
+    console.log(row);
   }
 
   const handleChangePage = (event, newPage) => {
@@ -259,10 +270,26 @@ export default function EnhancedTable() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  const handleDelConfirm = () => {
+    setDeleteDialog(false)
+  }
+
   return (
-    <div className={classes.root}>
+    <Fragment>
+      <UserAddDialog />
+      <ConfirmDialog
+        open={deleteDialog}
+        confirm={handleDelConfirm}
+        close={() => setDeleteDialog(false)}
+        data={
+          {
+            title: 'Удалить пользователей(я)?',
+            text: 'Внимание! Это операция не может быть отменена. Данные этого приложения привязвны к учетной записи, будьте внимательны.'
+          }
+        }
+      />
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} deleteDelete={setDeleteDialog} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -283,7 +310,7 @@ export default function EnhancedTable() {
               {stableSort(users, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.username);
+                  const isItemSelected = isSelected(row.id);
                   const labelId = `enhanced-table-checkbox-${index}`;
                   return (
                     <TableRow
@@ -291,13 +318,13 @@ export default function EnhancedTable() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.username}
+                      key={row.id}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
-                          onClick={(event) => handleClick(event, row.username)}
+                          onClick={(event) => handleClick(event, row.id)}
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
@@ -308,18 +335,20 @@ export default function EnhancedTable() {
                       <TableCell align="center">{row.status}</TableCell>
                       <TableCell align="center">{row.rights}</TableCell>
                       <TableCell align="center" padding="none">
-                        <IconButton>
-                          <AssignmentIndIcon
-                            inputProps={{ 'aria-labelledby': labelId }}
-                            onClick={(event) => handleRowInfo(event, row.username)}
-                          />
-                        </IconButton>
-                        <IconButton>
-                          <EditIcon
-                            inputProps={{ 'aria-labelledby': labelId }}
-                            onClick={(event) => handleRowEdit(event, row.username)}
-                          />
-                        </IconButton>
+                        <Tooltip title="Обновить">
+                          <IconButton
+                            onClick={(event) => handleRowEdit(event, row)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Сбросить пароль">
+                          <IconButton
+                            onClick={(event) => handlePassReset(event, row)}
+                          >
+                            <LockOpenIcon />
+                          </IconButton>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   );
@@ -338,6 +367,8 @@ export default function EnhancedTable() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-    </div>
+    </Fragment>
   );
 }
+
+export default UsersTable

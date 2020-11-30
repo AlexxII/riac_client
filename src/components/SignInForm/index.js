@@ -45,12 +45,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SignIn = ({ onLogin, userError, passwordError }) => {
-  const [username, setUsername] = useState('')
+  const [login, setlogin] = useState('')
   const [password, setPassword] = useState('')
   const classes = useStyles();
 
   const handleName = (e) => {
-    setUsername(e.target.value)
+    setlogin(e.target.value)
   }
 
   const handlePassword = (e) => {
@@ -59,9 +59,9 @@ const SignIn = ({ onLogin, userError, passwordError }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (username || password)
+    if (login || password)
       onLogin({
-        username,
+        login,
         password
       })
   }

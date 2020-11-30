@@ -11,7 +11,8 @@ import {
   AttachmentPage,
   WikiPage,
   PollAppSettingsPage,
-  UsersPage
+  UsersPage,
+  NotFoundPage
 } from '../../pages'
 
 const Router = () => {
@@ -29,6 +30,7 @@ const Router = () => {
         <Route path={"/poll-wiki/:id/:code"} component={WikiPage} />
         <Route path={"/poll-app-settings"} component={PollAppSettingsPage} />
         <Route path={"/tester"} component={TesterPage} />
+        <Route component={NotFoundPage} />
       </Switch>
     </BrowserRouter>
   )

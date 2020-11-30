@@ -20,32 +20,34 @@ import EditIcon from '@material-ui/icons/Edit';
 import Button from '@material-ui/core/Button';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 
-import ConfirmDialog from "../../../../components/ConfirmDialog";
-import UserAddDialog from "../UserAddDialog"
+import ConfirmDialog from '../../../../components/ConfirmDialog';
+import UserAddDialog from '../UserAddDialog'
+import UserUpdateDialog from '../UserUpdateDialog'
+import PassResetDialog from '../PassResetDialog'
 
-const users = [
-  {
-    id: '1111',
-    username: 'Петров И.В.',
-    login: 'PtrovIV',
-    status: 'военнослужащий',
-    rights: 'Пользователь'
-  },
-  {
-    id: '22222',
-    username: 'Иванов С.В.',
-    login: 'IvanovSV',
-    status: 'военнослужащий',
-    rights: 'Пользователь'
-  },
-  {
-    id: '33333',
-    username: 'Сидорова С.В.',
-    login: 'SidorovaSV',
-    status: 'гражданский служащий',
-    rights: 'Админ'
-  },
-]
+// const users = [
+//   {
+//     id: '1111',
+//     username: 'Петров И.В.',
+//     login: 'PtrovIV',
+//     status: 'военнослужащий',
+//     rights: 'Пользователь'
+//   },
+//   {
+//     id: '22222',
+//     username: 'Иванов С.В.',
+//     login: 'IvanovSV',
+//     status: 'военнослужащий',
+//     rights: 'Пользователь'
+//   },
+//   {
+//     id: '33333',
+//     username: 'Сидорова С.В.',
+//     login: 'SidorovaSV',
+//     status: 'гражданский служащий',
+//     rights: 'Админ'
+//   },
+// ]
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -148,7 +150,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected, deleteDelete } = props;
+  const { numSelected, deleteDelete, setUserAddOpen } = props;
 
   return (
     <Toolbar
@@ -175,12 +177,13 @@ const EnhancedTableToolbar = (props) => {
         </Tooltip>
       ) : (
           <Tooltip title="Добавить пользователя">
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={() => setUserAddOpen(true)}>
               Добавить
             </Button>
           </Tooltip>
-        )}
-    </Toolbar>
+        )
+      }
+    </Toolbar >
   );
 };
 
@@ -205,10 +208,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UsersTable = () => {
+const UsersTable = ({ users, addNewUser, deleteUsers, updateUser, resetPassword, selects }) => {
   const classes = useStyles();
 
   const [deleteDialog, setDeleteDialog] = useState(false)
+  const [userAddOpen, setUserAddOpen] = useState(false)
+  const [userUpdate, setUserUpdate] = useState(false)
+  const [passReset, setPassReset] = useState(false)
 
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('calories');
@@ -252,11 +258,11 @@ const UsersTable = () => {
   };
 
   const handleRowEdit = (_, row) => {
-    console.log(row);
+    setUserUpdate(row)
   }
 
   const handlePassReset = (_, row) => {
-    console.log(row);
+    setPassReset(row)
   }
 
   const handleChangePage = (event, newPage) => {
@@ -271,12 +277,35 @@ const UsersTable = () => {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const handleDelConfirm = () => {
+    deleteUsers(selected)
     setDeleteDialog(false)
+    setSelected([])
+  }
+
+  const saveNewUser = (data) => {
+    // TODO: "Нужна заставка ожидания"
+    addNewUser(data)
+    setUserAddOpen(false)
+  }
+
+  const hanleUserUpdate = ({ id, data }) => {
+    updateUser({
+      id,
+      data
+    })
+  }
+
+  const handlePasswordReset = ({ id, password }) => {
+    resetPassword({
+      id, password
+    })
   }
 
   return (
     <Fragment>
-      <UserAddDialog />
+      <UserAddDialog open={userAddOpen} selects={selects} close={() => setUserAddOpen(false)} saveNewUser={saveNewUser} />
+      <UserUpdateDialog data={userUpdate} selects={selects} open={userUpdate} close={() => setUserUpdate(false)} updateUser={hanleUserUpdate} />
+      <PassResetDialog data={passReset} open={passReset} close={() => setPassReset(false)} passReset={handlePasswordReset} />
       <ConfirmDialog
         open={deleteDialog}
         confirm={handleDelConfirm}
@@ -284,12 +313,12 @@ const UsersTable = () => {
         data={
           {
             title: 'Удалить пользователей(я)?',
-            text: 'Внимание! Это операция не может быть отменена. Данные этого приложения привязвны к учетной записи, будьте внимательны.'
+            text: 'Внимание! Это операция не может быть отменена. Часть данных приложения привязаны к учетной записи, будьте внимательны.'
           }
         }
       />
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} deleteDelete={setDeleteDialog} />
+        <EnhancedTableToolbar numSelected={selected.length} deleteDelete={setDeleteDialog} setUserAddOpen={setUserAddOpen} />
         <TableContainer>
           <Table
             className={classes.table}
@@ -332,8 +361,8 @@ const UsersTable = () => {
                         {row.username}
                       </TableCell>
                       <TableCell align="center">{row.login}</TableCell>
-                      <TableCell align="center">{row.status}</TableCell>
-                      <TableCell align="center">{row.rights}</TableCell>
+                      <TableCell align="center">{row.status ? row.status.label : '-'}</TableCell>
+                      <TableCell align="center">{row.rights ? row.rights.label : '-'}</TableCell>
                       <TableCell align="center" padding="none">
                         <Tooltip title="Обновить">
                           <IconButton

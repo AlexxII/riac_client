@@ -19,7 +19,7 @@ const ConfirmDialog = ({ open, confirm, close, data }) => {
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {data.text}
-          </DialogContentText>
+        </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={close} color="primary">

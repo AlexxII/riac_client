@@ -1,10 +1,8 @@
-import React from "react";
-
-import { Box, Typography } from "@material-ui/core";
+import React, { Fragment } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Box, Typography } from "@material-ui/core";
 
-
-function EmptyState(props) {
+const LoadingState = (props) => {
   let imageWidth;
   let imageHeight;
   let variant;
@@ -102,15 +100,17 @@ function EmptyState(props) {
       </Box>
     );
   }
-
   return null;
 }
 
-EmptyState.defaultProps = {
-  type: "page",
+LoadingState.defaultProps = {
   image: <CircularProgress />,
+  title: 'Загрузка',
+  description: 'Подождите пожалуйста',
+  type: "page",
   size: "medium",
   padding: 2,
 };
 
-export default EmptyState;
+
+export default LoadingState

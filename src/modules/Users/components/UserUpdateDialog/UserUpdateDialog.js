@@ -11,19 +11,24 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 
-const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
-  const [userData, setUserData] = useState()
+const UserUpdateDialog = ({ data, selects, open, close, updateUser }) => {
+  const [userData, setUserData] = useState(false)
 
   const save = (e) => {
     e.preventDefault()
-    saveNewUser(userData)
+    updateUser({
+      id: data.id,
+      data: userData
+    })
+    setUserData(false)
+    close()
   }
 
   return (
     <Fragment>
       <Dialog open={open} onClose={close} aria-labelledby="form-dialog-title">
         <form onSubmit={save}>
-          <DialogTitle>Добавление пользователя</DialogTitle>
+          <DialogTitle>Обновить данные</DialogTitle>
           <DialogContent>
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
@@ -32,6 +37,7 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
                   fullWidth="true"
                   label="Пользователь"
                   variant="outlined"
+                  defaultValue={data.username}
                   onChange={(e) => setUserData(
                     {
                       ...userData,
@@ -47,6 +53,7 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
                   fullWidth="true"
                   label="Логин"
                   variant="outlined"
+                  defaultValue={data.login}
                   onChange={(e) => setUserData(
                     {
                       ...userData,
@@ -57,37 +64,12 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <TextField
-                  required
-                  fullWidth="true"
-                  label="Пароль"
-                  type="password"
-                  variant="outlined"
-                  onChange={(e) => setUserData(
-                    {
-                      ...userData,
-                      password: e.currentTarget.value
-                    }
-                  )}
-                  helperText="Не менее восьми символов"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  required
-                  fullWidth="true"
-                  label="Пароль"
-                  type="password"
-                  variant="outlined"
-                  helperText="Повторите пароль"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
                 <FormControl required variant="outlined" fullWidth="true">
                   <InputLabel htmlFor="outlined-age-native-simple">Статус</InputLabel>
                   <Select
                     required
                     native
+                    defaultValue={data.status ? data.status.value : ''}
                     label="Статус"
                     onChange={(e) => setUserData(
                       {
@@ -111,6 +93,7 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
                   <InputLabel htmlFor="outlined-age-native-simple">Права</InputLabel>
                   <Select
                     native
+                    defaultValue={data.rights ? data.rights.value : ''}
                     label="Права"
                     onChange={(e) => setUserData(
                       {
@@ -137,7 +120,7 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
               Отмена
           </Button>
             <Button variant="contained" type="submit" color="primary">
-              Добавить
+              Обновить
           </Button>
           </DialogActions>
         </form>
@@ -146,4 +129,4 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
   );
 }
 
-export default UserAddDialog
+export default UserUpdateDialog

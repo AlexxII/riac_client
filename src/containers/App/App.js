@@ -3,7 +3,8 @@ import React, { Fragment } from 'react';
 import './App.scss';
 import Router from '../Router'
 import SignInWrap from '../SignInWrap'
-import EmptyState from '../../components/EmptyState'
+import ErrorState from '../../components/ErrorState'
+import LoadingSate from '../../components/LoadingState'
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -17,19 +18,17 @@ const App = () => {
 
   if (loading) return (
     <Fragment>
-      <EmptyState
-        image={<CircularProgress />}
-        title="Пожалуйста подождите"
-        description="Идет загрузка необходимых данных" />
+      <LoadingSate />
     </Fragment>
   )
 
   if (error) {
     console.log(JSON.stringify(error));
     return (
-      <EmptyState
+      <ErrorState
         title="Что-пошло не так"
-        description="Приложение не хочет стартовать, смотрите консоль!" />
+        description="Приложение не хочет стартовать, смотрите консоль!"
+      />
     )
   };
 

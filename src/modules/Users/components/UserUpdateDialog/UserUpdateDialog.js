@@ -69,7 +69,7 @@ const UserUpdateDialog = ({ data, selects, open, close, updateUser }) => {
                   <Select
                     required
                     native
-                    defaultValue={data.status ? data.status.value : ''}
+                    defaultValue={data.status ? data.status.id : ''}
                     label="Статус"
                     onChange={(e) => setUserData(
                       {
@@ -83,7 +83,7 @@ const UserUpdateDialog = ({ data, selects, open, close, updateUser }) => {
                     }}
                   >
                     <option aria-label="None" selected disabled="true" value="" />
-                    {selects.userStatus.map(obj => <option value={obj.value}>{obj.label}</option>)}
+                    {selects.userStatus.map(obj => <option value={obj.id}>{obj.title}</option>)}
                   </Select>
                   <FormHelperText>Укажите социальный статус</FormHelperText>
                 </FormControl>
@@ -93,7 +93,7 @@ const UserUpdateDialog = ({ data, selects, open, close, updateUser }) => {
                   <InputLabel htmlFor="outlined-age-native-simple">Права</InputLabel>
                   <Select
                     native
-                    defaultValue={data.rights ? data.rights.value : ''}
+                    defaultValue={data.rights ? data.rights.id : ''}
                     label="Права"
                     onChange={(e) => setUserData(
                       {
@@ -107,7 +107,7 @@ const UserUpdateDialog = ({ data, selects, open, close, updateUser }) => {
                     }}
                   >
                     <option aria-label="None" selected disabled="true" value="" />
-                    {selects.userRights.map(obj => <option value={obj.value}>{obj.label}</option>)}
+                    {selects.userRights.map(obj => <option value={obj.id}>{obj.title}</option>)}
                   </Select>
                   <FormHelperText>Укажите права поьзователя</FormHelperText>
                 </FormControl>

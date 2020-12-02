@@ -37,9 +37,7 @@ import { DELETE_RESULTS } from './mutations'
 import { LocalFlorist } from '@material-ui/icons';
 
 const OverallResults = ({ id }) => {
-
   const [ddate, setDdate] = useState()
-
   const client = useApolloClient();
   const [selectedDate, handleDateChange] = useState(new Date());
   const [delOpen, setDelOpen] = useState(false)

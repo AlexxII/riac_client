@@ -9,7 +9,7 @@ export const GET_ALL_CITIES_AND_ACTIVE = gql`
         title
         population
         category {
-          label
+          title
         }
       }
     }
@@ -17,7 +17,7 @@ export const GET_ALL_CITIES_AND_ACTIVE = gql`
       id
       title
       category {
-        label
+        title
       }
     }
   }

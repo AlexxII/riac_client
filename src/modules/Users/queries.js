@@ -7,12 +7,12 @@ export const GET_ALL_USERS = gql`
       username
       login
       status {
-        value
-        label
+        id
+        title
       }
       rights {
-        value
-        label
+        id
+        title
       }
     }
   }
@@ -21,12 +21,12 @@ export const GET_ALL_USERS = gql`
 export const GET_AUTH_SELECTS = gql`
   query {
     userRights {
-      value
-      label
+      id
+      title
     }
     userStatus {
-      value
-      label
+      id
+      title
     }
   }
 `

@@ -7,13 +7,13 @@ query {
     title
     population
     category {
-      value
-      label
+      id
+      title
     }
   }
   cityCategories{
-    value
-    label
+    id
+    title
   }
 }
 `

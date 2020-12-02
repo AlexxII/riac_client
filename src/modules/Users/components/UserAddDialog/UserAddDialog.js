@@ -101,7 +101,7 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
                     }}
                   >
                     <option aria-label="None" selected disabled="true" value="" />
-                    {selects.userStatus.map(obj => <option value={obj.value}>{obj.label}</option>)}
+                    {selects.userStatus.map(obj => <option value={obj.id}>{obj.title}</option>)}
                   </Select>
                   <FormHelperText>Укажите социальный статус</FormHelperText>
                 </FormControl>
@@ -124,7 +124,7 @@ const UserAddDialog = ({ open, close, saveNewUser, selects }) => {
                     }}
                   >
                     <option aria-label="None" selected disabled="true" value="" />
-                    {selects.userRights.map(obj => <option value={obj.value}>{obj.label}</option>)}
+                    {selects.userRights.map(obj => <option value={obj.id}>{obj.title}</option>)}
                   </Select>
                   <FormHelperText>Укажите права поьзователя</FormHelperText>
                 </FormControl>

@@ -7,12 +7,12 @@ export const ADD_NEW_USER = gql`
       username
       login
       status {
-        value
-        label
+        id
+        title
       }
       rights {
-        value
-        label
+        id
+        title
       }
     }
   }
@@ -25,12 +25,12 @@ export const UPDATE_USER = gql`
       username
       login
       status {
-        value
-        label
+        id
+        title
       }
       rights {
-        value
-        label
+        id
+        title
       }
     }
   }

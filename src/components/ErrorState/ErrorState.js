@@ -50,7 +50,7 @@ const ErrorState = (props) => {
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <Typography>I use Popover.</Typography>
+        <Typography>{}</Typography>
       </Popover>
     )
   }

@@ -50,11 +50,15 @@ const Users = () => {
       update: (cache, { data: { addNewUser } }) => cache.writeQuery({
         query: GET_ALL_USERS,
         data: {
-          users: data.users.map(user => user.id === addNewUser.id ? addNewUser : user)
+          users: [
+            ...data.users,
+            addNewUser
+          ]
         }
       })
     }
   )
+
   const [updateUser, { loading: updateLoading, error: updateError }] = useMutation(UPDATE_USER,
     {
       onError: (e) => {
@@ -64,10 +68,7 @@ const Users = () => {
       update: (cache, { data: { updateUser } }) => cache.writeQuery({
         query: GET_ALL_USERS,
         data: {
-          users: [
-            ...data.users,
-            addNewUser
-          ]
+          users: data.users.map(user => user.id === updateUser.id ? updateUser : user)
         }
       })
     }
@@ -87,7 +88,8 @@ const Users = () => {
       <ErrorState
         title="Что-то пошло не так"
         description="Не удалось загрузить критические данные. Смотрите консоль"
-      />)
+      />
+    )
   }
 
   const addNewUser = (data) => {

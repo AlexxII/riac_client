@@ -187,7 +187,7 @@ const CitiesEditor = ({ id }) => {
             {city.title}
           </Typography>
           <Typography variant="subtitle2" gutterBottom>
-            {city.category.label}
+            {city.category.title}
           </Typography>
           <Typography variant="overline" display="block" gutterBottom>
             Население: {city.population}

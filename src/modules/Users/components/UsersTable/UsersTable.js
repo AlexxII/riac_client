@@ -361,8 +361,8 @@ const UsersTable = ({ users, addNewUser, deleteUsers, updateUser, resetPassword,
                         {row.username}
                       </TableCell>
                       <TableCell align="center">{row.login}</TableCell>
-                      <TableCell align="center">{row.status ? row.status.label : '-'}</TableCell>
-                      <TableCell align="center">{row.rights ? row.rights.label : '-'}</TableCell>
+                      <TableCell align="center">{row.status ? row.status.title : '-'}</TableCell>
+                      <TableCell align="center">{row.rights ? row.rights.title : '-'}</TableCell>
                       <TableCell align="center" padding="none">
                         <Tooltip title="Обновить">
                           <IconButton

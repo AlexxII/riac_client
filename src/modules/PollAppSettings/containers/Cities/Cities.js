@@ -10,11 +10,12 @@ import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import Divider from '@material-ui/core/Divider';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
+import LoadingState from '../../../../components/LoadingState'
+import ErrorState from '../../../../components/ErrorState'
+import SystemNoti from '../../../../components/SystemNoti'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -29,28 +30,61 @@ const Cities = () => {
     message: '',
     duration: 6000
   })
+
+  const [noti, setNoti] = useState(false)
+
   const [delId, setDelId] = useState(false)
   const [cityAdd, setCityAdd] = useState(false)
   const {
     data: citiesData,
     loading: citiesLoading,
-    error: cititesError
+    error: citiesError
   } = useQuery(GET_CITITES_WITH_CATEGORIES)
 
-  const [
-    saveCity,
-    { loading: saveCityLoding, error: saveCityError }
-  ] = useMutation(CITY_SAVE_MUTATION)
+  const [saveCity, { loading: saveCityLoding, error: saveCityError }] = useMutation(CITY_SAVE_MUTATION, {
+    onError: (e) => {
+      console.log(e);
+    },
+    update: (cache, { data: { newCity } }) => cache.writeQuery({
+      query: GET_CITITES_WITH_CATEGORIES,
+      data: {
+        cities: [
+          ...citiesData.cities,
+          newCity
+        ]
+      }
+    })
+  })
 
-  const [
-    saveCityEdit,
-    { loading: saveCityEditLoading, error: saveCityEditError }
-  ] = useMutation(CITY_EDIT_SAVE)
+  const [saveCityEdit, { loading: saveCityEditLoading, error: saveCityEditError }] = useMutation(CITY_EDIT_SAVE, {
+    onError: (e) => {
+      console.log(e);
+    },
+    update: (cache, { data: { cityEdit } }) => cache.writeQuery({
+      query: GET_CITITES_WITH_CATEGORIES,
+      data: {
+        cities: citiesData.cities.map(city => city.id === cityEdit.id ? cityEdit : city)
+      }
+    }),
+    onCompleted: () => {
+      setNoti(true)
+    }
+  })
 
   const [
     deleteCity,
     { loading: deleteCityLoading, error: deleteCityError }
-  ] = useMutation(DELETE_CITY)
+  ] = useMutation(DELETE_CITY, {
+    onError: (e) => {
+      console.log(e);
+    },
+    update: (cache, { data: { deleteCity } }) => cache.writeQuery({
+      query: GET_CITITES_WITH_CATEGORIES,
+      data: {
+        cities: citiesData.cities.filter(city => city.id === deleteCity.id ? false : true)
+      }
+    })
+  })
 
   const CityCard = ({ city, save, deleteCity }) => {
     const [editting, setEditting] = useState(false)
@@ -74,6 +108,8 @@ const Cities = () => {
       deleteCity(city.id)
     }
 
+
+
     return (
       <Fragment>
         {!editting ?
@@ -82,7 +118,7 @@ const Cities = () => {
               {city.title}
             </Typography>
             <Typography variant="subtitle2" gutterBottom>
-              {city.category.label}
+              {city.category.title}
             </Typography>
             <Typography variant="overline" display="block" gutterBottom>
               Население: {city.population}
@@ -105,7 +141,7 @@ const Cities = () => {
     const [edit, setEdit] = useState(false)
     const [title, setTitle] = useState(city ? city.title : '')
     const [population, setPopulation] = useState(city ? city.population : '')
-    const [category, setCategory] = useState(city ? city.category : '')
+    const [category, setCategory] = useState(city ? city.category.id : '')
 
     const handleSubmit = (e) => {
       e.preventDefault()
@@ -114,6 +150,7 @@ const Cities = () => {
         population: +population,
         category
       }
+      console.log(newCity);
       save(newCity)
     }
 
@@ -158,15 +195,16 @@ const Cities = () => {
             select
             required
             onChange={catHandle}
-            defaultValue={city ? city.category.value : ''}
+            defaultValue={city ? city.category.id : ''}
             SelectProps={{
               native: true,
             }}
             helperText="Категория н.п."
           >
+            <option key={0} disabled selected value=""></option>
             {citiesData.cityCategories.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+              <option key={option.id} value={option.id}>
+                {option.title}
               </option>
             ))}
           </TextField>
@@ -195,81 +233,22 @@ const Cities = () => {
   }
 
   async function handleSaveNew(newData) {
-    try {
-      await saveCity({
-        variables: { ...newData },
-        update: (cache, { data }) => {
-          cache.modify({
-            fields: {
-              cities: (existingFieldData) => {
-                return [...existingFieldData, data.newCity]
-              }
-            }
-          })
-        }
-      })
-      setCityAdd(false)
-    } catch (e) {
-      setMessage({
-        show: true,
-        type: 'error',
-        duration: 6000,
-        text: 'Что-то не так. См. консоль'
-      })
-      console.log('Не удалось сохранить новый город');
-    }
+    await saveCity({
+      variables: { ...newData }
+    })
+    setCityAdd(false)
   }
 
   async function handleSaveEdit(cityData) {
-    try {
-      await saveCityEdit({
-        variables: { ...cityData }
-      })
-    } catch (e) {
-      setMessage({
-        show: true,
-        type: 'error',
-        duration: 6000,
-        text: 'Что-то не так. См. консоль'
-      })
-      console.log('Что-то пошло не так с изменением данных по городу', e)
-    }
+    await saveCityEdit({
+      variables: { ...cityData }
+    })
   }
 
   async function deleteCityCompletely(id) {
-    try {
-      await deleteCity({
-        variables: { id },
-        update: (cache, { data }) => {
-          if (data.deleteCity) {
-            cache.modify({
-              fields: {
-                cities: (existingFieldData, { readField }) => {
-                  return existingFieldData.filter(
-                    cityRef => id !== readField('id', cityRef)
-                  )
-                }
-              }
-            })
-          } else {
-            setMessage({
-              show: true,
-              type: 'error',
-              duration: 6000,
-              text: 'Удалить город не удалось.'
-            })
-          }
-        }
-      })
-    } catch (e) {
-      setMessage({
-        show: true,
-        type: 'error',
-        duration: 6000,
-        text: 'Что-то не так. См. консоль'
-      })
-      console.log('Что-то пошло не так с удалением города', e)
-    }
+    await deleteCity({
+      variables: { id }
+    })
   }
 
   const handleCityDelete = (id) => {
@@ -285,27 +264,37 @@ const Cities = () => {
     setDelId(false)
   }
 
-  const handleMessageClose = () => {
-    setMessage(prevState => ({
-      ...prevState,
-      show: false,
-      text: ''
-    }))
-  }
-
-  if (citiesLoading || !citiesData) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+  if (citiesLoading) return (
+    <LoadingState />
   )
 
-  const Alert = (props) => {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  if (citiesError) {
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
+  
+  const Loading = () => {
+    if (saveCityLoding) {
+      return <p>Loading... 1</p>
+    }
+    if (saveCityEditLoading) {
+      return <p>Loading... 2</p>
+    }
+    if (deleteCityLoading) {
+      return <p>Loading... 3</p>
+    }
+    return null
   }
 
   return (
     <Fragment>
+      <SystemNoti open={noti} close={() => setNoti(false)} />
+      <Loading />
+
       <div className="cities-service-zone">
         <Typography className="header">Города проведения опросов</Typography>
         <Button variant="contained" color="primary" size="small" onClick={handleAdd}>
@@ -335,11 +324,6 @@ const Cities = () => {
           </Grid>
         ))}
       </Grid>
-      <Snackbar open={message.show} autoHideDuration={message.duration} onClose={handleMessageClose}>
-        <Alert onClose={handleMessageClose} severity={message.type}>
-          {message.text}
-        </Alert>
-      </Snackbar>
       <p></p>
       <span>Статус</span>
       <Divider />

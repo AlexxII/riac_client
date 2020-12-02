@@ -13,9 +13,11 @@ import EditIcon from '@material-ui/icons/Edit';
 import Divider from '@material-ui/core/Divider';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
+
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
+import LoadingStatus from '../../../../components/LoadingStatus'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -24,13 +26,6 @@ import { GET_CITITES_WITH_CATEGORIES } from './queries'
 import { CITY_SAVE_MUTATION, CITY_EDIT_SAVE, DELETE_CITY } from './mutations'
 
 const Cities = () => {
-  const [message, setMessage] = useState({
-    show: false,
-    type: 'error',
-    message: '',
-    duration: 6000
-  })
-
   const [noti, setNoti] = useState(false)
 
   const [delId, setDelId] = useState(false)
@@ -41,8 +36,12 @@ const Cities = () => {
     error: citiesError
   } = useQuery(GET_CITITES_WITH_CATEGORIES)
 
-  const [saveCity, { loading: saveCityLoding, error: saveCityError }] = useMutation(CITY_SAVE_MUTATION, {
+  const [saveCity, { loading: saveCityLoading }] = useMutation(CITY_SAVE_MUTATION, {
     onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Сохранить новый город не удалось. Смотрите консоль.'
+      })
       console.log(e);
     },
     update: (cache, { data: { newCity } }) => cache.writeQuery({
@@ -56,8 +55,12 @@ const Cities = () => {
     })
   })
 
-  const [saveCityEdit, { loading: saveCityEditLoading, error: saveCityEditError }] = useMutation(CITY_EDIT_SAVE, {
+  const [saveCityEdit, { loading: saveCityEditLoading }] = useMutation(CITY_EDIT_SAVE, {
     onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Обновить информацию не удалось. Смотрите консоль.'
+      })
       console.log(e);
     },
     update: (cache, { data: { cityEdit } }) => cache.writeQuery({
@@ -73,9 +76,13 @@ const Cities = () => {
 
   const [
     deleteCity,
-    { loading: deleteCityLoading, error: deleteCityError }
+    { loading: deleteCityLoading }
   ] = useMutation(DELETE_CITY, {
     onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Удалить город не удалось. Смотрите консоль.'
+      })
       console.log(e);
     },
     update: (cache, { data: { deleteCity } }) => cache.writeQuery({
@@ -107,8 +114,6 @@ const Cities = () => {
     const handleDelete = () => {
       deleteCity(city.id)
     }
-
-
 
     return (
       <Fragment>
@@ -276,23 +281,23 @@ const Cities = () => {
       />
     )
   }
-  
+
   const Loading = () => {
-    if (saveCityLoding) {
-      return <p>Loading... 1</p>
-    }
-    if (saveCityEditLoading) {
-      return <p>Loading... 2</p>
-    }
-    if (deleteCityLoading) {
-      return <p>Loading... 3</p>
-    }
+    if (saveCityLoading) return <LoadingStatus />
+    if (saveCityEditLoading) return <LoadingStatus />
+    if (deleteCityLoading) return <LoadingStatus />
     return null
   }
 
   return (
     <Fragment>
-      <SystemNoti open={noti} close={() => setNoti(false)} />
+
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
       <Loading />
 
       <div className="cities-service-zone">

@@ -6,8 +6,6 @@ import SignInWrap from '../SignInWrap'
 import ErrorState from '../../components/ErrorState'
 import LoadingSate from '../../components/LoadingState'
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 import { useQuery } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';
 

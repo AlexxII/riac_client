@@ -4,33 +4,33 @@ import { mainUrl } from '../../../../mainconfig'
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
 
 import EditIcon from '@material-ui/icons/Edit';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+import LoadingState from '../../../../components/LoadingState'
+import ErrorState from '../../../../components/ErrorState'
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
-import { gql, useApolloClient, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
-import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
 
 const ServiceIcons = ({ answer }) => {
   const edit = (
-    <Tooltip title="Свободный ответ">
+    <Tooltip key={1} title="Свободный ответ">
       <EditIcon />
     </Tooltip>
   )
   const difficult = (
-    <Tooltip title="Затрудняюсь ответить">
+    <Tooltip key={2} title="Затрудняюсь ответить">
       <EmojiPeopleIcon />
     </Tooltip>
   )
   const unique = (
-    <Tooltip title="Уникальный ответ">
+    <Tooltip key={3} title="Уникальный ответ">
       <FlashOnIcon />
     </Tooltip>
   )
@@ -75,8 +75,6 @@ const AnswerCard = ({ answer, index }) => {
   )
 }
 
-
-
 const QuestionCard = ({ question, index }) => {
   return (
     <Card className="question-card">
@@ -86,7 +84,7 @@ const QuestionCard = ({ question, index }) => {
             <span className="question-limit">{question.limit}</span>
           </Tooltip>
           <span className="question-number">{index + 1}.</span>
-          <span className="question-title" color="textSecondary" gutterBottom>
+          <span className="question-title" color="textSecondary">
             {question.title}
           </span>
         </div>
@@ -99,11 +97,11 @@ const QuestionCard = ({ question, index }) => {
 }
 
 const CommonSetting = ({ id }) => {
-  const client = useApolloClient()
   const [ready, setReady] = useState(false)
   const [questions, setQuestions] = useState()
   const {
     loading,
+    error,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
@@ -179,11 +177,19 @@ const CommonSetting = ({ id }) => {
   }
 
   if (loading || !questions || !ready) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+    <LoadingState type="card" />
   )
+
+  if (error) {
+    console.log(JSON.stringify(error));
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
+
 
   return (
     <Fragment>
@@ -204,7 +210,7 @@ const CommonSetting = ({ id }) => {
           </Box>
         </Grid>
         {questions.map((question, index) => (
-          <QuestionCard question={question} key={index} index={index} />
+          <QuestionCard question={question} key={question.id} index={index} />
         ))}
       </Grid>
     </Fragment>

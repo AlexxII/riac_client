@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import Generation from './containers/Generation'
 import OverallResults from './containers/OverallResults'
+import LinearDistibution from './containers/LinearDistribution'
+import BatchInput from './containers/BatchInput'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -84,7 +85,7 @@ const PollResults = ({ id }) => {
           <Tab label="Item Seven" {...allProps(6)} />
         </Tabs>
       </div> */}
-      
+
       <span display={{ xs: 'none', sm: 'block' }}>
         <Tabs
           orientation="vertical"
@@ -103,10 +104,10 @@ const PollResults = ({ id }) => {
         <OverallResults id={id} />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Линейное распределение ответов
+        <LinearDistibution id={id} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Пакетный ВВод данных
+        <BatchInput id={id} />
       </TabPanel>
       <TabPanel value={value} index={3}>
         <Generation id={id} />

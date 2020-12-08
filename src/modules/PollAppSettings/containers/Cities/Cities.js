@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import CircularProgress from '@material-ui/core/CircularProgress'
+
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
@@ -68,10 +68,7 @@ const Cities = () => {
       data: {
         cities: citiesData.cities.map(city => city.id === cityEdit.id ? cityEdit : city)
       }
-    }),
-    onCompleted: () => {
-      setNoti(true)
-    }
+    })
   })
 
   const [
@@ -274,6 +271,7 @@ const Cities = () => {
   )
 
   if (citiesError) {
+    console.log(JSON.stringify(citiesError));
     return (
       <ErrorState
         title="Что-то пошло не так"
@@ -291,7 +289,6 @@ const Cities = () => {
 
   return (
     <Fragment>
-
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}
@@ -332,7 +329,6 @@ const Cities = () => {
       <p></p>
       <span>Статус</span>
       <Divider />
-
     </Fragment>
   )
 }

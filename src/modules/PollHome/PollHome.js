@@ -1,10 +1,12 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 import Container from '@material-ui/core/Container'
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import ListOfPolls from './components/ListOfPolls'
 import AddPollLogic from './components/AddPollLogic'
 import LoadingState from '../../components/LoadingState'
+import LoadingStatus from '../../components/LoadingStatus'
+import SystemNoti from '../../components/SystemNoti'
 import ErrorState from '../../components/ErrorState'
 
 import { useQuery } from '@apollo/client'
@@ -14,16 +16,23 @@ import { GET_ALL_ACTIVE_POLLS } from "./queries"
 import { ADD_NEW_POLL } from './mutations'
 
 const PollHome = () => {
+  const [noti, setNoti] = useState(false)
+
   const {
     loading: pollsLoading,
     error: pollsError,
     data: pollsData
   } = useQuery(GET_ALL_ACTIVE_POLLS)
+
   const [addPoll, {
     loading: addLoading
   }] = useMutation(ADD_NEW_POLL, {
     onError: (e) => {
-      console.log(e)
+      setNoti({
+        type: 'error',
+        text: 'Добавить не удалось. Смотрите консоль.'
+      })
+      console.log(e);
     },
     update: (cache, { data }) => {
       const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
@@ -35,10 +44,6 @@ const PollHome = () => {
     <LoadingState />
   )
 
-  if (addLoading) return (
-    <LoadingState title='Подождите' description='Ваш запрос выполняется' />
-  )
-
   if (pollsError) return (
     <ErrorState
       title="Что-то пошло не так"
@@ -46,8 +51,22 @@ const PollHome = () => {
     />
   );
 
+  const Loading = () => {
+    if (addLoading)
+      return <LoadingStatus />
+    return null
+  }
+
   return (
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
+      <Loading />
+
       <Container maxWidth="md">
         <ListOfPolls data={pollsData} />
       </Container>

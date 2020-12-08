@@ -44,12 +44,12 @@ export default function ServiceMenu({ open, close }) {
             <ListItemText primary="Анализатор" />
           </ListItem>
         </NavLink>
-        <NavLink to='tester'>
+        {/* <NavLink to='tester'>
           <ListItem button key={1}>
             <ListItemIcon><AlarmOnIcon /></ListItemIcon>
             <ListItemText primary="Тест интерфейса" />
           </ListItem>
-        </NavLink>
+        </NavLink> */}
         <ListItem button key={1}>
           <ListItemIcon><PhoneIcon /></ListItemIcon>
           <ListItemText primary="Генератор номеров" />

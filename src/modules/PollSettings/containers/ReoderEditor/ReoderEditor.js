@@ -1,19 +1,24 @@
 import React, { Fragment, useState } from 'react'
-import CircularProgress from '@material-ui/core/CircularProgress'
+
 import Grid from '@material-ui/core/Grid';
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from "array-move";
 
+import LoadingStatus from '../../../../components/LoadingStatus'
+import SystemNoti from '../../../../components/SystemNoti'
+import LoadingState from '../../../../components/LoadingState'
+import ErrorState from '../../../../components/ErrorState'
 import QuestionCard from '../../components/QuestionCard'
 import { pollQuery } from "./queries"
 import { saveNewLimit, saveNewOrder } from "./mutations"
 
 const ReoderEditor = ({ id }) => {
+  const [noti, setNoti] = useState(false)
   const [questions, setQuestions] = useState(null)
   const [prevOrder, setPrevOrder] = useState(null)
-  const { loading, error, data } = useQuery(pollQuery, {
+  const { loading: pollLoading, error: pollError, data } = useQuery(pollQuery, {
     variables: { id },
     onCompleted: () => {
       const questions = data.poll.questions
@@ -21,11 +26,25 @@ const ReoderEditor = ({ id }) => {
       setQuestions(questions.slice().sort((a, b) => (a.order > b.order) ? 1 : -1))
     }
   })
-  const [saveLimit] = useMutation(saveNewLimit)
-  const [saveOrder] = useMutation(saveNewOrder, {
+  const [saveLimit, { loading: limitSaveLoading }] = useMutation(saveNewLimit, {
+    onError: (e) => {
+      console.log(e);
+      setNoti({
+        type: 'error',
+        text: 'Сохранить лимит не удалось. Смотрите консоль.'
+      })
+    }
+  })
+  const [saveOrder, { loading: saveOrderLoading }] = useMutation(saveNewOrder, {
+    onError: (e) => {
+      console.log(e);
+      setNoti({
+        type: 'error',
+        text: 'Сохранить порядок не удалось. Смотрите консоль.'
+      })
+    },
     update: (cache, { data }) => {
       const questions = data.newOrder
-      console.log(questions);
       for (let i = 0; i < questions.length; i++) {
         const id = questions[i].id
         const dd = cache.data.data
@@ -36,14 +55,24 @@ const ReoderEditor = ({ id }) => {
     }
   })
 
-  if (loading || !questions) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+  if (pollLoading || !questions) return (
+    <LoadingState />
   )
 
-  if (error) return <p>Ошибка. Что-то пошло не так! :(</p>;
+  if (pollError) {
+    console.log(JSON.stringify(pollError));
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
+
+  const Loading = () => {
+    if (limitSaveLoading || saveOrderLoading) return <LoadingStatus />
+    return null
+  }
 
   const handleLimitInput = (inputData) => {
     const id = inputData.id
@@ -100,6 +129,13 @@ const ReoderEditor = ({ id }) => {
 
   return (
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
+      <Loading />
       <SortableList
         questions={questions}
         onSortEnd={onSortEnd}

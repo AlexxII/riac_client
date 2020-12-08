@@ -1,26 +1,5 @@
 import { gql } from '@apollo/client'
 
-// export const GET_POLL_RESULTS = gql`
-//   query pollResults($id: String!) {
-//     pollResults(id: $id) {
-//       id
-//       poll {
-//         title
-//       }
-//       city {
-//         title
-//         category {
-//           label
-//         }
-//       }
-//       result {
-//         code
-//         text
-//       }
-//     }
-//   }
-// `
-
 export const GET_FILTER_SELECTS = gql`
   query {
     cities {
@@ -28,7 +7,7 @@ export const GET_FILTER_SELECTS = gql`
       title
       population
       category {
-        label
+        title
       }
     }
     intervievers {
@@ -50,7 +29,7 @@ export const GET_POLL_RESULTS = gql`
         id
         title
         category {
-          label
+          title
         }
       }
       created
@@ -58,8 +37,16 @@ export const GET_POLL_RESULTS = gql`
       processed
       result {
         question {
+          id
           title
+          answers {
+            results {
+              id
+              code
+            }
+          }
         }
+        answer
         code
         text
       }

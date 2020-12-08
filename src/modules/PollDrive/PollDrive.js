@@ -57,7 +57,6 @@ const PollDrive = ({ id }) => {
   const { pollLoading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: (_, __) => {
-      console.log(_, __);
       handleConfigFile(data.poll.logic.path)
       setPoolOfCities(data.poll.cities)
     }
@@ -143,8 +142,9 @@ const PollDrive = ({ id }) => {
           id: key,
           data: data[key].data.map(answer => {
             return {
+              answer: answer.answerId,
               code: answer.answerCode,
-              text: answer.freeAnswerText
+              text: answer.freeAnswerText,
             }
           })
         })
@@ -190,7 +190,7 @@ const PollDrive = ({ id }) => {
       variables: {
         poll: poll.id,
         city: currentCity.id,
-        user: '5f73207d34750a3be7865de7',
+        user: currentUser.id,
         pool: data.pool,
         data: result
       }

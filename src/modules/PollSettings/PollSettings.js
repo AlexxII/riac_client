@@ -1,14 +1,13 @@
 import React, { Fragment } from 'react'
 
-import VerticalTabs from '../../components/VerticalTabs'
-import HorizontalTabs from '../../components/HorizontalTabs'
+import AdaptiveTabs from '../../components/AdaptiveTabs'
 
 import CommonSetting from './containers/Common'
 import ConfigEditor from './containers/ConfigEditor'
 import DeletePoll from './containers/DeletePoll';
 import CititesEditor from './containers/CitiesEditor';
-import ReoderEditor from './containers/ReoderEditor'
-import { Hidden } from '@material-ui/core'
+import ReoderEditor from './containers/ReoderEditor';
+import Hidden from '@material-ui/core/Hidden';
 
 const PollSettings = ({ id, code }) => {
   const data = [
@@ -35,12 +34,7 @@ const PollSettings = ({ id, code }) => {
   ]
   return (
     <Fragment>
-      <Hidden xsDown>
-        <VerticalTabs data={data} />
-      </Hidden>
-      <Hidden smUp>
-        <HorizontalTabs data={data} />
-      </Hidden>
+      <AdaptiveTabs data={data} />
     </Fragment>
   )
 }

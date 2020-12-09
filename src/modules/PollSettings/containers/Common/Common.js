@@ -196,7 +196,7 @@ const CommonSetting = ({ id }) => {
     <Fragment>
       <Grid container className="common-settings">
         <Typography variant="h6" gutterBottom>
-          {pollData.poll.title}
+          <strong>Тема: </strong>{pollData.poll.title}
         </Typography>
         <Grid
           className="poll-info"

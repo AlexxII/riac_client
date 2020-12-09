@@ -1,0 +1,7 @@
+.rooot {
+  flex-grow: 1;
+  width: 100%;
+  @media only screen and (min-width: 600px) {
+    display: flex;
+  }
+}

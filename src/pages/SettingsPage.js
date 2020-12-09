@@ -10,8 +10,8 @@ const Settings = () => {
   return (
     <Fragment>
       <SettingBar title={`Настройки опроса ` + code} />
-      <div style={{ paddingTop: '10px' }}>
-        <Container maxWidth="xl">
+      <div>
+        <Container maxWidth="xl" style={{ padding: 0 }}>
           <PollSettings id={id} code={code} />
         </Container>
       </div>

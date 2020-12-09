@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState } from 'react'
 import { mainUrl } from '../../../../mainconfig'
 
 import Grid from '@material-ui/core/Grid';
@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 import EditIcon from '@material-ui/icons/Edit';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
@@ -194,7 +195,9 @@ const CommonSetting = ({ id }) => {
   return (
     <Fragment>
       <Grid container className="common-settings">
-        <h3>{pollData.poll.title}</h3>
+        <Typography variant="h6" gutterBottom>
+          {pollData.poll.title}
+        </Typography>
         <Grid
           className="poll-info"
           container

@@ -14,7 +14,6 @@ const PollSettings = ({ id, code }) => {
   const data = [
     {
       label: 'Общие',
-      padding: 3,
       component: <CommonSetting id={id} />
     },
     {

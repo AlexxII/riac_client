@@ -1,12 +1,13 @@
 // стили компонентов
 @import "./components/DialogWithSelect/dialogwithselect.scss";
 @import "./components/ServiceMenu/servicemenu.scss";
+@import "./components/VerticalTabs/verticaltabs.scss";
 
 @import "./modules/PollHome/pollhome.scss";
 @import "./modules/PollDrive/polldrive.scss";
 @import "./modules/DataAnalyzer/analyser.scss";
 @import "./modules/PollSettings/pollsettings.scss";
 @import "./modules/PollResults/pollresults.scss";
-@import "./modules/PollAppSettings/pollappsetting.scss";
+@import "./modules/PollAppSettings/pollappsettings.scss";
 
 @import "./modules/Users/users.scss";

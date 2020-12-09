@@ -8,9 +8,7 @@ const PollAppSettingsPage = () => {
     <Fragment>
       <SettingBar title={`Настройки подсистемы`} />
       <div style={{ paddingTop: '10px' }}>
-        <Container maxWidth="xl">
-          <PollAppSettings />
-        </Container>
+        <PollAppSettings />
       </div>
     </Fragment>
   )

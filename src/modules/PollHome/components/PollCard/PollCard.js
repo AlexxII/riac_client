@@ -128,7 +128,9 @@ const PollCard = ({ data }) => {
             <Avatar />
           }
           action={
-            <Settings />
+            <p>
+              <Settings />
+            </p>
           }
           title={data.code + ': ' + data.title}
           subheader={data.startDate + ' - ' + data.endDate}

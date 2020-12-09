@@ -1,7 +1,6 @@
 import React from 'react';
 import { mainUrl } from './mainconfig'
 
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import ReactDOM from 'react-dom';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import * as serviceWorker from './serviceWorker';

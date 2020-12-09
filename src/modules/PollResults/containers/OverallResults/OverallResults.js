@@ -17,14 +17,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import ClearIcon from '@material-ui/icons/Clear';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import {
-  DatePicker
-} from '@material-ui/pickers';
-import Select from 'react-select'
-
 import ConfirmDialog from '../../../../components/ConfirmDialog'
-import QuestionCard from '../../components/QuestionCard'
-import AnswerCard from '../../components/AnswersCard'
 import RespondentCard from '../../components/RespondentCard'
 
 import { useApolloClient } from '@apollo/client'

@@ -14,6 +14,7 @@ function TabPanel(props) {
   return (
     <div
       role="tabpanel"
+      className="right-pannel"
       hidden={value !== index}
       id={`scrollable-auto-tabpanel-${index}`}
       aria-labelledby={`scrollable-auto-tab-${index}`}
@@ -36,11 +37,6 @@ function allProps(index) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-  },
   tabs: {
     minWidth: '160px',
     borderRight: `1px solid ${theme.palette.divider}`,
@@ -50,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Vertical = ({ data, value, handleChange }) => {
   const classes = useStyles();
-
   return (
     <Tabs
       orientation="vertical"
@@ -69,7 +64,6 @@ const Vertical = ({ data, value, handleChange }) => {
 }
 
 const Horizontal = ({ data, value, handleChange }) => {
-
   return (
     <AppBar position="static" color="default">
       <Tabs
@@ -88,8 +82,6 @@ const Horizontal = ({ data, value, handleChange }) => {
 }
 
 const AdaptiveTabs = ({ data }) => {
-  const classes = useStyles();
-
   const [value, setValue] = React.useState(0);
 
   const handleChange = (_, newValue) => {
@@ -98,7 +90,7 @@ const AdaptiveTabs = ({ data }) => {
 
   return (
     <Fragment>
-      <div className="rooot">
+      <div className="root-wrap">
         <Hidden xsDown>
           <Vertical data={data} value={value} handleChange={handleChange} />
         </Hidden>

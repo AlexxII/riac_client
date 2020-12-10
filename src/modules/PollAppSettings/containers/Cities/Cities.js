@@ -115,26 +115,29 @@ const Cities = () => {
     return (
       <Fragment>
         {!editting ?
-          <Paper className="city-card">
-            <Typography variant="h6" gutterBottom>
-              {city.title}
-            </Typography>
-            <Typography variant="subtitle2" gutterBottom>
-              {city.category.title}
-            </Typography>
-            <Typography variant="overline" display="block" gutterBottom>
-              Население: {city.population}
-            </Typography>
-            <Grid container item justify="space-between" className="card-service-buttons">
-              <IconButton className="card-button" aria-label="delete" onClick={handleDelete}>
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-              <IconButton className="card-button" aria-label="delete" onClick={handleEdit}>
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Grid>
-          </Paper>
-          : <CityAdd city={city} save={handleSave} close={handleCloseEdit} />}
+          <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+            <Paper className="city-card">
+              <Typography variant="h6" gutterBottom>
+                {city.title}
+              </Typography>
+              <Typography variant="subtitle2" gutterBottom>
+                {city.category.title}
+              </Typography>
+              <Typography variant="overline" display="block" gutterBottom>
+                Население: {city.population}
+              </Typography>
+              <Grid container item justify="space-between" className="card-service-buttons">
+                <IconButton className="card-button" aria-label="delete" onClick={handleDelete}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+                <IconButton className="card-button" aria-label="delete" onClick={handleEdit}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            </Paper>
+          </Grid>
+          : <CityAdd city={city} save={handleSave} close={handleCloseEdit} />
+        }
       </Fragment>
     )
   }
@@ -170,59 +173,61 @@ const Cities = () => {
     }
 
     return (
-      <Paper className="add-city-card">
-        <IconButton className="add-dialog-close" aria-label="delete" size="small" onClick={close}>
-          <CloseIcon fontSize="inherit" />
-        </IconButton>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            className="add-city-title"
-            required
-            defaultValue={city ? city.title : ''}
-            helperText="Название н.п."
-            onChange={titleHandle}
-          />
-          <TextField
-            className="add-city-population"
-            type="number"
-            required
-            defaultValue={city ? city.population : ''}
-            onChange={popHandle}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            helperText="Численность, чел."
-          />
-          <TextField
-            select
-            required
-            onChange={catHandle}
-            defaultValue={city ? city.category.id : ''}
-            SelectProps={{
-              native: true,
-            }}
-            helperText="Категория н.п."
-          >
-            <option key={0} disabled selected value=""></option>
-            {citiesData.cityCategories.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.title}
-              </option>
-            ))}
-          </TextField>
-          <Button
-            className="city-dialog-save"
-            variant="contained"
-            color="primary"
-            size="small"
-            startIcon={<SaveIcon />}
-            type="submit"
-            disabled={!edit}
-          >
-            Save
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+        <Paper className="add-city-card">
+          <IconButton className="add-dialog-close" aria-label="delete" size="small" onClick={close}>
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              className="add-city-title"
+              required
+              defaultValue={city ? city.title : ''}
+              helperText="Название н.п."
+              onChange={titleHandle}
+            />
+            <TextField
+              className="add-city-population"
+              type="number"
+              required
+              defaultValue={city ? city.population : ''}
+              onChange={popHandle}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              helperText="Численность, чел."
+            />
+            <TextField
+              select
+              required
+              onChange={catHandle}
+              defaultValue={city ? city.category.id : ''}
+              SelectProps={{
+                native: true,
+              }}
+              helperText="Категория н.п."
+            >
+              <option key={0} disabled selected value=""></option>
+              {citiesData.cityCategories.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.title}
+                </option>
+              ))}
+            </TextField>
+            <Button
+              className="city-dialog-save"
+              variant="contained"
+              color="primary"
+              size="small"
+              startIcon={<SaveIcon />}
+              type="submit"
+              disabled={!edit}
+            >
+              Save
           </Button>
-        </form>
-      </Paper>
+          </form>
+        </Paper>
+      </Grid>
     )
   }
 
@@ -314,16 +319,12 @@ const Cities = () => {
           }
         }
       />
-      <Grid container spacing={3}>
+      <Grid container spacing={3} xs={12}>
         {cityAdd &&
-          <Grid item xs={12} md={2}>
-            <CityAdd save={handleSaveNew} close={handleClose} />
-          </Grid>
+          <CityAdd save={handleSaveNew} close={handleClose} />
         }
         {citiesData.cities.map((city, index) => (
-          <Grid item xs={12} md={2} key={index} >
-            <CityCard city={city} save={handleSaveEdit} deleteCity={handleCityDelete} />
-          </Grid>
+          <CityCard city={city} save={handleSaveEdit} deleteCity={handleCityDelete} />
         ))}
       </Grid>
       <p></p>

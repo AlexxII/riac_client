@@ -56,7 +56,7 @@ const ReoderEditor = ({ id }) => {
   })
 
   if (pollLoading || !questions) return (
-    <LoadingState />
+    <LoadingState type="card" />
   )
 
   if (pollError) {

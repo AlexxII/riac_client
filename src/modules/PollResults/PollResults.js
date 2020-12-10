@@ -1,6 +1,6 @@
 import React from 'react'
 
-import VerticalTabs from '../../components/VerticalTabs'
+import AdaptiveTabs from '../../components/AdaptiveTabs'
 
 import Generation from './containers/Generation'
 import OverallResults from './containers/OverallResults'
@@ -27,7 +27,7 @@ const PollResults = ({ id }) => {
     }
   ]
   return (
-    <VerticalTabs data={data} />
+    <AdaptiveTabs data={data} />
   )
 
 }

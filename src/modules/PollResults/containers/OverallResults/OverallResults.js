@@ -505,7 +505,7 @@ const OverallResults = ({ id }) => {
           }
         }
       />
-      <Grid container spacing={3}>
+      <Grid container spacing={3} xs={12}>
         {activeResults.map((result, index) => (
           <Grid item xs={12} sm={6} md={3} lg={2} key={index} >
             <RespondentCard

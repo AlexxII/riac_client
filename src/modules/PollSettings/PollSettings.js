@@ -7,7 +7,6 @@ import ConfigEditor from './containers/ConfigEditor'
 import DeletePoll from './containers/DeletePoll';
 import CititesEditor from './containers/CitiesEditor';
 import ReoderEditor from './containers/ReoderEditor';
-import Hidden from '@material-ui/core/Hidden';
 
 const PollSettings = ({ id, code }) => {
   const data = [

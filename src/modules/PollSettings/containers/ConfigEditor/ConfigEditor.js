@@ -2,11 +2,15 @@ import React, { Fragment, useState, useRef } from 'react'
 import { mainUrl } from '../../../../mainconfig'
 
 import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress'
 import SaveIcon from '@material-ui/icons/Save';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { Box, Typography } from '@material-ui/core';
+
+import LoadingStatus from '../../../../components/LoadingStatus'
+import ErrorState from '../../../../components/ErrorState'
+import LoadingState from '../../../../components/LoadingState'
+import SystemNoti from '../../../../components/SystemNoti'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -15,6 +19,8 @@ import { saveConfigChanges } from "./mutations"
 import { GET_POLL_DATA } from '../../containers/Common/queries'
 
 const ConfigEditor = ({ id }) => {
+  const [noti, setNoti] = useState(false)
+  const [updated, setUpdated] = useState(false)
   const [config, setConfig] = useState(null)
   const [filePath, setFilePath] = useState(null)
   const textRef = useRef()
@@ -25,7 +31,20 @@ const ConfigEditor = ({ id }) => {
     },
   })
 
-  const [saveConfig] = useMutation(saveConfigChanges, {
+  const [saveConfig, { loading: configSaveLoading }] = useMutation(saveConfigChanges, {
+    onError: (e) => {
+      console.log(e);
+      setNoti({
+        type: 'error',
+        text: 'Сохранить не удалось. Смотрите консоль.'
+      })
+    },
+    onCompleted: () => {
+      setNoti({
+        type: 'success',
+        text: 'Конфиг сохранен успешно!'
+      })
+    },
     refetchQueries: () => [{
       query: GET_POLL_DATA,
       variables: {
@@ -52,17 +71,43 @@ const ConfigEditor = ({ id }) => {
     })
   }
 
+  const handleConfigChange = (e) => {
+    if (config === e.currentTarget.value) {
+      setUpdated(false)
+      return
+    }
+    setUpdated(true)
+  }
+
+  const Loading = () => {
+    if (configSaveLoading) return <LoadingStatus />
+    return null
+  }
+
   if (loading || !config) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+    <LoadingState type="card" />
   )
 
-  if (error) return <p>Ошибка. Что-то пошло не так! :(</p>;
+  if (error) {
+    console.log(JSON.stringify(error));
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
 
   return (
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
+      <Loading />
+
       <Grid item container>
         <Grid item container justify="space-between">
           <Box p={1}>
@@ -72,14 +117,15 @@ const ConfigEditor = ({ id }) => {
           </Box>
           <Box>
             <Tooltip title="Сохранить">
-              <IconButton>
-                <SaveIcon className="save-config" onClick={handleSave} />
+              <IconButton onClick={handleSave} disabled={!updated}>
+                <SaveIcon />
               </IconButton>
             </Tooltip>
           </Box>
           <textarea
             ref={textRef}
             defaultValue={config}
+            onChange={handleConfigChange}
           />
         </Grid>
       </Grid>

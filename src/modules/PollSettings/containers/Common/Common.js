@@ -7,10 +7,15 @@ import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-
+import IconButton from '@material-ui/core/IconButton';
+import Popover from '@material-ui/core/Popover';
+import InfoIcon from '@material-ui/icons/Info';
 import EditIcon from '@material-ui/icons/Edit';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+import { makeStyles } from '@material-ui/core/styles';
+
+
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 
@@ -18,6 +23,15 @@ import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
+
+const useStyles = makeStyles((theme) => ({
+  popover: {
+    pointerEvents: 'none',
+  },
+  paper: {
+    padding: theme.spacing(1),
+  },
+}));
 
 const ServiceIcons = ({ answer }) => {
   const edit = (
@@ -76,6 +90,50 @@ const AnswerCard = ({ answer, index }) => {
   )
 }
 
+const QuestionTopic = ({ topic }) => {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+
+  return (
+    <Fragment>
+      <InfoIcon
+        onMouseEnter={handlePopoverOpen}
+        onMouseLeave={handlePopoverClose}
+        fontSize="small" />
+      <Popover
+        className={classes.popover}
+        classes={{
+          paper: classes.paper,
+        }}
+        open={open}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Typography variant="overline" display="block" gutterBottom>
+          Тема: {topic.title}
+        </Typography>
+      </Popover>
+    </Fragment>
+  )
+}
+
 const QuestionCard = ({ question, index }) => {
   return (
     <Card className="question-card">
@@ -87,6 +145,7 @@ const QuestionCard = ({ question, index }) => {
           <span className="question-number">{index + 1}.</span>
           <span className="question-title" color="textSecondary">
             {question.title}
+            <QuestionTopic topic={question.topic} />
           </span>
         </div>
         {question.answers.map((answer, index) => (
@@ -190,7 +249,6 @@ const CommonSetting = ({ id }) => {
       />
     )
   }
-
 
   return (
     <Fragment>

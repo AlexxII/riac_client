@@ -3,18 +3,19 @@ import React, { Fragment, useState } from 'react'
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+
+import LoadingStatus from '../../../../components/LoadingStatus'
+import ErrorState from '../../../../components/ErrorState'
+import LoadingState from '../../../../components/LoadingState'
+import SystemNoti from '../../../../components/SystemNoti'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
@@ -25,13 +26,8 @@ import { GET_ALL_CITIES_AND_ACTIVE } from './queries'
 import { SET_ACTIVE_CITIES, DELETE_CITY_FROM_ACTIVE } from './mutations'
 
 const CitiesEditor = ({ id }) => {
-  const client = useApolloClient();
-  const [message, setMessage] = useState({
-    show: false,
-    type: 'error',
-    message: '',
-    duration: 6000
-  })
+  const [noti, setNoti] = useState(false)
+  // const client = useApolloClient();
   // const { currentUser } = client.readQuery({
   //   query: gql`
   //   query {
@@ -70,25 +66,63 @@ const CitiesEditor = ({ id }) => {
   })
   const [
     setCityActive,
-    { loading: cityActivationLoading, error: cityActivationError }
-  ] = useMutation(SET_ACTIVE_CITIES)
+    { loading: cityActivationLoading }
+  ] = useMutation(SET_ACTIVE_CITIES, {
+    onError: (e) => {
+      console.log(e);
+      setNoti({
+        type: 'error',
+        text: 'Сохранить не удалось. Смотрите консоль.'
+      })
+    },
+    update: (cache, { data: { setPollCity } }) => {
+      const cities = setPollCity.cities.map(city => city.id)
+      setAvailableCities(availableCities.filter(city => {
+        return !cities.includes(city.id)
+      }))
+    }
+  })
   const [
     deleteCity,
-    { loading: deleteCityLoading, error: deleteCityError }
-  ] = useMutation(DELETE_CITY_FROM_ACTIVE)
+    { loading: deleteCityLoading }
+  ] = useMutation(DELETE_CITY_FROM_ACTIVE, {
+    onError: (e) => {
+      console.log(e);
+      setNoti({
+        type: 'error',
+        text: 'Удалить не удалось. Смотрите консоль.'
+      })
+    },
+    update: (cache, { data }) => {
+      const pollCities = data.deleteCityFromActive.cities
+      const aCitites = allCities.filter(city => {
+        for (let i = 0; i < pollCities.length; i++) {
+          if (city.id === pollCities[i].id) return false
+        }
+        return true
+      })
+      setAvailableCities(aCitites)
+    }
+  })
 
   if (citiesLoading || !citiesData || !availableCities) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+    <LoadingState type="card" />
   )
 
-  if (cititesError) return (
-    <Fragment>
-      <p>Курить бамбук, что-то не работает</p>
-    </Fragment>
-  )
+  const Loading = () => {
+    if (cityActivationLoading || deleteCityLoading) return <LoadingStatus />
+    return null
+  }
+
+  if (cititesError) {
+    console.log(JSON.stringify(cititesError));
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
 
   const handleCityDelete = (id) => {
     setDelId(id)
@@ -99,44 +133,16 @@ const CitiesEditor = ({ id }) => {
     setDelId(false)
   }
 
-  const handleDelDialogClose = () => {
-    setDelId(false)
-  }
-
-  const handleMessageClose = () => {
-    setMessage(prevState => ({
-      ...prevState,
-      show: false,
-      text: ''
-    }))
-  }
-
-  async function handleAdd() {
+  const handleAdd = () => {
     const selectedCities = selected.map(obj => {
       return obj.id
     })
-    try {
-      await setCityActive({
-        variables: {
-          id,
-          cities: selectedCities
-        },
-        update: (cache, data) => {
-          setAvailableCities(availableCities.filter(city => {
-            return !selectedCities.includes(city.id)
-          }))
-        }
-      })
-    } catch (e) {
-      setMessage({
-        show: true,
-        type: 'error',
-        duration: 6000,
-        text: 'Что-то не так. См. консоль'
-      })
-      console.log('Не удалось сохранить новый город');
-      console.log(e);
-    }
+    setCityActive({
+      variables: {
+        id,
+        cities: selectedCities
+      },
+    })
     setClear(clear + 1)
   }
 
@@ -147,33 +153,13 @@ const CitiesEditor = ({ id }) => {
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-  async function deleteCityCompletely(cities) {
-    try {
-      await deleteCity({
-        variables: {
-          id,
-          cities: cities
-        },
-        update: (cache, { data }) => {
-          const pollCities = data.deleteCityFromActive.cities
-          const aCitites = allCities.filter(city => {
-            for (let i = 0; i < pollCities.length; i++) {
-              if (city.id === pollCities[i].id) return false
-            }
-            return true
-          })
-          setAvailableCities(aCitites)
-        }
-      })
-    } catch (e) {
-      setMessage({
-        show: true,
-        type: 'error',
-        duration: 6000,
-        text: 'Что-то не так. См. консоль'
-      })
-      console.log('Что-то пошло не так с удалением города. Вот ошибка -> ', e)
-    }
+  const deleteCityCompletely = (cities) => {
+    deleteCity({
+      variables: {
+        id,
+        cities: cities
+      }
+    })
   }
 
   const CityCard = ({ city, deleteCity }) => {
@@ -181,7 +167,7 @@ const CitiesEditor = ({ id }) => {
       deleteCity(city.id)
     }
     return (
-      <Fragment>
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
         <Paper className="city-card">
           <Typography variant="h6" gutterBottom>
             {city.title}
@@ -198,20 +184,34 @@ const CitiesEditor = ({ id }) => {
             </IconButton>
           </Grid>
         </Paper>
-      </Fragment>
+      </Grid>
     )
-  }
-
-  const Alert = (props) => {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
 
   return (
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
+      <Loading />
+      <ConfirmDialog
+        open={delId}
+        confirm={handleDelConfirm}
+        close={() => setDelId(false)}
+        data={
+          {
+            title: 'Удалить населенный пункт?',
+            text: 'Внимание! Результаты опросов учитывают н.п. в которых они проводились, удаление приведет к потере части статистики и некорректности ее отображения.'
+          }
+        }
+      />
       <div className="cities-service-zone">
         <Typography className="header">Города в которых проводится опрос</Typography>
         <Grid container justify="flex-start" alignItems="center" spacing={2}>
-          <Grid item xs={12} sm={6} md={6} lg={5}>
+          <Grid item xs={12} sm={8} md={6} lg={5}>
             <Autocomplete
               multiple
               key={clear}
@@ -237,36 +237,18 @@ const CitiesEditor = ({ id }) => {
               )}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={6} lg={5} alignItems="center">
+          <Grid item xs={12} sm={4} md={6} lg={5}>
             <Button variant="contained" color="primary" size="small" onClick={handleAdd} disabled={!selected.length}>
               Добавить
             </Button>
           </Grid>
         </Grid>
       </div>
-      <ConfirmDialog
-        open={delId}
-        confirm={handleDelConfirm}
-        close={() => setDelId(false)}
-        data={
-          {
-            title: 'Удалить населенный пункт?',
-            text: 'Внимание! Результаты опросов учитывают н.п. в которых они проводились, удаление приведет к потере части статистики и некорректности ее отображения.'
-          }
-        }
-      />
-      <Grid container spacing={3}>
+      <Grid container spacing={3} xs={12} >
         {citiesData.poll.cities.map((city, index) => (
-          <Grid item xs={12} md={2} key={index} >
-            <CityCard city={city} deleteCity={handleCityDelete} />
-          </Grid>
+          <CityCard key={index} city={city} deleteCity={handleCityDelete} />
         ))}
       </Grid>
-      <Snackbar open={message.show} autoHideDuration={message.duration} onClose={handleMessageClose}>
-        <Alert onClose={handleMessageClose} severity={message.type}>
-          {message.text}
-        </Alert>
-      </Snackbar>
     </Fragment>
   )
 }

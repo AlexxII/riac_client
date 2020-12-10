@@ -1,6 +1,6 @@
 import React from 'react'
 
-import VerticalTabs from '../../components/VerticalTabs'
+import AdaptiveTabs from '../../components/AdaptiveTabs'
 
 import Cities from './containers/Cities'
 import Sample from './containers/Sample'
@@ -33,7 +33,7 @@ const PollAppSettings = () => {
     }
   ]
   return (
-    <VerticalTabs data={data} />
+    <AdaptiveTabs data={data} />
   )
 }
 

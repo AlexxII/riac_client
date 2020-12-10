@@ -3,9 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
-import CloseIcon from '@material-ui/icons/Close';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import IconButton from '@material-ui/core/IconButton';
 
 const QuestionCard = ({ question, handleLimitInput }) => {
   const [val, setVal] = useState(question.limit)
@@ -34,7 +32,7 @@ const QuestionCard = ({ question, handleLimitInput }) => {
   }
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3} xl={2} spacing={2}>
+    <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
       <Paper className="question-item" elevation={2}>
         <Grid item xs={12} sm container>
           <Grid item xs container direction="column" spacing={2} alignItems="flex-start">

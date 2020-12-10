@@ -143,7 +143,7 @@ const BatchInput = ({ id }) => {
     <Fragment>
       <Loading />
       <p> Пакетный ввод данных</p>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} xs={12}>
         <Grid item xs={12}>
           <Box>
             <label>Подгрузите файл с результатами</label>

@@ -9,6 +9,8 @@ import LoadingStatus from '../../components/LoadingStatus'
 import SystemNoti from '../../components/SystemNoti'
 import ErrorState from '../../components/ErrorState'
 
+import TestBtn from './components/TestBtn'
+
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
@@ -70,7 +72,8 @@ const PollHome = () => {
       <Container maxWidth="md">
         <ListOfPolls data={pollsData} />
       </Container>
-      <AddPollLogic addPoll={addPoll} />
+      <TestBtn />
+      {/* <AddPollLogic addPoll={addPoll} /> */}
     </Fragment>
   )
 }

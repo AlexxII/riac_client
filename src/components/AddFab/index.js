@@ -4,11 +4,6 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    position: 'absolute',
-    top: '10px',
-    left: '-55px'
-  },
   small: {
     position: 'fixed',
     bottom: '30px',

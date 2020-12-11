@@ -88,19 +88,15 @@ const DeletePoll = ({ id, code }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Grid item container xs={12}>
-        <Grid >
-          <Typography variant="button" display="block" gutterBottom>
-            удаление опроса
+      <Typography variant="button" display="block" gutterBottom>
+        удаление опроса
         </Typography>
-          <Typography variant="caption" display="block" gutterBottom>
-            После удаления ОПРОСА пути назад уже не будет. Пожалуйста, будьте внимательны.
+      <Typography variant="caption" display="block" gutterBottom>
+        После удаления ОПРОСА пути назад уже не будет. Пожалуйста, будьте внимательны.
           </Typography>
-          <Button variant="contained" color="secondary" onClick={deleteQuery}>
-            Удалить опрос
+      <Button variant="contained" color="secondary" onClick={deleteQuery}>
+        Удалить опрос
           </Button>
-        </Grid>
-      </Grid>
     </Fragment>
   )
 }

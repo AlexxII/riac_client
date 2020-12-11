@@ -37,28 +37,37 @@ const useStyles = makeStyles(({
     display: 'flex'
   },
   avatar: {
-    backgroundColor: props => props.color
+    backgroundColor: data => data.color
   }
 }));
 
-const ActiveAvatar = (props) => {
-  const classes = useStyles(props);
+const ActiveAvatar = ({ data }) => {
+  const classes = useStyles(data);
+  if (data.active) {
+    return (
+      <div className={classes.root}>
+        <StyledBadge
+          overlap="circle"
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          variant="dot"
+        >
+          <Avatar className={classes.avatar}>
+            <span className="poll-liter-title">{data.liter}</span>
+          </Avatar>
+        </StyledBadge>
+      </div>
+    );
+  }
   return (
     <div className={classes.root}>
-      <StyledBadge
-        overlap="circle"
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        variant="dot"
-      >
-        <Avatar className={classes.avatar}>
-          {props.liter}
-        </Avatar>
-      </StyledBadge>
+      <Avatar className={classes.avatar}>
+        {data.liter}
+      </Avatar>
     </div>
-  );
+  )
 }
 
 export default ActiveAvatar

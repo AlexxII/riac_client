@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { NavLink } from 'react-router-dom'
+
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -11,11 +10,14 @@ import PollIcon from '@material-ui/icons/Poll';
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
-import ActiveAvatar from '../ActiveAvatar'
-import PassiveAvatar from '../PassiveAvatar'
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { NavLink } from 'react-router-dom'
+
+import PollAvatar from '../PollAvatar'
 
 import { pollWays } from '../../lib/constants'
 
@@ -31,39 +33,10 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     padding: '10px 16px 0 16px'
   },
-  media: {
-    height: 0,
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  }
 }));
 
 const PollCard = ({ data }) => {
   const classes = useStyles();
-  const Avatar = () => {
-    if (data.active) {
-      return (
-        <ActiveAvatar type={data.type} color={data.color}>
-          {data.type}
-        </ActiveAvatar>
-      )
-    } else {
-      return (
-        <PassiveAvatar type={data.type} color={data.color}>
-          {data.type}
-        </PassiveAvatar>
-      )
-    }
-  }
-
   const Results = () => {
     return (
       <Tooltip title="Результаты">
@@ -125,7 +98,7 @@ const PollCard = ({ data }) => {
       <Card className={classes.root}>
         <CardHeader className={classes.header}
           avatar={
-            <Avatar />
+            <PollAvatar data={data} />
           }
           action={
             <Settings />

@@ -17,6 +17,11 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import ClearIcon from '@material-ui/icons/Clear';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import LoadingState from '../../../../components/LoadingState'
+import ErrorState from '../../../../components/ErrorState'
+import SystemNoti from '../../../../components/SystemNoti'
+import LoadingStatus from '../../../../components/LoadingStatus'
+
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import RespondentCard from '../../components/RespondentCard'
 
@@ -29,6 +34,8 @@ import { DELETE_RESULTS } from './mutations'
 import { LocalFlorist } from '@material-ui/icons';
 
 const OverallResults = ({ id }) => {
+  const [noti, setNoti] = useState(false)
+
   const [ddate, setDdate] = useState()
   const client = useApolloClient();
   const [selectedDate, handleDateChange] = useState(new Date());
@@ -98,8 +105,16 @@ const OverallResults = ({ id }) => {
   })
   const [
     deleteResult,
-    { loading: loadOnDelete, error: errorWhileDeleting }
-  ] = useMutation(DELETE_RESULTS)
+    { loading: loadOnDelete }
+  ] = useMutation(DELETE_RESULTS, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Сохранить новый город не удалось. Смотрите консоль.'
+      })
+      console.log(e);
+    }
+  })
 
   useEffect(() => {
     if (activeFilters) {
@@ -124,15 +139,23 @@ const OverallResults = ({ id }) => {
 
   }
 
-  if (pollResultsLoading || !pollResults || !activeResults || !filters || loadOnDelete) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+  if (pollResultsLoading || !pollResults || !activeResults || !filters) return (
+    <LoadingState />
   )
 
-  const Alert = (props) => {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  if (pollResultsError || filtersResultsError) {
+    console.log(JSON.stringify(pollResultsError));
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
+
+  const Loading = () => {
+    if (loadOnDelete) return <LoadingStatus />
+    return null
   }
 
   const handleDialogConfirm = () => {
@@ -285,6 +308,13 @@ const OverallResults = ({ id }) => {
 
   return (
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
+      <Loading />
       <ConfirmDialog
         open={delOpen}
         confirm={deleteComplitely}

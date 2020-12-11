@@ -68,12 +68,10 @@ const PollHome = () => {
         close={() => setNoti(false)}
       />
       <Loading />
-
       <Container maxWidth="md">
         <ListOfPolls data={pollsData} />
       </Container>
-      <TestBtn />
-      {/* <AddPollLogic addPoll={addPoll} /> */}
+      <AddPollLogic addPoll={addPoll} />
     </Fragment>
   )
 }

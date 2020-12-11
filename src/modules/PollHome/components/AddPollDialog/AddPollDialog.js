@@ -1,8 +1,5 @@
 import React from "react";
 
-import { Formik, Field } from "formik";
-import * as yup from "yup";
-
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -11,6 +8,9 @@ import Button from '@material-ui/core/Button';
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import MenuItem from '@material-ui/core/MenuItem';
+
+import { Formik, Field } from "formik";
+import * as yup from "yup";
 
 import XmlInput from "../XmlInput";
 

@@ -2,13 +2,14 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { mainUrl } from "../../mainconfig";
 
 import Container from '@material-ui/core/Container'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import DriveLogic from "./components/DriveLogic";
 import DialogWithSelect from '../../components/DialogWithSelect';
-import Backdrop from '@material-ui/core/Backdrop';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
+
+import LoadingStatus from '../../components/LoadingStatus'
+import ErrorState from '../../components/ErrorState'
+import LoadingState from '../../components/LoadingState'
+import SystemNoti from '../../components/SystemNoti'
 
 import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PollDrive = ({ id }) => {
+  const [noti, setNoti] = useState(false)
   const client = useApolloClient();
   const [message, setMessage] = useState({
     show: false,
@@ -54,7 +56,7 @@ const PollDrive = ({ id }) => {
   const [currentQuestion, setCurrentQuestion] = useState({
     'multiple': false
   })
-  const { pollLoading, error, data } = useQuery(GET_POLL_DATA, {
+  const { loading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: (_, __) => {
       handleConfigFile(data.poll.logic.path)
@@ -71,15 +73,15 @@ const PollDrive = ({ id }) => {
         setPollLogic(normLogic)
       })
   }
-  const [saveResult] = useMutation(SAVE_NEW_RESULT)
-
-  const handleMessageClose = () => {
-    setMessage(prevState => ({
-      ...prevState,
-      show: false,
-      text: ''
-    }))
-  }
+  const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
+    onError: (e) => {
+      console.log(e);
+      setNoti({
+        type: 'error',
+        text: 'Сохранить не удалось. Смотрите консоль.'
+      })
+    },
+  })
 
   useEffect(() => {
     if (logic) {
@@ -115,14 +117,25 @@ const PollDrive = ({ id }) => {
     }
   }, [logic])
 
+
+  const Loading = () => {
+    if (saveLoading) return <LoadingStatus />
+    return null
+  }
+
   if (!poll || !poolOfCities || !logic || !currentUser) return (
-    <Fragment>
-      <CircularProgress />
-      <p>Загрузка. Подождите пожалуйста</p>
-    </Fragment>
+    <LoadingState />
   )
 
-  if (error) return <p>Error :(</p>;
+  if (error) {
+    console.log(JSON.stringify(error));
+    return (
+      <ErrorState
+        title="Что-то пошло не так"
+        description="Не удалось загрузить критические данные. Смотрите консоль"
+      />
+    )
+  }
 
   const saveCity = (city) => {
     setCurrentCity(city)
@@ -154,7 +167,6 @@ const PollDrive = ({ id }) => {
   }
 
   const saveAndGoBack = (data) => {
-    setBackOpen(true)
     const result = prepareResultData(data)
     saveResult({
       variables: {
@@ -164,27 +176,12 @@ const PollDrive = ({ id }) => {
         pool: data.pool,
         data: result
       }
-    }).then(
-      res => {
-        setBackOpen(false)
-        history.push("/")
-      },
-      error => {
-        // сохранить результат не удалось -> сохранить его локально?!
-        setBackOpen(false)
-        setMessage({
-          show: true,
-          type: 'error',
-          duration: 6000,
-          text: 'Сохранить не удалось.'
-        })
-        console.log(error)
-      }
-    )
+    }).then(res => {
+      history.push("/")
+    })
   }
 
   const saveWorksheet = (data) => {
-    setBackOpen(true)
     const result = prepareResultData(data)
     saveResult({
       variables: {
@@ -194,34 +191,18 @@ const PollDrive = ({ id }) => {
         pool: data.pool,
         data: result
       }
-    }).then(
-      res => {
-        setBackOpen(false)
-      },
-      error => {
-        setBackOpen(false)
-        setMessage({
-          show: true,
-          type: 'error',
-          duration: 6000,
-          text: 'Сохранить не удалось.'
-        })
-        console.log(error)
-        console.log(data)
-      }
-    )
-  }
-
-  const Alert = (props) => {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
+    })
   }
 
   return (
     <Fragment>
-      <Backdrop className={classes.backdrop} open={backOpen}>
-        <CircularProgress color="inherit" />
-        <p>Подождите, сохранение результатов</p>
-      </Backdrop>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
+      <Loading />
       <div style={{ backgroundColor: currentQuestion.multiple ? 'rgb(208 226 252)' : '#fff' }}>
         <Container maxWidth="md">
           <DialogWithSelect
@@ -240,11 +221,6 @@ const PollDrive = ({ id }) => {
             saveWorksheet={saveWorksheet} />
         </Container>
       </div>
-      <Snackbar open={message.show} autoHideDuration={message.duration} onClose={handleMessageClose}>
-        <Alert onClose={handleMessageClose} severity={message.type}>
-          {message.text}
-        </Alert>
-      </Snackbar>
     </Fragment>
   )
 }

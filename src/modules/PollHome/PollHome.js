@@ -9,6 +9,8 @@ import LoadingStatus from '../../components/LoadingStatus'
 import SystemNoti from '../../components/SystemNoti'
 import ErrorState from '../../components/ErrorState'
 
+import TestBtn from './components/TestBtn'
+
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
@@ -66,7 +68,6 @@ const PollHome = () => {
         close={() => setNoti(false)}
       />
       <Loading />
-
       <Container maxWidth="md">
         <ListOfPolls data={pollsData} />
       </Container>

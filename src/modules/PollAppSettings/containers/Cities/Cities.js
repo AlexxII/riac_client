@@ -286,9 +286,7 @@ const Cities = () => {
   }
 
   const Loading = () => {
-    if (saveCityLoading) return <LoadingStatus />
-    if (saveCityEditLoading) return <LoadingStatus />
-    if (deleteCityLoading) return <LoadingStatus />
+    if (saveCityLoading || saveCityEditLoading || deleteCityLoading) return <LoadingStatus />
     return null
   }
 

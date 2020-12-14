@@ -1,21 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react'
 
-import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid';
-import MuiAlert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
-import InputAdornment from "@material-ui/core/InputAdornment";
-import ClearIcon from '@material-ui/icons/Clear';
-import Tooltip from '@material-ui/core/Tooltip';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -23,7 +13,8 @@ import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
-import RespondentCard from '../../components/RespondentCard'
+import DataGrid from '../../components/DataGrid'
+import Filters from '../../components/Filters'
 
 import { useApolloClient } from '@apollo/client'
 import { useQuery } from '@apollo/client'
@@ -31,14 +22,11 @@ import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
-import { LocalFlorist } from '@material-ui/icons';
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
-
-  const [ddate, setDdate] = useState()
   const client = useApolloClient();
-  const [selectedDate, handleDateChange] = useState(new Date());
+
   const [delOpen, setDelOpen] = useState(false)
   const [activeResults, setActiveResults] = useState()
   const [filters, setFilters] = useState({
@@ -59,14 +47,7 @@ const OverallResults = ({ id }) => {
   })
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
-  const [lastSelectedIndex, setLastSelectedIndex] = useState()
-  const [delConfirm, setDelConfirm] = useState(false)
-  const [message, setMessage] = useState({
-    show: false,
-    type: 'error',
-    message: '',
-    duration: 6000
-  })
+
   const {
     data: pollResults,
     loading: pollResultsLoading,
@@ -110,9 +91,25 @@ const OverallResults = ({ id }) => {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Сохранить новый город не удалось. Смотрите консоль.'
+        text: 'Удалить не удалось. Смотрите консоль.'
       })
       console.log(e);
+    },
+    update: (cache, { data }) => {
+      const deletedPool = data.deleteResults.map(del => del.id)
+      setActiveResults(activeResults.filter(result => !deletedPool.includes(result.id)))
+      console.log(cache.data.data);
+      cache.modify({
+        fields: {
+          pollResults(existingRefs, { readField }) {
+            console.log(existingRefs);
+            return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
+          }
+        }
+      })
+    },
+    onCompleted: () => {
+      setDelOpen(false)
     }
   })
 
@@ -135,10 +132,6 @@ const OverallResults = ({ id }) => {
   }, [activeFilters])
 
 
-  const handleChange = (_, __) => {
-
-  }
-
   if (pollResultsLoading || !pollResults || !activeResults || !filters) return (
     <LoadingState />
   )
@@ -158,98 +151,9 @@ const OverallResults = ({ id }) => {
     return null
   }
 
-  const handleDialogConfirm = () => {
-
-  }
-
-  const handleDialogClose = () => {
-
-  }
-
-  const showDetails = ({ result }) => {
-    const oderedResults = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-    const datails = oderedResults.map(obj => {
-      if (obj.text !== '') {
-        return obj.code + ' ' + obj.text
-      }
-      return obj.code
-    })
-    console.log(datails);
-  }
-
-  const handleEdit = () => {
-
-  }
-
-  const handleSelect = (data) => {
-    if (data.event.nativeEvent.shiftKey) {
-      let ar = []
-      if (data.index + 1 > lastSelectedIndex) {
-        ar = activeResults.slice(lastSelectedIndex, data.index + 1)
-      } else {
-        ar = activeResults.slice(data.index, lastSelectedIndex)
-      }
-      const rr = ar.filter(obj => !selectPool.includes(obj.id)).map(obj => obj.id)
-      setSelectPool(prevState => ([
-        ...prevState,
-        ...rr
-      ]))
-      setLastSelectedIndex(data.index)
-      return
-    }
-    setLastSelectedIndex(data.index)
-    if (data.event.nativeEvent.ctrlKey) {
-      if (selectPool.includes(data.id)) {
-        const n = selectPool.filter(id => {
-          return id !== data.id
-        })
-        setSelectPool(n)
-        return
-      } else {
-        setSelectPool(prevState => ([
-          ...prevState,
-          data.id
-        ]))
-        return
-      }
-    }
-    // при простом клике мышью
-    if (selectPool.includes(data.id)) {
-      if (selectPool.length > 1) {
-        setSelectPool([data.id])
-        return
-      }
-      setSelectPool([])
-    } else {
-      setSelectPool([data.id])
-    }
-  }
-
 
   const deleteComplitely = () => {
-    deleteResult({
-      variables: {
-        results: selectPool
-      },
-      update: (cache, { data }) => {
-        const deletedPool = data.deleteResults.map(del => del.id)
-        setActiveResults(activeResults.filter(result => !deletedPool.includes(result.id)))
-        console.log(cache.data.data);
-        cache.modify({
-          fields: {
-            pollResults(existingRefs, { readField }) {
-              console.log(existingRefs);
-              return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
-            }
-          }
-        })
-      }
-    })
-    setDelOpen(false)
-  }
 
-  const handleResultsDelete = () => {
-    setDelOpen(true)
   }
 
   const handleResultsBatchUpdate = () => {
@@ -284,28 +188,6 @@ const OverallResults = ({ id }) => {
     element.click();
   }
 
-  // ФИЛЬТРЫ
-  const handleCityChange = (_, values) => {
-    const cities = values.map(city => city.value)
-    setActiveFilters({
-      cities
-    })
-  }
-
-  const handleStatusChahge = (_, values) => {
-
-  }
-
-
-  const handleDataChange = (e) => {
-    const date = e.target.value
-    setDdate(date)
-  }
-
-
-  const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-  const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
   return (
     <Fragment>
       <SystemNoti
@@ -317,7 +199,11 @@ const OverallResults = ({ id }) => {
       <Loading />
       <ConfirmDialog
         open={delOpen}
-        confirm={deleteComplitely}
+        confirm={() => deleteResult({
+          variables: {
+            results: selectPool
+          },
+        })}
         close={() => setDelOpen(false)}
         data={
           {
@@ -327,7 +213,6 @@ const OverallResults = ({ id }) => {
         }
       />
       <div className="result-service-zone">
-        {/* <Typography className="header">Общие результаты опроса</Typography> */}
         <Grid container justify="space-between" className="service-buttons">
           <Box className="main-buttons">
             <Button
@@ -348,172 +233,6 @@ const OverallResults = ({ id }) => {
               Обновить
             </Button>
           </Box>
-          <Box>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleResultsDelete}
-              disabled={!selectPool.length}
-              startIcon={<DeleteIcon />}
-            >
-              Удалить
-            </Button>
-          </Box>
-        </Grid>
-        <Grid container justify="flex-start" alignItems="center" spacing={2}>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <TextField
-              style={{ width: '100%' }}
-              id="date"
-              type="date"
-              variant="outlined"
-              value={ddate}
-              onChange={handleDataChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    {true ?
-                      <Tooltip title="Очистить">
-                        <ClearIcon style={{ cursor: "pointer" }}
-                          onClick={() => setDdate('')}
-                        />
-                      </Tooltip>
-                      :
-                      ""
-                    }
-                  </InputAdornment>
-                )
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              multiple
-              limitTags={1}
-              options={filters.age}
-              disableCloseOnSelect
-              clearOnEscape
-              onChange={handleChange}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                  />
-                  {option.title}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Возраст" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              multiple
-              limitTags={1}
-              options={filters.sex}
-              disableCloseOnSelect
-              clearOnEscape
-              onChange={handleChange}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                  />
-                  {option.title}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Пол" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              multiple
-              limitTags={1}
-              options={filters.cities.sort((a, b) => a.category - b.category)}
-              groupBy={(option) => option.category}
-              disableCloseOnSelect
-              clearOnEscape
-              onChange={handleCityChange}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                  />
-                  {option.title}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Город"
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-        <Grid container justify="flex-start" alignItems="center" spacing={2}>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              multiple
-              limitTags={1}
-              options={filters.intervievers}
-              disableCloseOnSelect
-              clearOnEscape
-              onChange={handleChange}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={icon}
-                    checkedIcon={checkedIcon}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
-                  />
-                  {option.title}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Интервьюер" />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <Autocomplete
-              options={filters.status}
-              onChange={handleStatusChahge}
-              noOptionsText={"Опции не настроены"}
-              getOptionLabel={(option) => option.title}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label="Статус" />
-              )}
-            />
-          </Grid>
-          <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
-            <Button
-              variant="contained"
-              onClick={handleResultsExport}
-              disabled={!selectPool.length}
-            >
-              применить
-            </Button>
-          </Grid>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
               <a href="">Есть дубли</a>
@@ -522,33 +241,21 @@ const OverallResults = ({ id }) => {
               <a href="">Есть проблемы</a>
             </Box>
           </Grid>
+          <Box>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setDelOpen(true)}
+              disabled={!selectPool.length}
+              startIcon={<DeleteIcon />}
+            >
+              Удалить
+            </Button>
+          </Box>
         </Grid>
+        <Filters filters={filters} setActiveFilters={setActiveFilters}/>
+        <DataGrid data={activeResults} />
       </div>
-      <ConfirmDialog
-        open={delConfirm}
-        confirm={handleDialogConfirm}
-        close={handleDialogClose}
-        data={
-          {
-            title: 'Удалить населенный пункт?',
-            text: 'Внимание! Результаты опросов учитывают н.п. в которых они проводились, удаление приведет к потере части статистики и некорректности ее отображения.'
-          }
-        }
-      />
-      <Grid container spacing={3} xs={12}>
-        {activeResults.map((result, index) => (
-          <Grid item xs={12} sm={6} md={3} lg={2} key={index} >
-            <RespondentCard
-              result={result}
-              index={index}
-              show={showDetails}
-              edit={handleEdit}
-              selected={selectPool.includes(result.id)}
-              select={handleSelect}
-            />
-          </Grid>
-        ))}
-      </Grid>
     </Fragment>
   )
 }

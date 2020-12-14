@@ -14,6 +14,18 @@ export const GET_FILTER_SELECTS = gql`
       id
       username
     }
+    status {
+      value
+      title
+    }
+    sex {
+      value
+      title
+    }
+    age {
+      value
+      title
+    }
   }
 `
 

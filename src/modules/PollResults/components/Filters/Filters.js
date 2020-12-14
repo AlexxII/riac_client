@@ -11,33 +11,46 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
 
-const Filters = ({ filters, setActiveFilters }) => {
+const Filters = ({ filters }) => {
   const [ddate, setDdate] = useState()
-
-  const handleDataChange = (e) => {
-    const date = e.target.value
-    setDdate(date)
-  }
-
-  const handleChange = (_, __) => {
-
-  }
+  const [avaiableFilters] = useState({
+  })
 
   // ФИЛЬТРЫ
-  const handleCityChange = (_, values) => {
-    const cities = values.map(city => city.value)
-    setActiveFilters({
-      cities
-    })
+  const handleDataChange = (e) => {
+    const date = e.target.value
+    console.log(date);
   }
 
-  const handleStatusChahge = (_, values) => {
+  const handleAgeChange = (_, values) => {
+    const ages = values.map(age => age.value)
+    console.log(ages);
+  }
+
+  const handleSexChange = (_, value) => {
+    console.log(value);
+  }
+
+  const handleCityChange = (_, values) => {
+    const cities = values.map(city => city.value)
+    console.log(cities);
+  }
+
+  const handleInterviewersChange = (_, values) => {
+    const intervs = values.map(interv => interv.value)
+    console.log(intervs);
+  }
+
+  const handleStatusChange = (_, value) => {
+    console.log(value);
+  }
+
+  const handleFilter = () => {
 
   }
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
 
   return (
     <Fragment>
@@ -74,7 +87,7 @@ const Filters = ({ filters, setActiveFilters }) => {
             options={filters.age}
             disableCloseOnSelect
             clearOnEscape
-            onChange={handleChange}
+            onChange={handleAgeChange}
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderOption={(option, { selected }) => (
@@ -95,25 +108,10 @@ const Filters = ({ filters, setActiveFilters }) => {
         </Grid>
         <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
-            multiple
-            limitTags={1}
             options={filters.sex}
-            disableCloseOnSelect
-            clearOnEscape
-            onChange={handleChange}
+            onChange={handleSexChange}
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
-            renderOption={(option, { selected }) => (
-              <React.Fragment>
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.title}
-              </React.Fragment>
-            )}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Пол" />
             )}
@@ -123,7 +121,13 @@ const Filters = ({ filters, setActiveFilters }) => {
           <Autocomplete
             multiple
             limitTags={1}
-            options={filters.cities.sort((a, b) => a.category - b.category)}
+            options={filters.cities.map(city => {
+              return {
+                value: city.id,
+                title: city.title,
+                category: city.category.label
+              }
+            }).sort((a, b) => a.category - b.category)}
             groupBy={(option) => option.category}
             disableCloseOnSelect
             clearOnEscape
@@ -153,10 +157,15 @@ const Filters = ({ filters, setActiveFilters }) => {
           <Autocomplete
             multiple
             limitTags={1}
-            options={filters.intervievers}
+            options={filters.intervievers.map(interv => {
+              return {
+                value: interv.id,
+                title: interv.username,
+              }
+            })}
             disableCloseOnSelect
             clearOnEscape
-            onChange={handleChange}
+            onChange={handleInterviewersChange}
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderOption={(option, { selected }) => (
@@ -178,7 +187,7 @@ const Filters = ({ filters, setActiveFilters }) => {
         <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
             options={filters.status}
-            onChange={handleStatusChahge}
+            onChange={handleStatusChange}
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderInput={(params) => (
@@ -189,8 +198,8 @@ const Filters = ({ filters, setActiveFilters }) => {
         <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
           <Button
             variant="contained"
-          // onClick={handleResultsExport}
-          // disabled={!selectPool.length}
+            onClick={handleFilter}
+            disabled={!avaiableFilters.length}
           >
             применить
             </Button>

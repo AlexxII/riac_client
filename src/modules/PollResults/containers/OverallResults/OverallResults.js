@@ -16,7 +16,6 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
 
-import { useApolloClient } from '@apollo/client'
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
@@ -25,26 +24,9 @@ import { DELETE_RESULTS } from './mutations'
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
-  const client = useApolloClient();
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeResults, setActiveResults] = useState()
-  const [filters, setFilters] = useState({
-    intervievers: [],
-    status: [
-      {
-        value: 0,
-        title: 'Не обработано'
-      },
-      {
-        value: 1,
-        title: 'Обработано'
-      }
-    ],
-    cities: [],
-    sex: [],
-    age: []
-  })
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
 
@@ -60,30 +42,13 @@ const OverallResults = ({ id }) => {
       setActiveResults(pollResults.pollResults)
     }
   });
+
   const {
     data: filtersResults,
     loading: filtersResultsLoading,
     error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS, {
-    onCompleted: () => {
-      setFilters({
-        ...filters,
-        cities: filtersResults.cities.map(city => {
-          return {
-            value: city.id,
-            title: city.title,
-            category: city.category.label
-          }
-        }),
-        intervievers: filtersResults.intervievers.map(iViever => {
-          return {
-            value: iViever.id,
-            title: iViever.username
-          }
-        }),
-      })
-    }
-  })
+  } = useQuery(GET_FILTER_SELECTS)
+
   const [
     deleteResult,
     { loading: loadOnDelete }
@@ -132,7 +97,7 @@ const OverallResults = ({ id }) => {
   }, [activeFilters])
 
 
-  if (pollResultsLoading || !pollResults || !activeResults || !filters) return (
+  if (pollResultsLoading || !pollResults || !activeResults || filtersResultsLoading) return (
     <LoadingState />
   )
 
@@ -151,10 +116,6 @@ const OverallResults = ({ id }) => {
     return null
   }
 
-
-  const deleteComplitely = () => {
-
-  }
 
   const handleResultsBatchUpdate = () => {
 
@@ -253,8 +214,8 @@ const OverallResults = ({ id }) => {
             </Button>
           </Box>
         </Grid>
-        <Filters filters={filters} setActiveFilters={setActiveFilters}/>
-        <DataGrid data={activeResults} />
+        <Filters filters={filtersResults} setActiveFilters={setActiveFilters} />
+        <DataGrid data={activeResults} selectPool={selectPool} setSelectPool={setSelectPool} />
       </div>
     </Fragment>
   )

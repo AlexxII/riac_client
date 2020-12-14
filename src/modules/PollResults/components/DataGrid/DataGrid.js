@@ -4,8 +4,7 @@ import Grid from '@material-ui/core/Grid';
 
 import RespondentCard from '../RespondentCard'
 
-const DataGrid = ({ data }) => {
-  const [selectPool, setSelectPool] = useState([])
+const DataGrid = ({ data, selectPool, setSelectPool }) => {
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
 
   const showDetails = ({ result }) => {

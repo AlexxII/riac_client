@@ -7,6 +7,11 @@ import PublishIcon from '@material-ui/icons/Publish';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 
+
+import IconButton from '@material-ui/core/IconButton';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
+
+
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
@@ -21,6 +26,7 @@ import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
+import { Tooltip } from '@material-ui/core';
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -72,9 +78,6 @@ const OverallResults = ({ id }) => {
           }
         }
       })
-    },
-    onCompleted: () => {
-      setDelOpen(false)
     }
   })
 
@@ -121,6 +124,15 @@ const OverallResults = ({ id }) => {
 
   }
 
+  const deleteComplitely = () => {
+    deleteResult({
+      variables: {
+        results: selectPool
+      },
+    })
+    setDelOpen(false)
+  }
+
   const handleResultsExport = () => {
     const resultsPool = activeResults.filter(result =>
       selectPool.includes(result.id)
@@ -160,11 +172,7 @@ const OverallResults = ({ id }) => {
       <Loading />
       <ConfirmDialog
         open={delOpen}
-        confirm={() => deleteResult({
-          variables: {
-            results: selectPool
-          },
-        })}
+        confirm={deleteComplitely}
         close={() => setDelOpen(false)}
         data={
           {
@@ -176,23 +184,36 @@ const OverallResults = ({ id }) => {
       <div className="result-service-zone">
         <Grid container justify="space-between" className="service-buttons">
           <Box className="main-buttons">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleResultsExport}
-              disabled={!selectPool.length}
-              startIcon={<PublishIcon />}
-            >
-              Выгрузить
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleResultsBatchUpdate}
-              disabled={!selectPool.length}
-              startIcon={<DynamicFeedIcon />}
-            >
-              Обновить
-            </Button>
+            <Tooltip title="Выгрузить">
+              <IconButton
+                color="primary"
+                component="span"
+                onClick={handleResultsExport}
+                disabled={!selectPool.length}
+              >
+                <PublishIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Обновить">
+              <IconButton
+                color="primary"
+                component="span"
+                onClick={handleResultsBatchUpdate}
+                disabled={!selectPool.length}
+              >
+                <DynamicFeedIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Удалить">
+              <IconButton
+                color="secondary"
+                component="span"
+                onClick={() => setDelOpen(true)}
+                disabled={!selectPool.length}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
@@ -202,17 +223,6 @@ const OverallResults = ({ id }) => {
               <a href="">Есть проблемы</a>
             </Box>
           </Grid>
-          <Box>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => setDelOpen(true)}
-              disabled={!selectPool.length}
-              startIcon={<DeleteIcon />}
-            >
-              Удалить
-            </Button>
-          </Box>
         </Grid>
         <Filters filters={filtersResults} setActiveFilters={setActiveFilters} />
         <DataGrid data={activeResults} selectPool={selectPool} setSelectPool={setSelectPool} />

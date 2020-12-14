@@ -79,6 +79,7 @@ const DataGrid = ({ data, selectPool, setSelectPool }) => {
               edit={handleEdit}
               selected={selectPool.includes(result.id)}
               select={handleSelect}
+              count={selectPool.length}
             />
           </Grid>
         ))}

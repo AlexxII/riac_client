@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -11,46 +11,101 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
 
-const Filters = ({ filters }) => {
-  const [ddate, setDdate] = useState()
+const Filters = ({ filters, setActiveFilters }) => {
   const [avaiableFilters] = useState({
+    age: filters.age,
+    cities: filters.cities.map(city => ({
+      value: city.id,
+      title: city.title,
+      category: city.category.label
+
+    })).sort((a, b) => a.category - b.category),
+    intervs: filters.intervievers.map(interv => ({
+      value: interv.id,
+      title: interv.username,
+    })),
+    sex: filters.sex,
+    status: filters.status
   })
+  const [newFilter, setNewFilters] = useState(null)
+  const [empty, setEmpty] = useState(true)
+
+  useEffect(() => {
+    if (newFilter) {
+      for (let key in newFilter) {
+        if (newFilter[key]) {
+          setEmpty(false)
+          return
+        }
+      }
+      setEmpty(true)
+    }
+  }, [newFilter])
+
 
   // ФИЛЬТРЫ
   const handleDataChange = (e) => {
     const date = e.target.value
+    setNewFilters(prevState => ({
+      ...prevState,
+      date: date
+    }))
     console.log(date);
+  }
+
+  const cleareDate = () => {
+    setNewFilters(prevState => ({
+      ...prevState,
+      date: null
+    }))
   }
 
   const handleAgeChange = (_, values) => {
     const ages = values.map(age => age.value)
-    console.log(ages);
+    setNewFilters(prevState => ({
+      ...prevState,
+      ages: ages.length ? ages : null
+    }))
   }
 
   const handleSexChange = (_, value) => {
-    console.log(value);
+    setNewFilters(prevState => ({
+      ...prevState,
+      sex: value ? value.value : null
+    }))
   }
 
   const handleCityChange = (_, values) => {
-    const cities = values.map(city => city.value)
-    console.log(cities);
+    const ct = values.map(city => city.value)
+    setNewFilters(prevState => ({
+      ...prevState,
+      cities: ct.length ? ct : null
+    }))
   }
 
   const handleInterviewersChange = (_, values) => {
     const intervs = values.map(interv => interv.value)
-    console.log(intervs);
+    setNewFilters(prevState => ({
+      ...prevState,
+      intervs: intervs.length ? intervs : null
+    }))
   }
 
   const handleStatusChange = (_, value) => {
-    console.log(value);
+    setNewFilters(prevState => ({
+      ...prevState,
+      status: value ? value.value : null
+    }))
   }
 
   const handleFilter = () => {
-
+    setActiveFilters(newFilter)
   }
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+  if (!avaiableFilters) return <p></p>
 
   return (
     <Fragment>
@@ -61,7 +116,7 @@ const Filters = ({ filters }) => {
             id="date"
             type="date"
             variant="outlined"
-            value={ddate}
+            value={newFilter ? newFilter.date ? newFilter.date : '' : ''}
             onChange={handleDataChange}
             InputProps={{
               startAdornment: (
@@ -69,7 +124,7 @@ const Filters = ({ filters }) => {
                   {true ?
                     <Tooltip title="Очистить">
                       <ClearIcon style={{ cursor: "pointer" }}
-                        onClick={() => setDdate('')}
+                        onClick={cleareDate}
                       />
                     </Tooltip>
                     :
@@ -84,7 +139,7 @@ const Filters = ({ filters }) => {
           <Autocomplete
             multiple
             limitTags={1}
-            options={filters.age}
+            options={avaiableFilters.age}
             disableCloseOnSelect
             clearOnEscape
             onChange={handleAgeChange}
@@ -108,7 +163,7 @@ const Filters = ({ filters }) => {
         </Grid>
         <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
-            options={filters.sex}
+            options={avaiableFilters.sex}
             onChange={handleSexChange}
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
@@ -121,13 +176,7 @@ const Filters = ({ filters }) => {
           <Autocomplete
             multiple
             limitTags={1}
-            options={filters.cities.map(city => {
-              return {
-                value: city.id,
-                title: city.title,
-                category: city.category.label
-              }
-            }).sort((a, b) => a.category - b.category)}
+            options={avaiableFilters.cities}
             groupBy={(option) => option.category}
             disableCloseOnSelect
             clearOnEscape
@@ -157,12 +206,7 @@ const Filters = ({ filters }) => {
           <Autocomplete
             multiple
             limitTags={1}
-            options={filters.intervievers.map(interv => {
-              return {
-                value: interv.id,
-                title: interv.username,
-              }
-            })}
+            options={avaiableFilters.intervs}
             disableCloseOnSelect
             clearOnEscape
             onChange={handleInterviewersChange}
@@ -186,7 +230,7 @@ const Filters = ({ filters }) => {
         </Grid>
         <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
-            options={filters.status}
+            options={avaiableFilters.status}
             onChange={handleStatusChange}
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
@@ -198,8 +242,9 @@ const Filters = ({ filters }) => {
         <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
           <Button
             variant="contained"
+            color="primary"
             onClick={handleFilter}
-            disabled={!avaiableFilters.length}
+            disabled={empty}
           >
             применить
             </Button>

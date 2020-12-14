@@ -9,7 +9,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import Checkbox from '@material-ui/core/Checkbox';
 
 
-const RespondentCard = ({ result, index, show, edit, selected, select }) => {
+const RespondentCard = ({ result, index, show, edit, selected, select, count }) => {
   return (
     <Fragment>
       <Paper className="respondent-card">
@@ -41,10 +41,19 @@ const RespondentCard = ({ result, index, show, edit, selected, select }) => {
           {result.city ? result.city.category.label : 'вероятно город стерли из БД'}
         </Typography> */}
         <Grid container item justify="space-between" className="card-service-buttons">
-          <IconButton className="card-button" aria-label="delete" onClick={() => edit(result.id)}>
+          <IconButton
+            className="card-button"
+            aria-label="delete"
+            onClick={() => edit(result.id)}
+            disabled={count > 1}
+          >
             <EditIcon fontSize="small" />
           </IconButton>
-          <IconButton className="card-button" aria-label="delete" onClick={() => show(result)}>
+          <IconButton
+            className="card-button"
+            aria-label="delete"
+            onClick={() => show(result)}
+            disabled={count > 1}>
             <ListAltIcon fontSize="small" />
           </IconButton>
         </Grid>

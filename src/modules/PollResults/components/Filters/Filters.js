@@ -29,6 +29,7 @@ const Filters = ({ filters, setActiveFilters }) => {
   })
   const [newFilter, setNewFilters] = useState(null)
   const [empty, setEmpty] = useState(true)
+  const [updated, setUpdated] = useState(false)
 
   useEffect(() => {
     if (newFilter) {
@@ -42,22 +43,25 @@ const Filters = ({ filters, setActiveFilters }) => {
     }
   }, [newFilter])
 
-
   // ФИЛЬТРЫ
   const handleDataChange = (e) => {
+    const RegExp = /(\d{4})-(\d{2})-(\d{2})/
     const date = e.target.value
     setNewFilters(prevState => ({
       ...prevState,
-      date: date
+      date: e.target.value.replace(RegExp, '$3.$2.$1'),
+      shownDate: date
     }))
-    console.log(date);
+    setUpdated(true)
   }
 
   const cleareDate = () => {
     setNewFilters(prevState => ({
       ...prevState,
-      date: null
+      date: null,
+      shownDate: null
     }))
+    setUpdated(true)
   }
 
   const handleAgeChange = (_, values) => {
@@ -66,6 +70,7 @@ const Filters = ({ filters, setActiveFilters }) => {
       ...prevState,
       ages: ages.length ? ages : null
     }))
+    setUpdated(true)
   }
 
   const handleSexChange = (_, value) => {
@@ -73,6 +78,7 @@ const Filters = ({ filters, setActiveFilters }) => {
       ...prevState,
       sex: value ? value.value : null
     }))
+    setUpdated(true)
   }
 
   const handleCityChange = (_, values) => {
@@ -81,6 +87,7 @@ const Filters = ({ filters, setActiveFilters }) => {
       ...prevState,
       cities: ct.length ? ct : null
     }))
+    setUpdated(true)
   }
 
   const handleInterviewersChange = (_, values) => {
@@ -89,6 +96,7 @@ const Filters = ({ filters, setActiveFilters }) => {
       ...prevState,
       intervs: intervs.length ? intervs : null
     }))
+    setUpdated(true)
   }
 
   const handleStatusChange = (_, value) => {
@@ -96,10 +104,12 @@ const Filters = ({ filters, setActiveFilters }) => {
       ...prevState,
       status: value ? value.value : null
     }))
+    setUpdated(true)
   }
 
   const handleFilter = () => {
     setActiveFilters(newFilter)
+    setUpdated(false)
   }
 
   const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -116,7 +126,7 @@ const Filters = ({ filters, setActiveFilters }) => {
             id="date"
             type="date"
             variant="outlined"
-            value={newFilter ? newFilter.date ? newFilter.date : '' : ''}
+            value={newFilter ? newFilter.shownDate ? newFilter.shownDate : '' : ''}
             onChange={handleDataChange}
             InputProps={{
               startAdornment: (
@@ -244,7 +254,7 @@ const Filters = ({ filters, setActiveFilters }) => {
             variant="contained"
             color="primary"
             onClick={handleFilter}
-            disabled={empty}
+            disabled={!updated}
           >
             применить
             </Button>

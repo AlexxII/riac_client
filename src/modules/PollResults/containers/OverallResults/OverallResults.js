@@ -7,9 +7,9 @@ import PublishIcon from '@material-ui/icons/Publish';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 
-
+import PollIcon from '@material-ui/icons/Poll';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
 
 import LoadingState from '../../../../components/LoadingState'
@@ -81,24 +81,21 @@ const OverallResults = ({ id }) => {
     }
   })
 
+  // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
     if (activeFilters) {
-      if (activeFilters.cities.length) {
-        const rrr = pollResults.pollResults.filter(
-          result => {
-            if (result.city) {
-              return activeFilters.cities.includes(result.city.id)
-            }
-            return false
-          }
-        )
-        setActiveResults(rrr)
-      } else {
-        setActiveResults(pollResults.pollResults)
-      }
+      const results = pollResults.pollResults
+      console.log(results);
+      const newResult = results.filter(result => {
+        return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : true : true
+      }).filter(result => {
+        return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
+      }).filter(result => {
+        return activeFilters.date ? result.lastModified ? activeFilters.date == result.lastModified : true : true
+      })
+      setActiveResults(newResult)
     }
   }, [activeFilters])
-
 
   if (pollResultsLoading || !pollResults || !activeResults || filtersResultsLoading) return (
     <LoadingState />
@@ -161,6 +158,10 @@ const OverallResults = ({ id }) => {
     element.click();
   }
 
+  const handleChartsData = () => {
+
+  }
+
   return (
     <Fragment>
       <SystemNoti
@@ -192,6 +193,16 @@ const OverallResults = ({ id }) => {
                 disabled={!selectPool.length}
               >
                 <PublishIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Графики">
+              <IconButton
+                color="primary"
+                component="span"
+                onClick={handleChartsData}
+                disabled={!selectPool.length}
+              >
+                <EqualizerIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Обновить">

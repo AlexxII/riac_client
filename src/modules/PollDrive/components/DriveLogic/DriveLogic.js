@@ -197,7 +197,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     for (let key in results) {
       if (key === question.id) {
         newResults[question.id] = {
-          ...newResults[question.id],
+          ...results[question.id],
           data: []
         }
       } else {
@@ -217,6 +217,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       }
     }
     setResults(newResults)
+    checkRespondentFinish(newResults)
     setQuestion(prevState => ({
       ...prevState,
       answers: prevState.answers.map(

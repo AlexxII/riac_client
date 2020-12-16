@@ -43,7 +43,7 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: () => {
-      setActiveResults(pollResults.pollResults)
+      setActiveResults(pollResults.poll.results)
     }
   });
 
@@ -82,7 +82,7 @@ const OverallResults = ({ id }) => {
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
     if (activeFilters) {
-      const results = pollResults.pollResults
+      const results = pollResults.poll.results
       console.log(results);
       const newResult = results.filter(result => {
         return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : true : true
@@ -95,7 +95,7 @@ const OverallResults = ({ id }) => {
     }
   }, [activeFilters])
 
-  if (pollResultsLoading || !pollResults || !activeResults || filtersResultsLoading) return (
+  if (pollResultsLoading || !activeResults || filtersResultsLoading) return (
     <LoadingState />
   )
 
@@ -161,7 +161,7 @@ const OverallResults = ({ id }) => {
 
   return (
     <Fragment>
-      <BatchUpdate data={activeResults}/>
+      <BatchUpdate data={pollResults} selectPool={selectPool}/>
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}

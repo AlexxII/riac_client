@@ -9,7 +9,6 @@ import BarChart from '../../components/BarChart'
 import LinearTable from '../../components/LinearTable'
 
 import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_WITH_RESULTS } from './queries'
 
@@ -22,9 +21,6 @@ const LinearDistribution = ({ id }) => {
   } = useQuery(GET_POLL_WITH_RESULTS, {
     variables: {
       id
-    },
-    onCompleted: () => {
-      console.log(pollResults);
     }
   });
 

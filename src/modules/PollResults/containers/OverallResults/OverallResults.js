@@ -1,16 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react'
 
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 
-import PollIcon from '@material-ui/icons/Poll';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
-
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -20,6 +17,7 @@ import LoadingStatus from '../../../../components/LoadingStatus'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
+import BatchUpdate from '../../components/BatchUpdate'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -116,20 +114,6 @@ const OverallResults = ({ id }) => {
     return null
   }
 
-
-  const handleResultsBatchUpdate = () => {
-
-  }
-
-  const deleteComplitely = () => {
-    deleteResult({
-      variables: {
-        results: selectPool
-      },
-    })
-    setDelOpen(false)
-  }
-
   const handleResultsExport = () => {
     const resultsPool = activeResults.filter(result =>
       selectPool.includes(result.id)
@@ -162,8 +146,22 @@ const OverallResults = ({ id }) => {
 
   }
 
+  const handleResultsBatchUpdate = () => {
+
+  }
+
+  const deleteComplitely = () => {
+    deleteResult({
+      variables: {
+        results: selectPool
+      },
+    })
+    setDelOpen(false)
+  }
+
   return (
     <Fragment>
+      <BatchUpdate data={activeResults}/>
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}

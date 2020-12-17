@@ -33,6 +33,7 @@ const OverallResults = ({ id }) => {
   const [activeResults, setActiveResults] = useState()
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
+  const [batchOpen, setBatchOpen] = useState(false)
 
   const {
     data: pollResults,
@@ -161,7 +162,7 @@ const OverallResults = ({ id }) => {
 
   return (
     <Fragment>
-      <BatchUpdate data={pollResults} selectPool={selectPool}/>
+      <BatchUpdate data={pollResults} selectPool={selectPool} open={batchOpen} close={() => setBatchOpen(false)} />
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}
@@ -207,7 +208,7 @@ const OverallResults = ({ id }) => {
               <IconButton
                 color="primary"
                 component="span"
-                onClick={handleResultsBatchUpdate}
+                onClick={() => setBatchOpen(true)}
                 disabled={!selectPool.length}
               >
                 <DynamicFeedIcon />

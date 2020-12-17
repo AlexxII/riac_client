@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -28,20 +28,7 @@ const Filters = ({ filters, setActiveFilters }) => {
     status: filters.status
   })
   const [newFilter, setNewFilters] = useState(null)
-  const [empty, setEmpty] = useState(true)
   const [updated, setUpdated] = useState(false)
-
-  useEffect(() => {
-    if (newFilter) {
-      for (let key in newFilter) {
-        if (newFilter[key]) {
-          setEmpty(false)
-          return
-        }
-      }
-      setEmpty(true)
-    }
-  }, [newFilter])
 
   // ФИЛЬТРЫ
   const handleDataChange = (e) => {
@@ -262,8 +249,5 @@ const Filters = ({ filters, setActiveFilters }) => {
       </Grid>
     </Fragment>
   )
-
-
 }
-
 export default Filters

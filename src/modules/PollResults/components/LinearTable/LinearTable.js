@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'
 
 const LinearTable = ({ index, question }) => {
-  const [count, setCount] = useState(
+  const [count] = useState(
     question.answers.reduce((acum, curr) => {
       return acum + curr.results.length
     }, 0)

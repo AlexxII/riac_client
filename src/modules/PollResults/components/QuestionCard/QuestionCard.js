@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -7,20 +7,22 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AnswerCard from '../AnswersCard'
 
 const QuestionCard = ({ question, index, pool }) => {
-
-  const [count, setCount] = useState(
-    question.answers.reduce((acum, curr) => {
-      if (curr.results.length) {
-        for (let i = 0; i < curr.results.length; i++) {
-          if (pool.includes(curr.results[i].respondent.id)) {
-            return acum + 1
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    let totalResults = 0
+    for (let i = 0; i < question.answers.length; i++) {
+      if (question.answers[i].results.length) {
+        for (let j = 0; j < question.answers[i].results.length; j++) {
+          if (pool.includes(question.answers[i].results[j].respondent.id)) {
+            totalResults++
           }
-          return acum
         }
       }
-      return acum
-    }, 0)
-  )
+    }
+    setCount(totalResults)
+  }, [])
+
+
 
   return (
     <Card className="question-card">

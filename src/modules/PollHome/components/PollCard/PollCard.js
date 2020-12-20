@@ -123,6 +123,8 @@ const PollCard = ({ data }) => {
         <CardActions disableSpacing>
           <Grid container item xs={12}>
             <Results />
+          </Grid>
+          <Grid container item xs={12} justify="flex-end">
             {data.cities.length ?
               <Drive /> :
               <Tooltip title="Города устанавливаются в настройках опроса">
@@ -131,11 +133,8 @@ const PollCard = ({ data }) => {
               </Typography>
               </Tooltip>
             }
-
-          </Grid>
-          <Grid container item xs={12} justify="flex-end">
-            <Attachment />
-            <Wiki />
+            {/* <Attachment />
+            <Wiki /> */}
           </Grid>
         </CardActions>
       </Card>

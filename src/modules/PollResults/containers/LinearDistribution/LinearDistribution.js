@@ -48,7 +48,7 @@ const LinearDistribution = ({ id }) => {
               <LinearTable index={index} key={question.id} question={question} />
             </Grid>
             <Grid xs={12} md={6}>
-              <BarChart question={question} />
+              <BarChart key={question.id} question={question} />
             </Grid>
             <p></p>
           </Fragment>

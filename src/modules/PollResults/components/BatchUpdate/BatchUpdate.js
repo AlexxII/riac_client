@@ -15,6 +15,10 @@ const BatchUpdate = ({ data, selectPool, open, close }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+  if (!open) {
+    return null
+  }
+
   return (
     <div>
       <Dialog

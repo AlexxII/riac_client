@@ -2,14 +2,14 @@ import React, { Fragment, useState } from 'react'
 import { mainUrl } from '../../../../mainconfig'
 
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Tooltip from '@material-ui/core/Tooltip';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Popover from '@material-ui/core/Popover';
-import InfoIcon from '@material-ui/icons/Info';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import EditIcon from '@material-ui/icons/Edit';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
@@ -104,10 +104,11 @@ const QuestionTopic = ({ topic }) => {
 
   return (
     <Fragment>
-      <InfoIcon
+      <InfoOutlinedIcon
+        className="info-icon"
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
-        fontSize="small" />
+      />
       <Popover
         className={classes.popover}
         classes={{

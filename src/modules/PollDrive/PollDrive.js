@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
+import { GET_POLL_RESULTS } from '../PollResults/containers/OverallResults/queries'
 
 import { SAVE_NEW_RESULT } from './mutaions'
 import { parseIni, normalizeLogic } from './lib/utils'
@@ -81,6 +82,12 @@ const PollDrive = ({ id }) => {
         text: 'Сохранить не удалось. Смотрите консоль.'
       })
     },
+    refetchQueries: [{
+      query: GET_POLL_RESULTS,
+      variables: {
+        id
+      }
+    }]
   })
 
   useEffect(() => {

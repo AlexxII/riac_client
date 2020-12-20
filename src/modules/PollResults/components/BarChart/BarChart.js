@@ -3,7 +3,7 @@ import Chart from 'chart.js'
 
 const BarChart = ({ question }) => {
 
-  const [data, setData] = useState({
+  const [data] = useState({
     labels: question.answers.map((_, index) => index + 1 + ''),
     set: [
       {

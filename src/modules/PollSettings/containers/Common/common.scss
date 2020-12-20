@@ -15,6 +15,11 @@
       position: relative;
       display: flex;
     }
+    .info-icon {
+      cursor: pointer;
+      font-size: 20px;
+      vertical-align: top;
+    }
     .question-title {
       align-items: center;
       font-size: 16px !important;

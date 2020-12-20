@@ -18,6 +18,7 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
 import BatchUpdate from '../../components/BatchUpdate'
+import BatchCharts from '../../components/BatchCharts'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -34,6 +35,7 @@ const OverallResults = ({ id }) => {
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
   const [batchOpen, setBatchOpen] = useState(false)
+  const [batchGrOpen, setBatchGrOpen] = useState(false)
 
   const {
     data: pollResults,
@@ -84,7 +86,6 @@ const OverallResults = ({ id }) => {
   useEffect(() => {
     if (activeFilters) {
       const results = pollResults.poll.results
-      console.log(results);
       const newResult = results.filter(result => {
         return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : true : true
       }).filter(result => {
@@ -92,6 +93,15 @@ const OverallResults = ({ id }) => {
       }).filter(result => {
         return activeFilters.date ? result.lastModified ? activeFilters.date == result.lastModified : true : true
       })
+      const newSelectPool = selectPool.filter(
+        selectId => {
+          const len = newResult.length
+          for (let i = 0; i < len; i++) {
+            if (selectId === newResult[i].id) return true
+          }
+          return false
+        })
+      setSelectPool(newSelectPool)
       setActiveResults(newResult)
     }
   }, [activeFilters])
@@ -162,7 +172,16 @@ const OverallResults = ({ id }) => {
 
   return (
     <Fragment>
-      <BatchUpdate data={pollResults} selectPool={selectPool} open={batchOpen} close={() => setBatchOpen(false)} />
+      <BatchCharts
+        data={pollResults}
+        selectPool={selectPool}
+        open={batchGrOpen}
+        close={() => setBatchGrOpen(false)} />
+      <BatchUpdate
+        data={pollResults}
+        selectPool={selectPool}
+        open={batchOpen}
+        close={() => setBatchOpen(false)} />
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}
@@ -198,7 +217,7 @@ const OverallResults = ({ id }) => {
               <IconButton
                 color="primary"
                 component="span"
-                onClick={handleChartsData}
+                onClick={() => setBatchGrOpen(true)}
                 disabled={!selectPool.length}
               >
                 <EqualizerIcon />

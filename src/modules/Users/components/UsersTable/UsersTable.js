@@ -310,6 +310,10 @@ const UsersTable = ({ users, addNewUser, deleteUsers, updateUser, resetPassword,
         open={deleteDialog}
         confirm={handleDelConfirm}
         close={() => setDeleteDialog(false)}
+        buttons={{
+          close: "Отмена",
+          confirm: "Удалить"
+        }}
         data={
           {
             title: 'Удалить пользователей(я)?',

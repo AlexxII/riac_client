@@ -1,4 +1,5 @@
 export { default as HomePage } from './HomePage'
+export { default as PollArchive } from './PollArchive'
 export { default as DrivePage } from './DrivePage'
 export { default as ResultsPage } from './ResultsPage'
 export { default as AnalyzePage } from './AnalyzePage'

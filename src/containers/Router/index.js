@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import {
   HomePage,
+  PollArchive,
   DrivePage,
   ResultsPage,
   AnalyzePage,
@@ -12,7 +13,7 @@ import {
   WikiPage,
   PollAppSettingsPage,
   UsersPage,
-  NotFoundPage
+  NotFoundPage,
 } from '../../pages'
 
 const Router = () => {
@@ -21,6 +22,7 @@ const Router = () => {
     <BrowserRouter>
       <Switch>
         <Route path={"/"} exact component={HomePage} />
+        <Route path={"/poll-archive"} exact component={PollArchive} />
         <Route path={"/settings/users"} exact component={UsersPage} />
         <Route path={"/results/:id/:code"} component={ResultsPage} />
         <Route path={"/poll-settings/:id/:code"} component={SettingsPage} />

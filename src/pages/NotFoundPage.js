@@ -1,9 +1,7 @@
 import React, { Fragment } from 'react';
 import ErrorState from '../components/ErrorState'
 
-
 // import { ReactComponent as ErrorIllustration } from "../../illustrations/error.svg";
-
 
 const NotFoundPage = () => {
   return (

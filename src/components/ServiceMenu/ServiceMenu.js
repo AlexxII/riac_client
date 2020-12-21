@@ -12,6 +12,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import Typography from '@material-ui/core/Typography';
 import GroupIcon from '@material-ui/icons/Group';
 import AlarmOnIcon from '@material-ui/icons/AlarmOn';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import PieChartIcon from '@material-ui/icons/PieChart';
 
 import { NavLink } from 'react-router-dom'
@@ -38,6 +39,12 @@ export default function ServiceMenu({ open, close }) {
         <Typography variant="overline" style={{ fontSize: '10px' }}>
           подсистема опросов
         </Typography>
+        <NavLink to='poll-archive'>
+          <ListItem button key={1}>
+            <ListItemIcon><CalendarTodayIcon /></ListItemIcon>
+            <ListItemText primary="Архив" />
+          </ListItem>
+        </NavLink>
         <NavLink to='analyze'>
           <ListItem button key={1}>
             <ListItemIcon><PieChartIcon /></ListItemIcon>

@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react'
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { Box, Typography } from "@material-ui/core";
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import Popover from '@material-ui/core/Popover';
@@ -50,7 +49,10 @@ const ErrorState = (props) => {
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <Typography>{}</Typography>
+        <Typography>
+          {props.poper &&
+            props.poper}
+        </Typography>
       </Popover>
     )
   }
@@ -169,9 +171,16 @@ const ErrorState = (props) => {
   return null;
 }
 
+const DefaultPoper = () => {
+  return(
+    <span>Смотрите консоль</span>
+  )
+}
+
 ErrorState.defaultProps = {
   title: 'Ошибка',
   description: 'Что-то пошло не так',
+  poper: <DefaultPoper />,
   type: "page",
   size: "medium",
   padding: 2,

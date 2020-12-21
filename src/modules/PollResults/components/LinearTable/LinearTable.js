@@ -14,9 +14,6 @@ const LinearTable = ({ index, question }) => {
           <tr>
             <th>&nbsp;</th><th>Ответов</th><th>%</th>
           </tr>
-          <tr>
-            <td className="question-title" colspan="3"><strong>{index + 1}. {question.title}</strong></td>
-          </tr>
           {question.answers.map((answer, index) =>
             <tr>
               <td className="answer-title">

@@ -24,10 +24,6 @@ const PollAppSettings = () => {
       component: 'Возраст'
     },
     {
-      label: 'Статус',
-      component: 'Статус'
-    },
-    {
       label: 'ТНП',
       component: 'ТНП'
     }

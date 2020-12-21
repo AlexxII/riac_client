@@ -201,6 +201,10 @@ const CitiesEditor = ({ id }) => {
         open={delId}
         confirm={handleDelConfirm}
         close={() => setDelId(false)}
+        buttons={{
+          close: "Отмена",
+          confirm: "Удалить"
+        }}
         data={
           {
             title: 'Удалить населенный пункт?',

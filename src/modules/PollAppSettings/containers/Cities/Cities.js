@@ -310,6 +310,10 @@ const Cities = () => {
         open={delId}
         confirm={handleDelConfirm}
         close={handleDelDialogClose}
+        buttons={{
+          close: "Отмена",
+          confirm: "Удалить"
+        }}
         data={
           {
             title: 'Удалить населенный пункт?',
@@ -325,9 +329,6 @@ const Cities = () => {
           <CityCard city={city} save={handleSaveEdit} deleteCity={handleCityDelete} />
         ))}
       </Grid>
-      <p></p>
-      <span>Статус</span>
-      <Divider />
     </Fragment>
   )
 }

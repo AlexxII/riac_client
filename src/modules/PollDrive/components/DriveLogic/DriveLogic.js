@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Question from '../Question'
 import FinishDialog from '../FinishDialog';
+import ConfirmDialog from '../../../../components/ConfirmDialog'
 
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
 import questionFormation from '../../lib/questionFormation'
@@ -29,6 +30,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   const [userSettings, setUserSettings] = useState({
     codesShow: true
   })
+  const [earlyСompletion, setEarlyСompletion] = useState(false)
   const [direction, setDirection] = useState(1)
   const [logic] = useState(logics)
   const [count, setCount] = useState(0)
@@ -110,6 +112,11 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     if (!newQuestion) return
     if (newQuestion.next) {
       if (direction) {
+        if (count === questionsLimit - 1) {
+          console.log('END');
+          setEarlyСompletion(true)
+          return
+        }
         setCount(count + 1)
       } else {
         setCount(count - 1)
@@ -267,12 +274,12 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     const keyCodesPool = question.keyCodesPool
     const selectedAnswer = question.answers.filter(obj => obj.keyCode === trueCode)[0]
     // движение по опросу
-    if (trueCode === 39) {
+    if (trueCode === 39) { // клавиша вправо
       setTimeout(() => {
         goToNext()
       }, MOVE_DELAY)
       return
-    } else if (trueCode === 37) {
+    } else if (trueCode === 37) { // клавиша влево
       setTimeout(() => {
         goToPrevious()
       }, MOVE_DELAY)
@@ -662,6 +669,14 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     saveAndGoBack(results)
   }
 
+  const handleEarlyСompletion = () => {
+    setResults({
+      pool: []
+    })
+    setCount(0)
+    setEarlyСompletion(false)
+  }
+
   const InlineInformer = () => {
     return (
       <Typography variant="overline" display="block" gutterBottom>
@@ -672,6 +687,19 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   return (
     <Fragment>
+      <ConfirmDialog
+        open={earlyСompletion}
+        confirm={handleEarlyСompletion}
+        buttons={{
+          confirm: "Заново"
+        }}
+        data={
+          {
+            title: 'Анкета досрочно завершена',
+            text: 'Внимание! Вносимые данные противоречат условиям проведения данного опроса. Вероятно был выбран код, который привел к завершению. Посмотрите конфигурационный файл.'
+          }
+        }
+      />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Grid container direction="row" justify="space-between" alignItems="center">
         <Grid container xs={6} md={3} justify="flex-start">

@@ -5,6 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
+import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
@@ -168,6 +169,7 @@ const OverallResults = ({ id }) => {
       },
     })
     setDelOpen(false)
+    setSelectPool([])
   }
 
   return (
@@ -193,6 +195,10 @@ const OverallResults = ({ id }) => {
         open={delOpen}
         confirm={deleteComplitely}
         close={() => setDelOpen(false)}
+        buttons={{
+          close: "Отмена",
+          confirm: "Удалить"
+        }}
         data={
           {
             title: 'Удалить выбранные результаты?',
@@ -231,6 +237,16 @@ const OverallResults = ({ id }) => {
                 disabled={!selectPool.length}
               >
                 <DynamicFeedIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Изменить статус">
+              <IconButton
+                color="primary"
+                component="span"
+                onClick={() => setBatchOpen(true)}
+                disabled={!selectPool.length}
+              >
+                <CheckCircleOutlineOutlinedIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Удалить">

@@ -52,11 +52,11 @@ const PollCard = ({ data }) => {
     return (
       <Tooltip title="Ввод результатов">
         <NavLink to={`/drive/${data.id}/${data.code}`}>
-          <IconButton >
+          <IconButton>
             <AssignmentTurnedInIcon />
           </IconButton>
         </NavLink>
-      </Tooltip>
+      </Tooltip >
     )
   }
   const Attachment = () => {

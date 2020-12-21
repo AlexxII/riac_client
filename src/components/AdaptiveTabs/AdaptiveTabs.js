@@ -57,7 +57,7 @@ const Vertical = ({ data, value, handleChange }) => {
       className={classes.tabs}
     >
       {data.map((obj, index) => (
-        <Tab label={obj.label} {...allProps({ index })} />
+        <Tab label={obj.label} key={index} {...allProps({ index })} />
       ))}
     </Tabs>
   )
@@ -98,7 +98,7 @@ const AdaptiveTabs = ({ data }) => {
           <Horizontal data={data} value={value} handleChange={handleChange} />
         </Hidden>
         {data.map((obj, index) => (
-          <TabPanel value={value} index={index} p={obj.padding ? obj.padding : 1}>
+          <TabPanel value={value} key={index} index={index} p={obj.padding ? obj.padding : 1}>
             {obj.component}
           </TabPanel>
         ))}

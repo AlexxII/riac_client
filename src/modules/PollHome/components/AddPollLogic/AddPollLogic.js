@@ -1,8 +1,14 @@
 import React, { Fragment, useState } from 'react'
 import AddPollDialog from '../AddPollDialog';
-import AddFab from "../../../../components/AddFab";
+import PollIcon from '@material-ui/icons/Poll';
+import CalendarTodayRoundedIcon from '@material-ui/icons/CalendarTodayRounded';
+
+import { useHistory } from "react-router-dom";
+
+import SpeedDialFab from '../../../../components/SpeedDealFab'
 
 const AddPollLogic = ({ addPoll }) => {
+  const history = useHistory()
   const [openDialog, setOpenDialog] = useState(false)
   const openPollDialog = () => {
     setOpenDialog(true)
@@ -163,9 +169,16 @@ const AddPollLogic = ({ addPoll }) => {
     return data
   }
 
+  // элементы для кнопки быстрого доступа
+  const actions = [
+    { icon: <PollIcon />, name: 'Новый опрос', click: () => openPollDialog() },
+    { icon: <CalendarTodayRoundedIcon />, name: 'Архив опросов', click: () => history.push("/poll-archive") }
+  ];
+
+
   return (
     <Fragment>
-      <AddFab onClick={openPollDialog} />
+      <SpeedDialFab actions={actions} />
       <AddPollDialog open={openDialog} saveHndl={saveNewPoll} closeHndl={closeDialog} />
     </Fragment>
   )

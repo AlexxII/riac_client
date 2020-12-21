@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from 'react'
 import Container from '@material-ui/core/Container'
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import ListOfPolls from './components/ListOfPolls'
 import AddPollLogic from './components/AddPollLogic'
@@ -8,8 +7,6 @@ import LoadingState from '../../components/LoadingState'
 import LoadingStatus from '../../components/LoadingStatus'
 import SystemNoti from '../../components/SystemNoti'
 import ErrorState from '../../components/ErrorState'
-
-import TestBtn from './components/TestBtn'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -58,6 +55,7 @@ const PollHome = () => {
       return <LoadingStatus />
     return null
   }
+
 
   return (
     <Fragment>

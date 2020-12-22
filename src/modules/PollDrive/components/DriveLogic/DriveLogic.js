@@ -7,6 +7,8 @@ import Hidden from '@material-ui/core/Hidden';
 import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
+import { Prompt } from 'react-router-dom'
+
 import Question from '../Question'
 import FinishDialog from '../FinishDialog';
 import ConfirmDialog from '../../../../components/ConfirmDialog'
@@ -78,6 +80,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       beep()
     }
   }
+
 
   const goToNext = () => {
     setDirection(1)
@@ -687,6 +690,12 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   return (
     <Fragment>
+      <Prompt
+        when={results.pool.length}
+        message={location =>
+          `Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!`
+        }
+      />
       <ConfirmDialog
         open={earlyСompletion}
         confirm={handleEarlyСompletion}

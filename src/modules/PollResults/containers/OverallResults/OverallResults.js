@@ -127,6 +127,7 @@ const OverallResults = ({ id }) => {
   }
 
   const handleResultsExport = () => {
+    const regExp = /,/gi
     const resultsPool = activeResults.filter(result =>
       selectPool.includes(result.id)
     ).map(obj => obj.result)
@@ -136,11 +137,22 @@ const OverallResults = ({ id }) => {
       const oderedResults = resultsPool[i].slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
       const details = oderedResults.map(obj => {
         if (obj.text !== '') {
-          return obj.code + ' ' + obj.text
+          return obj.code + ' ' + obj.text.replaceAll(regExp, ';')
         }
         return obj.code
       })
-      allResults += details + ',999' + '\n'
+      // кусок ниже, чтобы вставить перенос каретки при 180 символах и более, для Вити М.
+      const rLength = details.length
+      let tempResult = ''
+      let counter = 0
+      for (let j = 0; j < rLength; j++) {
+        tempResult += details[j] + ','
+        if (tempResult.length - counter > 160) {
+          tempResult += '\n'
+          counter = tempResult.length
+        }
+      }
+      allResults += tempResult + ',999' + '\n'
     }
     downloadIt(allResults)
   }

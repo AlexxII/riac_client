@@ -12,12 +12,8 @@ const FreeAnswer = ({ answer, focusHandler, blurHandler }) => {
   }, [])
 
   const handlerInput = (e) => {
-    // замена запятой на ";"
-    const regRex = /,/gi
     let keyCode = e.keyCode
     if (keyCode === 13) {
-      const val = textInput.current.value.replaceAll(regRex, ';')
-      textInput.current.value = val
       e.currentTarget.blur()
       return
     } else if (keyCode === 27) {

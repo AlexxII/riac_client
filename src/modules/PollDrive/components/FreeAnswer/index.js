@@ -1,13 +1,11 @@
 import React, { useRef, useEffect } from 'react'
 
 const FreeAnswer = ({ answer, focusHandler, blurHandler }) => {
+  console.log('new init');
   const textInput = useRef(null);
   useEffect(() => {
     if (answer.focus) {
       textInput.current.focus()
-    }
-    if (answer.freeAnswerText !== '') {
-      textInput.current.value = answer.freeAnswerText
     }
   }, [])
 
@@ -35,6 +33,7 @@ const FreeAnswer = ({ answer, focusHandler, blurHandler }) => {
           data-code={answer.code}
           data-keycode={answer.keyCode}
           placeholder="Введите свободный ответ"
+          defaultValue={answer.freeAnswerText ? answer.freeAnswerText : ''}
           onKeyUp={handlerInput}
           onFocus={focusHandler}
           onBlur={blurHandler}

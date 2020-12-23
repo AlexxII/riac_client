@@ -42,6 +42,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     }
   )
   const [finish, setFinish] = useState(false)
+  const [userBack, setUserBack] = useState(false)
   const [finishDialog, setFinishDialog] = useState(false)
   const [inlineMessage, setInlineMessage] = useState('')
   const keyUpHandler = ({ target, keyCode }) => {
@@ -604,7 +605,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         }, STEP_DELAY)
       }
     }
-
   }
 
   // !!!!!!!!!!!!!!!!!!!!Обработчик SELECTa - не доделана логика выбора!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -660,6 +660,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     setResults({
       pool: []
     })
+    setUserBack(true)
     setCount(0)
     setFinish(false)
     setFinishDialog(false)
@@ -668,6 +669,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   const finishThisPoll = () => {
     // закончить данный опрос и перейти на главную страницу
     setFinish(false)
+    setUserBack(true)
     setFinishDialog(false)
     saveAndGoBack(results)
   }
@@ -692,9 +694,11 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     <Fragment>
       <Prompt
         when={results.pool.length}
-        message={location =>
-          `Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!`
-        }
+        message={() => {
+          return userBack
+            ? true
+            : "Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!"
+        }}
       />
       <ConfirmDialog
         open={earlyСompletion}

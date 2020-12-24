@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react'
-import Grid from '@material-ui/core/Grid';
+
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -8,8 +8,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useHistory } from "react-router-dom";
 
+import { useHistory } from "react-router-dom";
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'

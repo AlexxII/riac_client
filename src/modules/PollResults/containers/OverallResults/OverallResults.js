@@ -152,7 +152,7 @@ const OverallResults = ({ id }) => {
           counter = tempResult.length
         }
       }
-      allResults += tempResult + ',999' + '\n'
+      allResults += tempResult + '999' + '\n'
     }
     downloadIt(allResults)
   }
@@ -207,14 +207,14 @@ const OverallResults = ({ id }) => {
         open={delOpen}
         confirm={deleteComplitely}
         close={() => setDelOpen(false)}
-        buttons={{
-          close: "Отмена",
-          confirm: "Удалить"
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Удалить"
         }}
         data={
           {
             title: 'Удалить выбранные результаты?',
-            text: 'Внимание! Выбранные результаты будут уничтожены безвозвратно. Будьте внимательны!'
+            content: 'Внимание! Выбранные результаты будут уничтожены безвозвратно. Будьте внимательны!'
           }
         }
       />

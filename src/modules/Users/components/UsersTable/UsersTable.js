@@ -310,14 +310,14 @@ const UsersTable = ({ users, addNewUser, deleteUsers, updateUser, resetPassword,
         open={deleteDialog}
         confirm={handleDelConfirm}
         close={() => setDeleteDialog(false)}
-        buttons={{
-          close: "Отмена",
-          confirm: "Удалить"
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Удалить"
         }}
         data={
           {
             title: 'Удалить пользователей(я)?',
-            text: 'Внимание! Это операция не может быть отменена. Часть данных приложения привязаны к учетной записи, будьте внимательны.'
+            content: 'Внимание! Это операция не может быть отменена. Часть данных приложения привязаны к учетной записи, будьте внимательны.'
           }
         }
       />

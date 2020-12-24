@@ -1,13 +1,16 @@
-import React, { Fragment, useState } from 'react'
-import AddPollDialog from '../AddPollDialog';
+import React, { Fragment, useState, useRef } from 'react'
+
 import PollIcon from '@material-ui/icons/Poll';
 import CalendarTodayRoundedIcon from '@material-ui/icons/CalendarTodayRounded';
 
 import { useHistory } from "react-router-dom";
 
+import AddPollForm from '../AddPollForm'
+import ConfirmDialog from '../../../../components/ConfirmDialog'
 import SpeedDialFab from '../../../../components/SpeedDealFab'
 
 const AddPollLogic = ({ addPoll }) => {
+  const formRef = useRef()
   const history = useHistory()
   const [openDialog, setOpenDialog] = useState(false)
   const openPollDialog = () => {
@@ -175,11 +178,22 @@ const AddPollLogic = ({ addPoll }) => {
     { icon: <CalendarTodayRoundedIcon />, name: 'Архив опросов', click: () => history.push("/poll-archive") }
   ];
 
-
   return (
     <Fragment>
       <SpeedDialFab actions={actions} />
-      <AddPollDialog open={openDialog} saveHndl={saveNewPoll} closeHndl={closeDialog} />
+      <ConfirmDialog
+        open={openDialog}
+        confirm={() => formRef.current.handleSubmit()}
+        close={closeDialog}
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Добавить"
+        }}
+        data={{
+          title: 'Добавить новый опрос',
+          content: <AddPollForm save={saveNewPoll} close={closeDialog} formRef={formRef} />,
+        }}
+      />
     </Fragment>
   )
 }

@@ -703,13 +703,13 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       <ConfirmDialog
         open={earlyСompletion}
         confirm={handleEarlyСompletion}
-        buttons={{
-          confirm: "Заново"
+        config={{
+          confirmBtn: "Заново"
         }}
         data={
           {
             title: 'Анкета досрочно завершена',
-            text: 'Внимание! Вносимые данные противоречат условиям проведения данного опроса. Вероятно был выбран код, который привел к завершению. Посмотрите конфигурационный файл.'
+            content: 'Внимание! Вносимые данные противоречат условиям проведения данного опроса. Вероятно был выбран код, который привел к завершению. Посмотрите конфигурационный файл.'
           }
         }
       />

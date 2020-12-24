@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 import AdaptiveTabs from '../../components/AdaptiveTabs'
 
 import CommonSetting from './containers/Common'
+import Common from './containers/CommonEx'
 import ConfigEditor from './containers/ConfigEditor'
 import DeletePoll from './containers/DeletePoll';
 import CititesEditor from './containers/CitiesEditor';
@@ -12,6 +13,10 @@ const PollSettings = ({ id, code }) => {
   const data = [
     {
       label: 'Общие',
+      component: <Common id={id} />
+    },
+    {
+      label: 'Вопросы',
       component: <CommonSetting id={id} />
     },
     {

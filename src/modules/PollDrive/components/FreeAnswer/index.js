@@ -7,7 +7,7 @@ const FreeAnswer = ({ answer, focusHandler, blurHandler }) => {
     if (answer.focus) {
       textInput.current.focus()
     }
-  }, [])
+  })
 
   const handlerInput = (e) => {
     let keyCode = e.keyCode

@@ -18,7 +18,7 @@ import questionFormation from '../../lib/questionFormation'
 import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
-const STEP_DELAY = 100
+const STEP_DELAY = 0
 const MOVE_DELAY = 0
 
 const ANSWER_SELECTED = 1
@@ -81,7 +81,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       beep()
     }
   }
-
 
   const goToNext = () => {
     setDirection(1)

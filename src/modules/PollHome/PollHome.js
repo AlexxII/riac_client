@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'
 import Container from '@material-ui/core/Container'
 
-import ListOfPolls from './components/ListOfPolls'
+import PollCard from './components/PollCard'
 import AddPollLogic from './components/AddPollLogic'
 
 import LoadingState from '../../components/LoadingState'
@@ -68,7 +68,9 @@ const PollHome = () => {
       />
       <Loading />
       <Container maxWidth="md">
-        <ListOfPolls data={pollsData} />
+        {pollsData.polls.map((poll, i) => (
+          <PollCard key={i} data={poll} />
+        ))}
       </Container>
       <AddPollLogic addPoll={addPoll} />
     </Fragment>

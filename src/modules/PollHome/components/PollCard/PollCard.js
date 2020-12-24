@@ -56,7 +56,7 @@ const PollCard = ({ data }) => {
             <AssignmentTurnedInIcon />
           </IconButton>
         </NavLink>
-      </Tooltip >
+      </Tooltip>
     )
   }
   const Attachment = () => {

@@ -26,7 +26,7 @@ import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
-import { Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core'
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)

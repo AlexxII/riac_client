@@ -1,13 +1,13 @@
 import React, { Fragment, useState } from 'react'
 
-import Grid from '@material-ui/core/Grid';
+import Grid from '@material-ui/core/Grid'
 
 import RespondentCard from '../RespondentCard'
 
 const DataGrid = ({ data, selectPool, setSelectPool }) => {
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
-
-  const showDetails = ({ result }) => {
+  const showDetails = (respondent) => {
+    const result = respondent.result
     const oderedResults = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
     const datails = oderedResults.map(obj => {
       if (obj.text !== '') {
@@ -18,8 +18,9 @@ const DataGrid = ({ data, selectPool, setSelectPool }) => {
     console.log(datails);
   }
 
-  const handleEdit = () => {
-
+  const handleEdit = (respondent) => {
+    const result = respondent.result
+    console.log(respondent);
   }
 
 
@@ -67,22 +68,24 @@ const DataGrid = ({ data, selectPool, setSelectPool }) => {
     }
   }
 
+  const dataItems = data.map((result, index) => (
+    <Grid item xs={12} sm={6} md={3} lg={2} key={index} >
+      <RespondentCard
+        respondent={result}
+        index={index}
+        show={showDetails}
+        edit={handleEdit}
+        selected={selectPool.includes(result.id)}
+        select={handleSelect}
+        count={selectPool.length}
+      />
+    </Grid>
+  ))
+
   return (
     <Fragment>
       <Grid container spacing={3} xs={12}>
-        {data.map((result, index) => (
-          <Grid item xs={12} sm={6} md={3} lg={2} key={index} >
-            <RespondentCard
-              result={result}
-              index={index}
-              show={showDetails}
-              edit={handleEdit}
-              selected={selectPool.includes(result.id)}
-              select={handleSelect}
-              count={selectPool.length}
-            />
-          </Grid>
-        ))}
+        {dataItems}
       </Grid>
     </Fragment>
   )

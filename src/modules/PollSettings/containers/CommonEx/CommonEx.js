@@ -3,13 +3,13 @@ import React, { Fragment, useState } from 'react'
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import ErrorState from '../../../../components/ErrorState'
 import LoadingState from '../../../../components/LoadingState'
 import SystemNoti from '../../../../components/SystemNoti'
-
-import PollStatus from '../../components/PollStatus'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -49,11 +49,12 @@ const CommonEx = ({ id }) => {
     // }]
   })
 
-  const changePollStatus = (index) => {
+  const changePollStatus = (event) => {
+    console.log(event.target.checked);
     saveNewStatus({
       variables: {
         id,
-        active: Boolean(index)
+        active: event.target.checked
       }
     })
   }
@@ -104,7 +105,12 @@ const CommonEx = ({ id }) => {
             <div> Ответов: {pollData.poll.answersCount}</div>
           </Box>
         </Grid>
-        <PollStatus status={pollData.poll.active ? 1 : 0} changeStatus={changePollStatus} />
+        <FormControlLabel
+          label="Активный"
+          size="small"
+          labelPlacement="start"
+          control={<Switch checked={pollData.poll.active} onChange={changePollStatus} />}
+        />
       </Grid>
     </Fragment>
   )

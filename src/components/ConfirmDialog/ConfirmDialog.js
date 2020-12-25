@@ -21,6 +21,7 @@ const ConfirmDialog = ({ open, confirm, close, data, config }) => {
   return (
     <Dialog
       fullScreen={fullScreen}
+      fullWidth={true}
       maxWidth={config.width}
       open={open}
       onClose={close}
@@ -50,7 +51,7 @@ const ConfirmDialog = ({ open, confirm, close, data, config }) => {
 }
 ConfirmDialog.defaultProps = {
   config: {
-    width: 'sm'
+    width: "sm"
   }
 }
 

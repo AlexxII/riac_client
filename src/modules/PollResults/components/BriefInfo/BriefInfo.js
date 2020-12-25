@@ -5,6 +5,7 @@ import LoadingState from '../../../../components/LoadingState'
 
 const BriefInfo = ({ data, selectPool, open, close }) => {
   const [selectedData, setSelectedData] = useState([])
+  const [groupedData, setGroupedData] = useState([])
 
   useEffect(() => {
     const needData = data.filter(respondent => selectPool.includes(respondent.id))
@@ -12,23 +13,39 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
       .sort((a, b) => (a.city.category.order > b.city.category.order) ? 1 : -1)
       .sort((a, b) => (a.city.category.id > b.city.category.id) ? 1 : -1)
     setSelectedData(needData)
-    console.log(needData);
+    const groups = needData.reduce((groups, item) => ({
+      ...groups,
+      [item.city.title]: [...(groups[item.city.title] || []), item]
+    }), {});
+    console.log(groups);
+    setGroupedData(groups)
   }, [open])
 
   if (!open) {
     return null
   }
 
-  if (!selectedData) return (
+  if (!selectedData || !groupedData) return (
     <LoadingState />
   )
 
-  const contentView = selectedData.map(respondent => (
-    <Fragment>
-      <p>{respondent.id}</p>
-      <span>{respondent}</span>
-    </Fragment>
-  ))
+  const contentViewCommon = selectedData.map(respondent => {
+    return (
+      <Fragment>
+        <p>{respondent.id}</p>
+        <span>{respondent.city.category.title}</span>
+      </Fragment>
+    )
+  })
+
+  const contentViewGrouped = groupedData.map(respondent => {
+    return (
+      <Fragment>
+        <p>{respondent.id}</p>
+        <span>{respondent.city.category.title}</span>
+      </Fragment>
+    )
+  })
 
   return (
     <ConfirmDialog
@@ -36,10 +53,11 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
       close={close}
       data={{
         title: 'Краткая информация',
-        content: contentView
+        content: contentViewCommon
       }}
       config={{
-        closeBtn: "Отмена"
+        closeBtn: "Отмена",
+        width: "md"
       }}
     />
   )

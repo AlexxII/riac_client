@@ -9,7 +9,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt'
 import Checkbox from '@material-ui/core/Checkbox'
 
 const RespondentCard = ({ respondent, index, show, edit, selected, select, count }) => {
-  console.log(respondent);
+
   return (
     <Fragment>
       <Paper className="respondent-card">

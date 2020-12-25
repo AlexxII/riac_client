@@ -6,23 +6,24 @@ import RespondentCard from '../RespondentCard'
 
 const DataGrid = ({ data, selectPool, setSelectPool }) => {
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
+
   const showDetails = (respondent) => {
-    const result = respondent.result
-    const oderedResults = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+    const results = respondent.result
+    const oderedResults = results.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
     const datails = oderedResults.map(obj => {
       if (obj.text !== '') {
         return obj.code + ' ' + obj.text
       }
       return obj.code
     })
-    console.log(datails);
+    const view = respondent.id + " - " + datails
+    console.log(view);
   }
 
   const handleEdit = (respondent) => {
     const result = respondent.result
     console.log(respondent);
   }
-
 
   const handleSelect = (inData) => {
     if (inData.event.nativeEvent.shiftKey) {

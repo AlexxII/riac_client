@@ -44,6 +44,8 @@ query ($id: ID!) {
         id
         title
         category {
+          order
+          id
           title
         }
       }

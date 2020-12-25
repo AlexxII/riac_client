@@ -19,11 +19,7 @@ const PollArchive = () => {
     loading: pollsLoading,
     error: pollsError,
     data: pollsData
-  } = useQuery(GET_ARCHIVE_POLLS, {
-    onCompleted: () => {
-      console.log(pollsData);
-    }
-  })
+  } = useQuery(GET_ARCHIVE_POLLS)
 
   if (pollsLoading) return (
     <LoadingState />

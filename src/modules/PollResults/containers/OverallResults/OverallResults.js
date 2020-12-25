@@ -6,9 +6,9 @@ import PublishIcon from '@material-ui/icons/Publish';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
-
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -20,6 +20,7 @@ import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
 import BatchUpdate from '../../components/BatchUpdate'
 import BatchCharts from '../../components/BatchCharts'
+import BriefInfo from '../../components/BriefInfo'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -36,6 +37,7 @@ const OverallResults = ({ id }) => {
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
   const [batchOpen, setBatchOpen] = useState(false)
+  const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
 
   const {
@@ -191,6 +193,11 @@ const OverallResults = ({ id }) => {
         selectPool={selectPool}
         open={batchGrOpen}
         close={() => setBatchGrOpen(false)} />
+      <BriefInfo
+        data={pollResults.poll.results}
+        selectPool={selectPool}
+        open={briefOpen}
+        close={() => setBrifOpen(false)} />
       <BatchUpdate
         data={pollResults}
         selectPool={selectPool}
@@ -229,6 +236,16 @@ const OverallResults = ({ id }) => {
                 disabled={!selectPool.length}
               >
                 <PublishIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Краткая информация">
+              <IconButton
+                color="primary"
+                component="span"
+                onClick={() => setBrifOpen(true)}
+                disabled={!selectPool.length}
+              >
+                <InfoOutlinedIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Графики">

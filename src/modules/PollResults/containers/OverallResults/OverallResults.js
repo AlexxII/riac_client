@@ -9,6 +9,7 @@ import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlin
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -21,13 +22,13 @@ import Filters from '../../components/Filters'
 import BatchUpdate from '../../components/BatchUpdate'
 import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
+import ExportMenu from '../../components/ExportMenu'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
-import { Tooltip } from '@material-ui/core'
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -128,9 +129,25 @@ const OverallResults = ({ id }) => {
     return null
   }
 
-  const handleResultsExport = () => {
+  const exportDataCityGrouped = () => {
+    // должен вкючать алгоритм разбивки на города
+    setNoti({
+      type: 'info',
+      text: 'Опция пока не доступна'
+    })
+  }
+
+  const exportDataIntervGroup = () => {
+    // должен включать алгоритм разбивки данных на респонденты и добавление шапки
+    // ???????? или важен город ???????
+    setNoti({
+      type: 'info',
+      text: 'Опция пока не доступна'
+    })
+  }
+
+  const exportAllRawData = () => {
     const regExp = /,/gi
-    console.log(activeResults);
     const resultsPool = activeResults
       .filter(result => selectPool.includes(result.id))
       .map(obj => obj.result)
@@ -159,21 +176,16 @@ const OverallResults = ({ id }) => {
     }
     // транслит для имени файла
     // rus_to_latin('Имя файла')
-
-    downloadIt(allResults)
+    downloadIt(allResults, 'allData.txt')
   }
 
-  const downloadIt = (data) => {
+  const downloadIt = (data, fileName) => {
     const element = document.createElement('a')
     const file = new Blob([data], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
-    element.download = "myFile.txt";
+    element.download = fileName;
     document.body.appendChild(element);
     element.click();
-  }
-
-  const handleChartsData = () => {
-
   }
 
   const handleResultsBatchUpdate = () => {
@@ -188,6 +200,18 @@ const OverallResults = ({ id }) => {
     })
     setDelOpen(false)
     setSelectPool([])
+  }
+
+  const showOneResultDetails = (respondent) => {
+    console.log(respondent);
+  }
+
+  const updateSingleResult = (respondent) => {
+    console.log(respondent);
+    setNoti({
+      type: 'info',
+      text: 'Опция пока не доступна'
+    })
   }
 
   return (
@@ -232,16 +256,12 @@ const OverallResults = ({ id }) => {
       <div className="result-service-zone">
         <Grid container justify="space-between" className="service-buttons">
           <Box className="main-buttons">
-            <Tooltip title="Выгрузить">
-              <IconButton
-                color="primary"
-                component="span"
-                onClick={handleResultsExport}
-                disabled={!selectPool.length}
-              >
-                <PublishIcon />
-              </IconButton>
-            </Tooltip>
+            <ExportMenu
+              visible={!selectPool.length}
+              rawDataExport={exportAllRawData}
+              byCityExport={exportDataCityGrouped}
+              byIntervExport={exportDataIntervGroup}
+            />
             <Tooltip title="Краткая информация">
               <IconButton
                 color="primary"
@@ -303,7 +323,13 @@ const OverallResults = ({ id }) => {
           </Grid>
         </Grid>
         <Filters filters={filtersResults} setActiveFilters={setActiveFilters} />
-        <DataGrid data={activeResults} selectPool={selectPool} setSelectPool={setSelectPool} />
+        <DataGrid
+          data={activeResults}
+          selectPool={selectPool}
+          setSelectPool={setSelectPool}
+          showDetails={showOneResultDetails}
+          updateSingle={updateSingleResult}
+        />
       </div>
     </Fragment>
   )

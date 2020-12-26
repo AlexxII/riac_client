@@ -4,9 +4,10 @@ import Grid from '@material-ui/core/Grid'
 
 import RespondentCard from '../RespondentCard'
 
-const DataGrid = ({ data, selectPool, setSelectPool }) => {
+const DataGrid = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
 
+  /*
   const showDetails = (respondent) => {
     const results = respondent.result
     const oderedResults = results.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
@@ -19,11 +20,14 @@ const DataGrid = ({ data, selectPool, setSelectPool }) => {
     const view = respondent.id + " - " + datails
     console.log(view);
   }
+  */
 
+  /*
   const handleEdit = (respondent) => {
     const result = respondent.result
     console.log(respondent);
   }
+  */
 
   const handleSelect = (inData) => {
     if (inData.event.nativeEvent.shiftKey) {
@@ -75,7 +79,7 @@ const DataGrid = ({ data, selectPool, setSelectPool }) => {
         respondent={result}
         index={index}
         show={showDetails}
-        edit={handleEdit}
+        edit={updateSingle}
         selected={selectPool.includes(result.id)}
         select={handleSelect}
         count={selectPool.length}

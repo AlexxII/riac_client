@@ -4,7 +4,6 @@ import EditIcon from '@material-ui/icons/Edit';
 
 const Answer = ({ answer, clickHandler, focusHandler, blurHandler, settings }) => {
   const answerRef = useRef(null)
-  console.log(answer.code);
   let answerCls = ['answer-wrap']
   let answerTitle = ['answer-title']
   if (answer.selected) {

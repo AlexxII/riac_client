@@ -130,13 +130,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     setCurrentQuestion(newQuestion.data)
   }, [count])
 
-  const clickHandler = (target) => {
-    const code = target.dataset.code
-    const selectedAnswer = question.answers.filter(obj => obj.keyCode === +code)[0]
-    // проверка, если поле со свободным ответом необходимо отредактировать
-    if (selectedAnswer.freeAnswer && selectedAnswer.selected) {
-      return
-    }
+  const clickHandler = (code) => {
     mainLogic(code)
   }
 
@@ -147,6 +141,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     }))
   }
 
+  // проверка заполненности всех ответов
   const checkRespondentFinish = (newResults) => {
     let count = 0
     for (let key in newResults) {
@@ -231,7 +226,14 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     setQuestion(prevState => ({
       ...prevState,
       answers: prevState.answers.map(
-        answer => true ? { ...answer, selected: false, showFreeAnswer: false, disabled: false } : answer
+        answer => true ? {
+          ...answer,
+          selected: false,
+          showFreeAnswer: false,                      
+          freeAnswerText: '',                             // сбрасываем свободный ответ
+          focus: true,                                    // чтобы фокус вернулся на свободеый ответ, т.к. он сброшен 
+          disabled: false
+        } : answer
       ).map(
         answer => {
           let excludePool = []
@@ -320,7 +322,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         setQuestion(prevState => ({
           ...prevState,
           answers: prevState.answers.map(
-            answer => answer.code === selectedAnswer.code ? { ...answer, selected: false, showFreeAnswer: false } : answer
+            answer => answer.code === selectedAnswer.code ? {
+              ...answer, selected: false, showFreeAnswer: false, freeAnswerText: ''
+            } : answer
           ).map(
             answer => newResults[question.id].data.length ? answer : ({ ...answer, disabled: false })
           ).map(
@@ -497,7 +501,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       setQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
-          answer => answer.code === selectedCode ? { ...answer, selected: false, showFreeAnswer: false } : answer
+          answer => answer.code === selectedCode ? {
+            ...answer, selected: false, showFreeAnswer: false, freeAnswerText: ''
+          } : answer
         ).map(
           answer => newResults[question.id].data.length ? answer : ({ ...answer, disabled: false })
         ).map(
@@ -582,9 +588,11 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     setQuestion(prevState => ({
       ...prevState,
       answers: prevState.answers.map(
-        answer => answer.keyCode === selectedCode ? { ...answer, selected: true } : answer
+        answer => {
+          return answer.code === selectedCode ? { ...answer, selected: true, freeAnswerText: value, focus: false } : answer
+        }
       ).map(
-        answer => logic.unique.includes(answer.code) & answer.keyCode !== selectedCode ? { ...answer, disabled: true } : answer
+        answer => logic.unique.includes(answer.code) & answer.code !== selectedCode ? { ...answer, disabled: true } : answer
       ).map(
         answer => selectedAnswer.exclude.includes(answer.code) ? {
           ...answer,
@@ -742,7 +750,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
           count={count}
           question={question}
           settings={userSettings}
-          clickHandler={clickHandler}
+          clickHandler={mainLogic}
           blurHandler={blurHandler}
           multipleHandler={multipleHandler}
         />

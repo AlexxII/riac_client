@@ -124,7 +124,6 @@ const PollDrive = ({ id }) => {
     }
   }, [logic])
 
-
   const Loading = () => {
     if (saveLoading) return <LoadingStatus />
     return null

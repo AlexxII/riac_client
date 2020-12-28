@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useRef } from 'react'
-import { mainUrl } from '../../../../mainconfig'
 
 import Grid from '@material-ui/core/Grid';
 import SaveIcon from '@material-ui/icons/Save';
@@ -17,6 +16,9 @@ import { useMutation } from '@apollo/react-hooks'
 import { logicQuery } from "./queries"
 import { saveConfigChanges } from "./mutations"
 import { GET_POLL_DATA } from '../../containers/Common/queries'
+
+const proDuctionUrl = process.env.REACT_APP_GQL_SERVER
+const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : proDuctionUrl
 
 const ConfigEditor = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -55,7 +57,7 @@ const ConfigEditor = ({ id }) => {
 
   const handleConfigFile = (filePath) => {
     setFilePath(filePath)
-    fetch(mainUrl + filePath)
+    fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
         setConfig(text)

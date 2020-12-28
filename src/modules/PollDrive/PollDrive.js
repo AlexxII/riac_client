@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { mainUrl } from "../../mainconfig";
 
 import Container from '@material-ui/core/Container'
 import DriveLogic from "./components/DriveLogic";
@@ -19,6 +18,9 @@ import { GET_POLL_RESULTS } from '../PollResults/containers/OverallResults/queri
 
 import { SAVE_NEW_RESULT } from './mutaions'
 import { parseIni, normalizeLogic } from './lib/utils'
+
+const proDuctionUrl = process.env.REACT_APP_GQL_SERVER
+const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : proDuctionUrl
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -65,7 +67,7 @@ const PollDrive = ({ id }) => {
     }
   })
   const handleConfigFile = (filePath) => {
-    fetch(mainUrl + filePath)
+    fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
         const logic = parseIni(text)

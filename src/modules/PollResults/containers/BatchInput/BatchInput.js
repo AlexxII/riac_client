@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { mainUrl } from "../../../../mainconfig";
 
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -18,6 +17,9 @@ import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_DATA } from './queries'
+
+const proDuctionUrl = process.env.REACT_APP_GQL_SERVER
+const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : proDuctionUrl
 
 const BatchInput = ({ id }) => {
   const [dataPool, setDataPool] = useState(false)
@@ -77,7 +79,7 @@ const BatchInput = ({ id }) => {
   });
 
   const handleConfigFile = (filePath) => {
-    fetch(mainUrl + filePath)
+    fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
         const logic = parseIni(text)

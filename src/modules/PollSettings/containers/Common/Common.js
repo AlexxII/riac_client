@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from 'react'
-import { mainUrl } from '../../../../mainconfig'
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -21,6 +20,9 @@ import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
+
+const proDuctionUrl = process.env.REACT_APP_GQL_SERVER
+const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : proDuctionUrl
 
 const useStyles = makeStyles((theme) => ({
   popover: {
@@ -172,7 +174,7 @@ const CommonSetting = ({ id }) => {
 
   const handleConfigFileAndUpdateCache = (poll) => {
     const filePath = poll.logic.path
-    fetch(mainUrl + filePath)
+    fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
         const normalizedLogic = normalizeLogic(parseIni(text))

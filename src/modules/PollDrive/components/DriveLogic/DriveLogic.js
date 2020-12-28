@@ -323,7 +323,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
           ...prevState,
           answers: prevState.answers.map(
             answer => answer.code === selectedAnswer.code ? {
-              ...answer, selected: false, showFreeAnswer: false, freeAnswerText: ''
+              ...answer, selected: false, showFreeAnswer: false, freeAnswerText: '', focus: true
             } : answer
           ).map(
             answer => newResults[question.id].data.length ? answer : ({ ...answer, disabled: false })

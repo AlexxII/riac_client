@@ -111,7 +111,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
+    console.log(count);
     const newQuestion = questionFormation(poll, count, results, logic, setResults);
+    console.log(newQuestion);
     if (!newQuestion) return
     if (newQuestion.next) {
       if (direction) {
@@ -129,10 +131,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     setQuestion(newQuestion.data)
     setCurrentQuestion(newQuestion.data)
   }, [count])
-
-  const clickHandler = (code) => {
-    mainLogic(code)
-  }
 
   const codesShow = (e) => {
     setUserSettings(prevState => ({
@@ -172,15 +170,19 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
             })
             if (r.length) {
               setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
+              setCount(result.count)
               setFinish(false)
-              return false
+            // чтобы он не перешел к след. ответу
+              return true
             }
           } else {
             // пула критичных ответов нет -> запрещенных вопросов нет -> какой-то вопрос пропущен
             // ОПРЕДЕЛИТЬ какой номер вопроса
             setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
+            setCount(result.count)
             setFinish(false)
-            return false
+            // чтобы он не перешел к след. ответу
+            return true
           }
         }
       }

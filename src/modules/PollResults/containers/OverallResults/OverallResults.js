@@ -37,6 +37,8 @@ const OverallResults = ({ id }) => {
   const [activeResults, setActiveResults] = useState()
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
+  const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
+  const [intervUpload, setIntervUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
@@ -74,7 +76,6 @@ const OverallResults = ({ id }) => {
     update: (cache, { data }) => {
       const deletedPool = data.deleteResults.map(del => del.id)
       setActiveResults(activeResults.filter(result => !deletedPool.includes(result.id)))
-      console.log(cache.data.data);
       cache.modify({
         fields: {
           pollResults(existingRefs, { readField }) {
@@ -85,6 +86,19 @@ const OverallResults = ({ id }) => {
       })
     }
   })
+
+  useEffect(() => {
+    if (selectPool.length) {
+      const selectedData = activeResults
+        .filter(result => selectPool.includes(result.id))
+      // кол-во уникальных городов, которые были выбраны
+      const uniqueCitites = selectedData.map(obj => obj.city.id).filter((v, i, a) => a.indexOf(v) === i).length
+      setCitiesUpload(uniqueCitites)
+      // кол-во уникальных интервьюеров, которые были выбраны
+      const uniqueInterv = selectedData.map(obj => obj.user.id).filter((v, i, a) => a.indexOf(v) === i).length
+      setIntervUpload(uniqueInterv)
+    }
+  }, [selectPool])
 
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
@@ -131,10 +145,17 @@ const OverallResults = ({ id }) => {
 
   const exportDataCityGrouped = () => {
     // должен вкючать алгоритм разбивки на города
-    setNoti({
-      type: 'info',
-      text: 'Опция пока не доступна'
-    })
+    // setNoti({
+    //   type: 'info',
+    //   text: 'Опция пока не доступна'
+    // })
+    // 1 - разбиваем на города
+    // 2 - сформировать строку ответов
+    // 3 - выгрузить файлы в соответствии с городами
+
+    for (let i = 0; i < 5; i++) {
+      downloadIt(i, `test_${i}.txt`)
+    }
   }
 
   const exportDataIntervGroup = () => {
@@ -261,6 +282,10 @@ const OverallResults = ({ id }) => {
               rawDataExport={exportAllRawData}
               byCityExport={exportDataCityGrouped}
               byIntervExport={exportDataIntervGroup}
+              bags={{
+                cities: citiesUpload,
+                interv: intervUpload
+              }}
             />
             <Tooltip title="Краткая информация">
               <IconButton

@@ -6,8 +6,14 @@ import PublishIcon from '@material-ui/icons/Publish';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import Typography from '@material-ui/core/Typography';
 
-const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport }) => {
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+
+import Badge from '@material-ui/core/Badge';
+
+
+const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport, bags }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -40,7 +46,6 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport }) =>
           color="primary"
           component="span"
           onClick={handleClick}
-          // onClick={() => setExportMenuOpen(true)}
           disabled={visible}
         >
           <PublishIcon />
@@ -54,8 +59,22 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport }) =>
         onClose={handleClose}
       >
         <MenuItem onClick={handleRaw}>Общие данные</MenuItem>
-        <MenuItem onClick={handlyByCity}>По городам</MenuItem>
-        <MenuItem onClick={handleByInterv}>С шапкой</MenuItem>
+        <MenuItem onClick={handlyByCity}>
+          <ListItemIcon style={{ minWidth: '25px' }}>
+            <Tooltip title="Кол-во уникальных городов, следовательно и файлов">
+              <Typography variant="button" display="block" gutterBottom>{bags.cities}</Typography>
+            </Tooltip>
+          </ListItemIcon>
+          <Typography variant="inherit">По городам</Typography>
+        </MenuItem>
+        <MenuItem onClick={handleByInterv}>
+          <ListItemIcon style={{ minWidth: '25px' }}>
+            <Tooltip title="Кол-во уникальных респондентов, следовательно и файлов">
+              <Typography variant="button" display="block" gutterBottom>{bags.interv}</Typography>
+            </Tooltip>
+          </ListItemIcon>
+          <Typography variant="inherit">С шапкой</Typography>
+        </MenuItem>
       </Menu>
     </Fragment>
   );

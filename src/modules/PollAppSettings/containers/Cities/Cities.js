@@ -24,7 +24,7 @@ import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_CITITES_WITH_CATEGORIES } from './queries'
-import { CITY_SAVE_MUTATION, CITY_EDIT_SAVE, DELETE_CITY } from './mutations'
+import { CITY_SAVE_MUTATION, CITY_SAVE_MULTIPLE_MUTATION, CITY_EDIT_SAVE, DELETE_CITY } from './mutations'
 
 const Cities = () => {
   const [noti, setNoti] = useState(false)
@@ -53,6 +53,25 @@ const Cities = () => {
         cities: [
           ...citiesData.cities,
           newCity
+        ]
+      }
+    })
+  })
+
+  const [saveCityMultiple, { loading: saveCityMultipleLoading }] = useMutation(CITY_SAVE_MULTIPLE_MUTATION, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Сохранить новые города не удалось. Смотрите консоль.'
+      })
+      console.log(e);
+    },
+    update: (cache, { data: { newCities } }) => cache.writeQuery({
+      query: GET_CITITES_WITH_CATEGORIES,
+      data: {
+        cities: [
+          ...citiesData.cities,
+          ...newCities
         ]
       }
     })
@@ -237,6 +256,11 @@ const Cities = () => {
   const handleMultipleCitiesAdd = () => {
     setMultipleAdd(false)
     console.log(cityPoolAdd);
+    saveCityMultiple({
+      variables: {
+        cities: cityPoolAdd
+      }
+    })
   }
 
   const handleClose = () => {
@@ -323,7 +347,7 @@ const Cities = () => {
         data={
           {
             title: 'Добавдение нескольких НП',
-            content: <CitiesUpload setCityPool={setCityPoolAdd}/>
+            content: <CitiesUpload setCityPool={setCityPoolAdd} />
           }
         }
       />

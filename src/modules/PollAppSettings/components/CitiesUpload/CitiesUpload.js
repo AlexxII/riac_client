@@ -46,10 +46,10 @@ const CitiesUpload = ({ setCityPool }) => {
     for (let i = 0; i < lPoolOfCities; i++) {
       const cityInfo = poolOfCities[i].split(';')
       const city = {
-        order: cityInfo[0],
+        order: +cityInfo[0],
         title: cityInfo[1],
         type: cityInfo[2],
-        population: cityInfo[3],
+        population: +cityInfo[3],
         category: cityInfo[4]
       }
       resultPool.push(city)

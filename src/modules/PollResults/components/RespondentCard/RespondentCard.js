@@ -22,13 +22,13 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
           </Typography>
           {respondent.processed ? <p>dd</p> : ''}
           <Checkbox
+            color="primary"
             checked={selected}
             onChange={(e) => select({
               id: respondent.id,
               index,
               event: e
             })}
-            inputProps={{ 'aria-label': 'primary checkbox' }}
           />
         </Grid>
         <Typography variant="subtitle2" gutterBottom>

@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from 'react'
 
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PublishIcon from '@material-ui/icons/Publish';
 import Box from '@material-ui/core/Box';
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
@@ -10,6 +9,8 @@ import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -37,6 +38,8 @@ const OverallResults = ({ id }) => {
   const [activeResults, setActiveResults] = useState()
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
+  // const [intermidateCheck, setIntermidateCheck] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
   const [intervUpload, setIntervUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
@@ -97,6 +100,8 @@ const OverallResults = ({ id }) => {
       // кол-во уникальных интервьюеров, которые были выбраны
       const uniqueInterv = selectedData.map(obj => obj.user.id).filter((v, i, a) => a.indexOf(v) === i).length
       setIntervUpload(uniqueInterv)
+      // для отображения промежуточного положения checkbox-a 
+      activeResults.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
     }
   }, [selectPool])
 
@@ -141,6 +146,17 @@ const OverallResults = ({ id }) => {
   const Loading = () => {
     if (loadOnDelete) return <LoadingStatus />
     return null
+  }
+
+  const selectAllActive = (event) => {
+    setSelectAll(event.target.checked)
+    if (event.target.checked) {
+      const selectPool = activeResults.map(result => result.id)
+      setSelectPool(selectPool)
+    } else {
+      setSelectPool([])
+      setSelectAll()
+    }
   }
 
   const exportDataCityGrouped = () => {
@@ -337,6 +353,17 @@ const OverallResults = ({ id }) => {
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
+            <FormControlLabel id="selectall-checkbox"
+              control={
+                <Checkbox
+                  checked={selectAll && selectPool.length === activeResults.length}
+                  onChange={selectAllActive}
+                  color="primary"
+                  indeterminate={selectPool.length > 0 & !selectAll}
+                />
+              }
+              label="Выделить все"
+            />
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>

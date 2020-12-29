@@ -1,4 +1,4 @@
-@import '../../components/LinearTable/lineartable.scss';
+@import "../../components/LinearTable/lineartable.scss";
 
 .result-service-zone {
   text-align: left;
@@ -20,4 +20,7 @@
   .city-group-label {
     font-size: 10px;
   }
+}
+#selectall-checkbox {
+  margin-left: 0px !important;
 }

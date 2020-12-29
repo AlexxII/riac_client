@@ -73,7 +73,6 @@ const XmlImport = ({ field, ...props }) => {
         id={name}
         ref={fileUpload}
         onBlur={onBlur}
-        // onChange={handleChange}
         onInput={handleChg}
       />
       <Badge

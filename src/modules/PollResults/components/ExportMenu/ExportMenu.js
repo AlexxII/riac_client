@@ -10,9 +10,6 @@ import Typography from '@material-ui/core/Typography';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 
-import Badge from '@material-ui/core/Badge';
-
-
 const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport, bags }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 

@@ -10,9 +10,10 @@ import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import Divider from '@material-ui/core/Divider';
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
+import ImportMenu from '../../components/ImportMenu'
+import CitiesUpload from '../../components/CitiesUpload'
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -30,6 +31,8 @@ const Cities = () => {
 
   const [delId, setDelId] = useState(false)
   const [cityAdd, setCityAdd] = useState(false)
+  const [multipleAdd, setMultipleAdd] = useState(false)
+
   const {
     data: citiesData,
     loading: citiesLoading,
@@ -231,8 +234,9 @@ const Cities = () => {
     )
   }
 
-  const handleAdd = () => {
-    setCityAdd(true)
+
+  const handleMultipleCitiesAdd = () => {
+    setMultipleAdd(false)
   }
 
   const handleClose = () => {
@@ -299,13 +303,25 @@ const Cities = () => {
         close={() => setNoti(false)}
       />
       <Loading />
-
       <div className="cities-service-zone">
         <Typography className="header">Города проведения опросов</Typography>
-        <Button variant="contained" color="primary" size="small" onClick={handleAdd}>
-          Добавить
-        </Button>
+        <ImportMenu disabled={cityAdd} addOneCity={() => setCityAdd(true)} addCitites={() => setMultipleAdd(true)} />
       </div>
+      <ConfirmDialog
+        open={multipleAdd}
+        confirm={handleMultipleCitiesAdd}
+        close={() => setMultipleAdd(false)}
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Добавить"
+        }}
+        data={
+          {
+            title: 'Добавдение нескольких НП',
+            content: <CitiesUpload />
+          }
+        }
+      />
       <ConfirmDialog
         open={delId}
         confirm={handleDelConfirm}

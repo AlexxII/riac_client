@@ -28,9 +28,9 @@ import { CITY_SAVE_MUTATION, CITY_EDIT_SAVE, DELETE_CITY } from './mutations'
 
 const Cities = () => {
   const [noti, setNoti] = useState(false)
-
   const [delId, setDelId] = useState(false)
   const [cityAdd, setCityAdd] = useState(false)
+  const [cityPoolAdd, setCityPoolAdd] = useState(false)
   const [multipleAdd, setMultipleAdd] = useState(false)
 
   const {
@@ -234,9 +234,9 @@ const Cities = () => {
     )
   }
 
-
   const handleMultipleCitiesAdd = () => {
     setMultipleAdd(false)
+    console.log(cityPoolAdd);
   }
 
   const handleClose = () => {
@@ -294,6 +294,11 @@ const Cities = () => {
     return null
   }
 
+  const handleMultipleAddClose = () => {
+    setMultipleAdd(false)
+    setCityPoolAdd(false)
+  }
+
   return (
     <Fragment>
       <SystemNoti
@@ -310,15 +315,15 @@ const Cities = () => {
       <ConfirmDialog
         open={multipleAdd}
         confirm={handleMultipleCitiesAdd}
-        close={() => setMultipleAdd(false)}
+        close={handleMultipleAddClose}
         config={{
           closeBtn: "Отмена",
-          confirmBtn: "Добавить"
+          confirmBtn: cityPoolAdd ? "Добавить" : null
         }}
         data={
           {
             title: 'Добавдение нескольких НП',
-            content: <CitiesUpload />
+            content: <CitiesUpload setCityPool={setCityPoolAdd}/>
           }
         }
       />

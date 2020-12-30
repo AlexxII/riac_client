@@ -11,6 +11,8 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Badge from '@material-ui/core/Badge';
+import { withStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -31,6 +33,17 @@ import { useMutation } from '@apollo/react-hooks'
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
 
+
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    right: 0,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: '0 4px',
+  },
+}))(Badge);
+
+
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
 
@@ -39,7 +52,6 @@ const OverallResults = ({ id }) => {
   const [activeFilters, setActiveFilters] = useState()
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
-  // const [intermidateCheck, setIntermidateCheck] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
   const [intervUpload, setIntervUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
@@ -353,17 +365,19 @@ const OverallResults = ({ id }) => {
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
-            <FormControlLabel id="selectall-checkbox"
-              control={
-                <Checkbox
-                  checked={selectAll && selectPool.length === activeResults.length}
-                  onChange={selectAllActive}
-                  color="primary"
-                  indeterminate={selectPool.length > 0 & !selectAll}
-                />
-              }
-              label="Выделить все"
-            />
+            <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={999}>
+              <FormControlLabel id="selectall-checkbox"
+                control={
+                  <Checkbox
+                    checked={selectAll && selectPool.length === activeResults.length}
+                    onChange={selectAllActive}
+                    color="primary"
+                    indeterminate={selectPool.length > 0 & !selectAll}
+                  />
+                }
+                label="Выделить все"
+              />
+            </StyledBadge>
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>

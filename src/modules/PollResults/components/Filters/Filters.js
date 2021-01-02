@@ -11,14 +11,14 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
 
-const Filters = ({ filters, setActiveFilters }) => {
+const Filters = ({ filters, cities, setActiveFilters }) => {
+  console.log(cities);
   const [avaiableFilters] = useState({
     age: filters.age,
-    cities: filters.cities.map(city => ({
+    cities: cities.map(city => ({
       value: city.id,
       title: city.title,
-      category: city.category.label
-
+      category: city.category.title
     })).sort((a, b) => a.category - b.category),
     intervs: filters.intervievers.map(interv => ({
       value: interv.id,

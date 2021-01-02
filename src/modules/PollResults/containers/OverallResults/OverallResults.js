@@ -48,8 +48,8 @@ const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
 
   const [delOpen, setDelOpen] = useState(false)
-  const [activeResults, setActiveResults] = useState()
-  const [activeFilters, setActiveFilters] = useState()
+  const [activeResults, setActiveResults] = useState(null)
+  const [activeFilters, setActiveFilters] = useState(null)
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
@@ -388,7 +388,7 @@ const OverallResults = ({ id }) => {
             </Box>
           </Grid>
         </Grid>
-        <Filters filters={filtersResults} setActiveFilters={setActiveFilters} />
+        <Filters filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters} />
         <DataGrid
           data={activeResults}
           selectPool={selectPool}

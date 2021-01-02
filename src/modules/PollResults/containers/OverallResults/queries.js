@@ -2,14 +2,6 @@ import { gql } from '@apollo/client'
 
 export const GET_FILTER_SELECTS = gql`
   query {
-    cities {
-      id
-      title
-      population
-      category {
-        title
-      }
-    }
     intervievers {
       id
       username
@@ -34,6 +26,14 @@ query ($id: ID!) {
   poll(id: $id) {
     id
     title
+    cities {
+      id
+      title
+      population
+      category {
+        title
+      }
+    }
     results {
       id
       user {

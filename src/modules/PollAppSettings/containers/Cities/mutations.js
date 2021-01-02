@@ -28,14 +28,15 @@ mutation ($cities: [CityInput]!) {
 }
 `
 export const CITY_EDIT_SAVE = gql`
-mutation ($id: String!, $title: String!, $population: Int!, $category: String!) {
-  cityEdit(id: $id, title: $title, population: $population, category: $category) {
+mutation ($id: String!, $type: String, $title: String!, $population: Int!, $category: String!) {
+  cityEdit(id: $id, type: $type, title: $title, population: $population, category: $category) {
     id
     title
     category {
       id
       title
     }
+    type
     population
   }
 }
@@ -49,6 +50,7 @@ mutation ($id: String!) {
       id
       title
     }
+    type
     population
   }
 }

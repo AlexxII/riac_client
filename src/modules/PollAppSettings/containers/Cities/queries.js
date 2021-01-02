@@ -10,6 +10,7 @@ query {
       id
       title
     }
+    type
   }
   cityCategories{
     id

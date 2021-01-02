@@ -1,14 +1,15 @@
 import { gql } from '@apollo/client'
 
 export const CITY_SAVE_MUTATION = gql`
-mutation ($title: String!, $population: Int!, $category: String!) {
-  newCity(title: $title, population: $population, category: $category) {
+mutation ($title: String!, $type: String!, $population: Int!, $category: String!) {
+  newCity(title: $title, type: $type, population: $population, category: $category) {
     id
     title
     category {
       id
       title
     }
+    type
     population
   }
 }

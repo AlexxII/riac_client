@@ -139,6 +139,9 @@ const Cities = () => {
         {!editting ?
           <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
             <Paper className="city-card">
+              <Typography variant="caption" display="block" gutterBotto>
+                {city.type ? city.type : ''}
+              </Typography>
               <Typography variant="h6" gutterBottom>
                 {city.title}
               </Typography>
@@ -167,6 +170,7 @@ const Cities = () => {
   const CityAdd = ({ save, close, city }) => {
     const [edit, setEdit] = useState(false)
     const [title, setTitle] = useState(city ? city.title : '')
+    const [type, setType] = useState(city ? city.type : '')
     const [population, setPopulation] = useState(city ? city.population : '')
     const [category, setCategory] = useState(city ? city.category.id : '')
 
@@ -174,16 +178,20 @@ const Cities = () => {
       e.preventDefault()
       const newCity = {
         title,
+        type,
         population: +population,
         category
       }
-      console.log(newCity);
       save(newCity)
     }
 
     const titleHandle = (e) => {
       setEdit(true)
       setTitle(e.currentTarget.value)
+    }
+    const typeHandle = (e) => {
+      setEdit(true)
+      setType(e.currentTarget.value)
     }
     const popHandle = (e) => {
       setEdit(true)
@@ -208,17 +216,30 @@ const Cities = () => {
               helperText="Название н.п."
               onChange={titleHandle}
             />
-            <TextField
-              className="add-city-population"
-              type="number"
-              required
-              defaultValue={city ? city.population : ''}
-              onChange={popHandle}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              helperText="Численность, чел."
-            />
+            <Grid item container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  className="add-city-type"
+                  required
+                  defaultValue={city ? city.type : ''}
+                  helperText="Тип н.п."
+                  onChange={typeHandle}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  className="add-city-population"
+                  type="number"
+                  required
+                  defaultValue={city ? city.population : ''}
+                  onChange={popHandle}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  helperText="Численность, чел."
+                />
+              </Grid>
+            </Grid>
             <TextField
               select
               required
@@ -314,7 +335,7 @@ const Cities = () => {
   }
 
   const Loading = () => {
-    if (saveCityLoading || saveCityEditLoading || deleteCityLoading) return <LoadingStatus />
+    if (saveCityLoading || saveCityEditLoading || deleteCityLoading || saveCityMultipleLoading) return <LoadingStatus />
     return null
   }
 

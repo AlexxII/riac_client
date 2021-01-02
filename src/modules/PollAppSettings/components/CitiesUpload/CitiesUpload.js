@@ -76,7 +76,7 @@ const CitiesUpload = ({ setCityPool }) => {
         <Box sm={6} className={classes.button}>
           <label htmlFor="contained-button-file">
             <Button variant="contained" color="primary" component="span">
-              Загрузить
+              Выбрать файл
             </Button>
           </label>
         </Box>

@@ -11,6 +11,9 @@ import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 
+const productionUrl = process.env.REACT_APP_GQL_SERVER
+const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
+const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const Generation = ({ id }) => {
   const [poll, setPoll] = useState(null)
@@ -31,7 +34,7 @@ const Generation = ({ id }) => {
   })
 
   const handleConfigFile = (filePath) => {
-    fetch(`http://localhost:4000${filePath}`)
+    fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
         const logic = parseIni(text)

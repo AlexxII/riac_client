@@ -1,10 +1,10 @@
-export const parseIni = (area) => {
-  let configData = area;
-  // let configData = area.value;
+export const parseIni = (configData) => {
   let regex = {
     section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
     param: /^\s*([^=]+?)\s*=\s*(.*?)\s*$/,
-    comment: /^\s*#.*$/
+    comment: /^\s*#.*$/,
+    header: /"[^"\\]+(?:\\.[^"\\]*)*"/,
+    chart: /chart.*/
   };
   let config = {};
   let lines = configData.split(/[\r\n]+/);
@@ -15,6 +15,10 @@ export const parseIni = (area) => {
     } else if (regex.param.test(line)) {
       let match = line.match(regex.param);
       if (section) {
+        if (regex.chart.test(section)) {
+          // если это секция с графиком, применить другую логику парсинга
+          console.log(match[2]);
+        }
         config[section][match[1]] = parseParams(match[2]);
       } else {
         config[match[1]] = parseParams(match[2]);
@@ -27,8 +31,19 @@ export const parseIni = (area) => {
       section = null;
     }
   });
-  // console.log(config);
-  return concatLogic(config);
+  const resConfig = concatLogic(config)
+  console.log(resConfig);
+
+  // если шапку не стерли из конфиг файла
+  if (regex.header.test(configData)) {
+    const header = configData.match(regex.header)[0]
+    return {
+      ...resConfig,
+      header
+    }
+  } else {
+    return resConfig
+  }
 }
 
 function concatLogic(config) {
@@ -53,13 +68,15 @@ function concatLogic(config) {
 
 function parseParams(data) {
   // избавляемся от пробелов
+
+  console.log(data);
+
   let trimData = data.replace(/\s*/g, '');
   let regex = {
     // range : /\[(.+?)\]/gm,
     // single: /([0-9]{1,3})/gm,
     srange: /([0-9]{1,3})|\[(.+?)\]/gm
   };
-
   let output = [];
   let temp;
   do {
@@ -103,6 +120,7 @@ function rangeToArray(data) {
 }
 
 export const normalizeLogic = (logic) => {
+  console.log(logic);
   let normalizedLogic = {}
   for (let key in logic) {
     switch (key) {
@@ -162,5 +180,6 @@ export const normalizeLogic = (logic) => {
         break
     }
   }
+  console.log(normalizedLogic);
   return normalizedLogic
 }

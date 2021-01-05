@@ -19,6 +19,8 @@ import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
+import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
+
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
@@ -33,7 +35,11 @@ import { useMutation } from '@apollo/react-hooks'
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
 
+const productionUrl = process.env.REACT_APP_GQL_SERVER
+const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
+const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
+// кол-во выделенных анкет
 const StyledBadge = withStyles((theme) => ({
   badge: {
     right: 0,
@@ -42,7 +48,6 @@ const StyledBadge = withStyles((theme) => ({
     padding: '0 4px',
   },
 }))(Badge);
-
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -68,8 +73,18 @@ const OverallResults = ({ id }) => {
     },
     onCompleted: () => {
       setActiveResults(pollResults.poll.results)
+      handleConfigFileAndUpdateCache(pollResults.poll)
     }
   });
+
+  const handleConfigFileAndUpdateCache = (poll) => {
+    const filePath = poll.logic.path
+    fetch(url + filePath)
+      .then((r) => r.text())
+      .then(text => {
+        const normalizedLogic = normalizeLogic(parseIni(text))
+      })
+  }
 
   const {
     data: filtersResults,
@@ -107,10 +122,10 @@ const OverallResults = ({ id }) => {
       const selectedData = activeResults
         .filter(result => selectPool.includes(result.id))
       // кол-во уникальных городов, которые были выбраны
-      const uniqueCitites = selectedData.map(obj => obj.city.id).filter((v, i, a) => a.indexOf(v) === i).length
+      const uniqueCitites = selectedData.map(obj => obj.city ? obj.city.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
       setCitiesUpload(uniqueCitites)
       // кол-во уникальных интервьюеров, которые были выбраны
-      const uniqueInterv = selectedData.map(obj => obj.user.id).filter((v, i, a) => a.indexOf(v) === i).length
+      const uniqueInterv = selectedData.map(obj => obj.user ? obj.user.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
       setIntervUpload(uniqueInterv)
       // для отображения промежуточного положения checkbox-a 
       activeResults.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
@@ -159,6 +174,7 @@ const OverallResults = ({ id }) => {
     if (loadOnDelete) return <LoadingStatus />
     return null
   }
+
 
   const selectAllActive = (event) => {
     setSelectAll(event.target.checked)

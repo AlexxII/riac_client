@@ -21,8 +21,9 @@ import { useQuery } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
 
-const proDuctionUrl = process.env.REACT_APP_GQL_SERVER
-const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : proDuctionUrl
+const productionUrl = process.env.REACT_APP_GQL_SERVER
+const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
+const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const useStyles = makeStyles((theme) => ({
   popover: {

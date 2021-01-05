@@ -34,6 +34,9 @@ query ($id: ID!) {
         title
       }
     }
+    logic {
+      path
+    }
     results {
       id
       user {

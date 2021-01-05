@@ -17,8 +17,9 @@ import { logicQuery } from "./queries"
 import { saveConfigChanges } from "./mutations"
 import { GET_POLL_DATA } from '../../containers/Common/queries'
 
-const proDuctionUrl = process.env.REACT_APP_GQL_SERVER
-const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : proDuctionUrl
+const productionUrl = process.env.REACT_APP_GQL_SERVER
+const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
+const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const ConfigEditor = ({ id }) => {
   const [noti, setNoti] = useState(false)

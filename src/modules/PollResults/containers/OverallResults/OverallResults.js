@@ -62,6 +62,7 @@ const OverallResults = ({ id }) => {
   const [batchOpen, setBatchOpen] = useState(false)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
+  const [logic, setLogic] = useState(false)
 
   const {
     data: pollResults,
@@ -83,6 +84,7 @@ const OverallResults = ({ id }) => {
       .then((r) => r.text())
       .then(text => {
         const normalizedLogic = normalizeLogic(parseIni(text))
+        setLogic(normalizedLogic)
       })
   }
 
@@ -137,7 +139,7 @@ const OverallResults = ({ id }) => {
     if (activeFilters) {
       const results = pollResults.poll.results
       const newResult = results.filter(result => {
-        return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : true : true
+        return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
       }).filter(result => {
         return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
       }).filter(result => {
@@ -175,7 +177,6 @@ const OverallResults = ({ id }) => {
     return null
   }
 
-
   const selectAllActive = (event) => {
     setSelectAll(event.target.checked)
     if (event.target.checked) {
@@ -203,8 +204,18 @@ const OverallResults = ({ id }) => {
   }
 
   const exportDataIntervGroup = () => {
+    const needData = pollResults.poll.results.filter(respondent => selectPool.includes(respondent.id))
+      .slice()
+      .sort((a, b) => a.city && b.city ? (a.city.category.order > b.city.category.order) ? 1 : -1 : 1)
+      .sort((a, b) => a.city && b.city ? (a.city.category.id > b.city.category.id) ? 1 : -1 : 1)
+      .sort((a, b) => a.user && b.user ? (a.user.id > b.user.id) ? 1 : -1 : 1)
+    console.log(needData);
+
     // должен включать алгоритм разбивки данных на респонденты и добавление шапки
     // ???????? или важен город ???????
+
+
+
     setNoti({
       type: 'info',
       text: 'Опция пока не доступна'

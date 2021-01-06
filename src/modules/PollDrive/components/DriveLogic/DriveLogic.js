@@ -111,9 +111,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
-    console.log(count);
     const newQuestion = questionFormation(poll, count, results, logic, setResults);
-    console.log(newQuestion);
     if (!newQuestion) return
     if (newQuestion.next) {
       if (direction) {

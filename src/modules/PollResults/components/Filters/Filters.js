@@ -12,7 +12,6 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
 
 const Filters = ({ filters, cities, setActiveFilters }) => {
-  console.log(cities);
   const [avaiableFilters] = useState({
     age: filters.age,
     cities: cities.map(city => ({

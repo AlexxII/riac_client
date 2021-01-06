@@ -17,23 +17,29 @@ export const parseIni = (configData) => {
       if (section) {
         if (regex.chart.test(section)) {
           // если это секция с графиком, применить другую логику парсинга
-          console.log(match[2]);
+          if (match[1] === 'data') {
+            config[section][match[1]] = parseChartData(match[2])
+          } else {
+            config[section][match[1]] = parseParams(match[2]);
+          }
+        } else {
+          config[section][match[1]] = parseParams(match[2]);
         }
-        config[section][match[1]] = parseParams(match[2]);
       } else {
         config[match[1]] = parseParams(match[2]);
       }
     } else if (regex.section.test(line)) {
       let match = line.match(regex.section);
-      config[match[1]] = {};
-      section = match[1];
+      // отбрасываем из обработки header -> добавляем при необходимости ниже
+      if (match[1] !== 'header') {
+        config[match[1]] = {};
+        section = match[1];
+      }
     } else if (line.length == 0 && section) {
       section = null;
     }
   });
   const resConfig = concatLogic(config)
-  console.log(resConfig);
-
   // если шапку не стерли из конфиг файла
   if (regex.header.test(configData)) {
     const header = configData.match(regex.header)[0]
@@ -46,8 +52,21 @@ export const parseIni = (configData) => {
   }
 }
 
+const parseChartData = (data) => {
+  const regExp = /[0-9.]{1,}/gm
+  const trimData = data.replace(/\s*/g, '');
+  let temp, out = []
+  do {
+    temp = regExp.exec(trimData);
+    if (temp) {
+      out.push(temp[0]);
+    }
+  } while (temp);
+  return out
+}
+
 function concatLogic(config) {
-  let regex = /([0-9]{1,})/gm;
+  const regex = /([0-9]{1,})/gm;
   let result = {};
   let property = null;
   for (let key in config) {
@@ -68,13 +87,8 @@ function concatLogic(config) {
 
 function parseParams(data) {
   // избавляемся от пробелов
-
-  console.log(data);
-
   let trimData = data.replace(/\s*/g, '');
   let regex = {
-    // range : /\[(.+?)\]/gm,
-    // single: /([0-9]{1,3})/gm,
     srange: /([0-9]{1,3})|\[(.+?)\]/gm
   };
   let output = [];
@@ -120,7 +134,7 @@ function rangeToArray(data) {
 }
 
 export const normalizeLogic = (logic) => {
-  console.log(logic);
+  // console.log(logic);
   let normalizedLogic = {}
   for (let key in logic) {
     switch (key) {
@@ -164,6 +178,15 @@ export const normalizeLogic = (logic) => {
           unique: logic[key][1].answers
         }
         break
+      case 'header':
+        normalizedLogic = {
+          ...normalizedLogic,
+          header: logic[key]
+        }
+        break
+      case 'charts':
+        const charts = logic[key]
+        break
       case 'invisible':
         const invisible = logic[key]
         let invisiblePool = []
@@ -180,6 +203,5 @@ export const normalizeLogic = (logic) => {
         break
     }
   }
-  console.log(normalizedLogic);
   return normalizedLogic
 }

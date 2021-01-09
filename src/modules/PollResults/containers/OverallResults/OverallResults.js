@@ -20,6 +20,7 @@ import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
+import { rusToLatin, prepareResultsDataToExport } from '../../lib/utils'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
@@ -58,7 +59,6 @@ const OverallResults = ({ id }) => {
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
-  const [intervUpload, setIntervUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
@@ -73,6 +73,7 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: () => {
+      console.log(pollResults);
       setActiveResults(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
     }
@@ -111,7 +112,6 @@ const OverallResults = ({ id }) => {
       cache.modify({
         fields: {
           pollResults(existingRefs, { readField }) {
-            console.log(existingRefs);
             return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
           }
         }
@@ -126,9 +126,6 @@ const OverallResults = ({ id }) => {
       // кол-во уникальных городов, которые были выбраны
       const uniqueCitites = selectedData.map(obj => obj.city ? obj.city.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
       setCitiesUpload(uniqueCitites)
-      // кол-во уникальных интервьюеров, которые были выбраны
-      const uniqueInterv = selectedData.map(obj => obj.user ? obj.user.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
-      setIntervUpload(uniqueInterv)
       // для отображения промежуточного положения checkbox-a 
       activeResults.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
     }
@@ -188,70 +185,78 @@ const OverallResults = ({ id }) => {
     }
   }
 
-  const exportDataCityGrouped = () => {
-    // должен вкючать алгоритм разбивки на города
-    // setNoti({
-    //   type: 'info',
-    //   text: 'Опция пока не доступна'
-    // })
-    // 1 - разбиваем на города
-    // 2 - сформировать строку ответов
-    // 3 - выгрузить файлы в соответствии с городами
-
-    for (let i = 0; i < 5; i++) {
-      downloadIt(i, `test_${i}.txt`)
-    }
-  }
-
-  const exportDataIntervGroup = () => {
+  const exportDataCityGrouped = (singleFile) => {
     const needData = pollResults.poll.results.filter(respondent => selectPool.includes(respondent.id))
       .slice()
       .sort((a, b) => a.city && b.city ? (a.city.category.order > b.city.category.order) ? 1 : -1 : 1)
       .sort((a, b) => a.city && b.city ? (a.city.category.id > b.city.category.id) ? 1 : -1 : 1)
       .sort((a, b) => a.user && b.user ? (a.user.id > b.user.id) ? 1 : -1 : 1)
-    console.log(needData);
-
-    // должен включать алгоритм разбивки данных на респонденты и добавление шапки
-    // ???????? или важен город ???????
-
-
-
-    setNoti({
-      type: 'info',
-      text: 'Опция пока не доступна'
-    })
+    // групировка по городам
+    const groupedObj = needData.reduce((groups, item) => ({
+      ...groups,
+      [item.city ? item.city.title : null]: [...(groups[item.city ? item.city.title : null] || []), item]
+    }), {});
+    const exportData = {}
+    const dateRegExp = /(\d{2}).(\d{2}).(\d{2})(\d{2})/gmi                        // регулярка для даты
+    for (let city in groupedObj) {
+      const cityData = groupedObj[city]
+      const results = cityData.map(obj => obj.result)
+      const intervs = cityData.map(obj => obj.user.username)                      // все интервьюеры
+      const dietIntervs = [...new Set(intervs)]                                   // остаются только уникальные
+      exportData[city] = {
+        data: prepareResultsDataToExport(results),
+        date: cityData[0].created.replace(dateRegExp, `$1$2$4`),                  // дата в шапку
+        city: cityData[0].city ? cityData[0].city.type + " " + city : '-',        // город
+        interviewer: `${dietIntervs}`
+      }
+    }
+    let count = 1
+    // одним файлом или множество
+    if (singleFile) {
+      let outData = ''
+      for (let city in exportData) {
+        const mapObj = {
+          '{code}': pollResults.poll.code,
+          '{date}': exportData[city].date,
+          '{int}': count,
+          '{city}': exportData[city].city
+        }
+        const header = logic.header.replace(/{code}|{date}|{int}|{city}/gi, function (matched) {
+          return mapObj[matched]
+        }).replace(/['"]+/g, '')                                                  // удаление кавычек
+        outData += header + '\n' + exportData[city].data
+        outData += '==='
+        outData += '\n' + exportData[city].interviewer + '\n\n'
+        count++
+      }
+      downloadIt(outData, 'allData.opr')
+    } else {
+      for (let city in exportData) {
+        let outData = ''
+        const mapObj = {
+          '{code}': pollResults.poll.code,
+          '{date}': exportData[city].date,
+          '{int}': count,
+          '{city}': exportData[city].city
+        }
+        const header = logic.header.replace(/{code}|{date}|{int}|{city}/gi, function (matched) {
+          return mapObj[matched]
+        }).replace(/['"]+/g, '')                                                  // удаление кавычек
+        outData += header + '\n' + exportData[city].data
+        outData += '==='
+        outData += '\n' + exportData[city].interviewer
+        count++
+        downloadIt(outData, rusToLatin(city))                                   // транслит для имени файла
+      }
+    }
   }
 
+
   const exportAllRawData = () => {
-    const regExp = /,/gi
     const resultsPool = activeResults
       .filter(result => selectPool.includes(result.id))
       .map(obj => obj.result)
-    const lResults = resultsPool.length
-    let allResults = ''
-    for (let i = 0; i < lResults; i++) {
-      const oderedResults = resultsPool[i].slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-      const details = oderedResults.map(obj => {
-        if (obj.text !== '') {
-          return obj.code + ' ' + obj.text.replaceAll(regExp, ';')
-        }
-        return obj.code
-      })
-      // кусок ниже, чтобы вставить перенос каретки при 180 символах и более, для Вити М.
-      const rLength = details.length
-      let tempResult = ''
-      let counter = 0
-      for (let j = 0; j < rLength; j++) {
-        tempResult += details[j] + ','
-        if (tempResult.length - counter > 160) {
-          tempResult += '\n'
-          counter = tempResult.length
-        }
-      }
-      allResults += tempResult + '999' + '\n'
-    }
-    // транслит для имени файла
-    // rus_to_latin('Имя файла')
+    const allResults = prepareResultsDataToExport(resultsPool)
     downloadIt(allResults, 'allData.txt')
   }
 
@@ -336,10 +341,8 @@ const OverallResults = ({ id }) => {
               visible={!selectPool.length}
               rawDataExport={exportAllRawData}
               byCityExport={exportDataCityGrouped}
-              byIntervExport={exportDataIntervGroup}
               bags={{
-                cities: citiesUpload,
-                interv: intervUpload
+                cities: citiesUpload
               }}
             />
             <Tooltip title="Краткая информация">
@@ -430,24 +433,3 @@ const OverallResults = ({ id }) => {
 
 
 export default OverallResults
-
-
-function rus_to_latin(str) {
-  var ru = {
-    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd',
-    'е': 'e', 'ё': 'e', 'ж': 'j', 'з': 'z', 'и': 'i',
-    'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
-    'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
-    'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh',
-    'щ': 'shch', 'ы': 'y', 'э': 'e', 'ю': 'u', 'я': 'ya'
-  }, n_str = [];
-  str = str.replace(/[ъь]+/g, '').replace(/й/g, 'i');
-  for (var i = 0; i < str.length; ++i) {
-    n_str.push(
-      ru[str[i]]
-      || ru[str[i].toLowerCase()] == undefined && str[i]
-      || ru[str[i].toLowerCase()].toUpperCase()
-    );
-  }
-  return n_str.join('');
-}

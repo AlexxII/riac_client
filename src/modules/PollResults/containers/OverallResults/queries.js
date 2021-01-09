@@ -26,11 +26,14 @@ query ($id: ID!) {
   poll(id: $id) {
     id
     title
+    code
     cities {
       id
       title
       population
       category {
+        id
+        order
         title
       }
     }
@@ -46,6 +49,7 @@ query ($id: ID!) {
       city {
         id
         title
+        type
         category {
           order
           id

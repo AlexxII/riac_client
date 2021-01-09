@@ -14,11 +14,15 @@ import Button from '@material-ui/core/Button';
 const Filters = ({ filters, cities, setActiveFilters }) => {
   const [avaiableFilters] = useState({
     age: filters.age,
-    cities: cities.map(city => ({
-      value: city.id,
-      title: city.title,
-      category: city.category.title
-    })).sort((a, b) => a.category - b.category),
+    cities: cities
+      .slice()
+      .sort((a, b) => a.category.id > b.category.id ? 1 : -1)
+      .sort((a, b) => a.category.order > b.category.order ? 1 : -1)
+      .map(city => ({
+        value: city.id,
+        title: city.title,
+        category: city.category.title
+      })),
     intervs: filters.intervievers.map(interv => ({
       value: interv.id,
       title: interv.username,
@@ -114,6 +118,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             variant="outlined"
             value={newFilter ? newFilter.shownDate ? newFilter.shownDate : '' : ''}
             onChange={handleDataChange}
+            size="small"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -139,10 +144,11 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             disableCloseOnSelect
             clearOnEscape
             onChange={handleAgeChange}
+            size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderOption={(option, { selected }) => (
-              <React.Fragment>
+              <Fragment>
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
@@ -150,7 +156,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
                   checked={selected}
                 />
                 {option.title}
-              </React.Fragment>
+              </Fragment>
             )}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Возраст" />
@@ -161,6 +167,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
           <Autocomplete
             options={avaiableFilters.sex}
             onChange={handleSexChange}
+            size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderInput={(params) => (
@@ -177,10 +184,11 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             disableCloseOnSelect
             clearOnEscape
             onChange={handleCityChange}
+            size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderOption={(option, { selected }) => (
-              <React.Fragment>
+              <Fragment>
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
@@ -188,7 +196,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
                   checked={selected}
                 />
                 {option.title}
-              </React.Fragment>
+              </Fragment>
             )}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Город"
@@ -206,10 +214,11 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             disableCloseOnSelect
             clearOnEscape
             onChange={handleInterviewersChange}
+            size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderOption={(option, { selected }) => (
-              <React.Fragment>
+              <Fragment>
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
@@ -217,7 +226,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
                   checked={selected}
                 />
                 {option.title}
-              </React.Fragment>
+              </Fragment>
             )}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" label="Интервьюер" />
@@ -228,6 +237,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
           <Autocomplete
             options={avaiableFilters.status}
             onChange={handleStatusChange}
+            size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
             renderInput={(params) => (

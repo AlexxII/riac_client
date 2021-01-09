@@ -63,10 +63,6 @@ const BatchCharts = ({ data, selectPool, open, close }) => {
     return null
   }
 
-  if (!selectedData) return (
-    <LoadingState />
-  )
-
   return (
     <div>
       <Dialog fullScreen open={open} onClose={close} TransitionComponent={Transition}>
@@ -82,19 +78,23 @@ const BatchCharts = ({ data, selectPool, open, close }) => {
         </AppBar>
         <Container className="batch-linear">
           <Grid item container>
-            {selectedData.questions.map((question, index) => (
-              <Fragment>
-                <Grid xs={12} style={{ textAlign: 'center' }}>
-                  <p className="question-title">{index + 1}. {question.title}</p>
-                </Grid>
-                <Grid xs={12} md={6}>
-                  <LinearTable index={index} key={question.id} question={question} />
-                </Grid>
-                <Grid xs={12} md={6}>
-                  <BarChart key={question.id} question={question} />
-                </Grid>
-              </Fragment>
-            ))}
+            {selectedData ?
+              selectedData.questions.map((question, index) => (
+                <Fragment>
+                  <Grid xs={12} style={{ textAlign: 'center' }}>
+                    <p className="question-title">{index + 1}. {question.title}</p>
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <LinearTable index={index} key={question.id} question={question} />
+                  </Grid>
+                  <Grid xs={12} md={6}>
+                    <BarChart key={question.id} question={question} />
+                  </Grid>
+                </Fragment>
+              ))
+              :
+              <LoadingState />
+            }
           </Grid>
         </Container>
       </Dialog>

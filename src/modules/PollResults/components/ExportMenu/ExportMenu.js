@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 
-const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport, bags }) => {
+const ExportMenu = ({ visible, rawDataExport, byCityExport, bags }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -27,15 +27,15 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport, bags
   }
 
   const handlyByCity = () => {
-    byCityExport()
+    byCityExport(false)
     setAnchorEl(null)
   }
 
-  const handleByInterv = () => {
-    byIntervExport()
+  const handlyByCityOne = () => {
+    byCityExport(true)
     setAnchorEl(null)
   }
-
+  
   return (
     <Fragment>
       <Tooltip title="Выгрузить">
@@ -56,21 +56,14 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, byIntervExport, bags
         onClose={handleClose}
       >
         <MenuItem onClick={handleRaw}>Общие данные</MenuItem>
+        <MenuItem onClick={handlyByCityOne}>Одиним файлом</MenuItem>
         <MenuItem onClick={handlyByCity}>
           <ListItemIcon style={{ minWidth: '25px' }}>
-            <Tooltip title="Кол-во уникальных городов, следовательно и файлов">
+            <Tooltip title="Кол-во уникальных городов">
               <Typography variant="button" display="block" gutterBottom>{bags.cities}</Typography>
             </Tooltip>
           </ListItemIcon>
           <Typography variant="inherit">По городам</Typography>
-        </MenuItem>
-        <MenuItem onClick={handleByInterv}>
-          <ListItemIcon style={{ minWidth: '25px' }}>
-            <Tooltip title="Кол-во уникальных респондентов, следовательно и файлов">
-              <Typography variant="button" display="block" gutterBottom>{bags.interv}</Typography>
-            </Tooltip>
-          </ListItemIcon>
-          <Typography variant="inherit">С шапкой</Typography>
         </MenuItem>
       </Menu>
     </Fragment>

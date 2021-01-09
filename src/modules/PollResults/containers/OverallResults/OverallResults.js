@@ -345,7 +345,7 @@ const OverallResults = ({ id }) => {
                 cities: citiesUpload
               }}
             />
-            <Tooltip title="Краткая информация">
+            <Tooltip title="Просмотр кодов">
               <IconButton
                 color="primary"
                 component="span"

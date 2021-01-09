@@ -25,16 +25,19 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
         [item.city ? item.city.title : null]: [...(groups[item.city ? item.city.title : null] || []), item]
       }), {});
 
-      let shownData = ''
+      let shownLine = []
       for (let city in groupedObj) {
         const cityData = groupedObj[city]
         const results = cityData.map(obj => obj.result)
-        const data = prepareResultsDataToExport(results)
-        shownData += city + '\n'
-        shownData += '' + data + '\n'
+        const data = prepareResultsDataToExport(results).split('\n')
+        shownLine = [
+          ...shownLine,
+          city,
+          ...data
+        ]
       }
-      setGroupedData(shownData)
-
+      console.log(shownLine);
+      setGroupedData(shownLine)
     }
   }, [open])
 
@@ -42,16 +45,17 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
     return null
   }
 
-  // if (!selectedData || !groupedData) return (
-  // )
-
-  const Info = () => {
+  const Content = () => {
     return (
       <Fragment>
         {!groupedData ?
           <LoadingState />
           :
-          groupedData
+          groupedData.map(line => (
+            <Fragment>
+              <span>{line}</span><br />
+            </Fragment>
+          ))
         }
       </Fragment>
     )
@@ -85,7 +89,7 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
       close={close}
       data={{
         title: 'Краткая информация',
-        content: <Info />
+        content: <Content />
       }}
       config={{
         closeBtn: "Отмена",

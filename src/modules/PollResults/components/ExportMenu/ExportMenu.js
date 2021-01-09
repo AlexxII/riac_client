@@ -5,6 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import PublishIcon from '@material-ui/icons/Publish';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import Divider from '@material-ui/core/Divider';
 
 import Typography from '@material-ui/core/Typography';
 
@@ -35,7 +36,7 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, bags }) => {
     byCityExport(true)
     setAnchorEl(null)
   }
-  
+
   return (
     <Fragment>
       <Tooltip title="Выгрузить">
@@ -56,6 +57,14 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, bags }) => {
         onClose={handleClose}
       >
         <MenuItem onClick={handleRaw}>Общие данные</MenuItem>
+        <Divider style={{marginTop: '5px'}} />
+        <Typography
+          color="textSecondary"
+          display="block"
+          variant="caption"
+        >
+          По НП
+        </Typography>
         <MenuItem onClick={handlyByCityOne}>Одиним файлом</MenuItem>
         <MenuItem onClick={handlyByCity}>
           <ListItemIcon style={{ minWidth: '25px' }}>
@@ -63,7 +72,7 @@ const ExportMenu = ({ visible, rawDataExport, byCityExport, bags }) => {
               <Typography variant="button" display="block" gutterBottom>{bags.cities}</Typography>
             </Tooltip>
           </ListItemIcon>
-          <Typography variant="inherit">По городам</Typography>
+          <Typography variant="inherit">Несколько файлов</Typography>
         </MenuItem>
       </Menu>
     </Fragment>

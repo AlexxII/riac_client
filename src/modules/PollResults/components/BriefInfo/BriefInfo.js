@@ -36,7 +36,6 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
           ...data
         ]
       }
-      console.log(shownLine);
       setGroupedData(shownLine)
     }
   }, [open])

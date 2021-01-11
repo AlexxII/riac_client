@@ -213,6 +213,7 @@ const OverallResults = ({ id }) => {
     let count = 1
     // одним файлом или множество
     if (singleFile) {
+      console.log(logic.header);
       let outData = ''
       for (let city in exportData) {
         const mapObj = {
@@ -221,9 +222,14 @@ const OverallResults = ({ id }) => {
           '{int}': count,
           '{city}': exportData[city].city
         }
-        const header = logic.header.replace(/{code}|{date}|{int}|{city}/gi, function (matched) {
-          return mapObj[matched]
-        }).replace(/['"]+/g, '')                                                  // удаление кавычек
+        let header = ''
+        if (logic.header) {
+          header = logic.header.replace(/{code}|{date}|{int}|{city}/gi, function (matched) {
+            return mapObj[matched]
+          }).replace(/['"]+/g, '')                                                  // удаление кавычек
+        } else {
+          header = 'Шапка не задана в конфиг.файле'
+        }
         outData += header + '\n' + exportData[city].data
         outData += '==='
         outData += '\n' + exportData[city].interviewer + '\n\n'
@@ -239,18 +245,22 @@ const OverallResults = ({ id }) => {
           '{int}': count,
           '{city}': exportData[city].city
         }
-        const header = logic.header.replace(/{code}|{date}|{int}|{city}/gi, function (matched) {
-          return mapObj[matched]
-        }).replace(/['"]+/g, '')                                                  // удаление кавычек
+        let header = ''
+        if (logic.header) {
+          header = logic.header.replace(/{code}|{date}|{int}|{city}/gi, function (matched) {
+            return mapObj[matched]
+          }).replace(/['"]+/g, '')                                                  // удаление кавычек
+        } else {
+          header = 'Шапка не задана в конфиг.файле'
+        }
         outData += header + '\n' + exportData[city].data
         outData += '==='
         outData += '\n' + exportData[city].interviewer
         count++
-        downloadIt(outData, rusToLatin(city))                                   // транслит для имени файла
+        downloadIt(outData, rusToLatin(city))                                     // транслит для имени файла
       }
     }
   }
-
 
   const exportAllRawData = () => {
     const resultsPool = activeResults

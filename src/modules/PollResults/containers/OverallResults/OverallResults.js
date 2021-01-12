@@ -487,7 +487,7 @@ const OverallResults = ({ id }) => {
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
-              <Badge badgeContent={doubleResults.length ? doubleResults.length : null} color="secondary" anchorOrigin={{
+              <Badge badgeContent={doubleResults.length ? `${doubleResults.length}/34` : null} color="secondary" anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
               }}

@@ -12,6 +12,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
@@ -55,7 +56,9 @@ const OverallResults = ({ id }) => {
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState(null)                // отображаемые анкеты
+  const [doubleResults, setDoubleResults] = useState(null)
   const [activeFilters, setActiveFilters] = useState(null)
+  const [calculating, setCalculating] = useState(true)
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
@@ -132,7 +135,7 @@ const OverallResults = ({ id }) => {
         ))
         // процесс анализа дублей
         const lResults = results.length - 1                                           // кол-во итераций N-1, т.к. предпоследний сравнивается с последним
-        let rr = []
+        let arrayOfDublWorksheets = []
         for (let i = 0; i < lResults; i++) {
           const result = results[i].answers
           const lresult = result.length
@@ -156,7 +159,7 @@ const OverallResults = ({ id }) => {
                 break
               }
               if (count === result.length) {
-                rr.push({
+                arrayOfDublWorksheets.push({
                   first: results[i].id,
                   second: results[k].id
                 })
@@ -164,7 +167,18 @@ const OverallResults = ({ id }) => {
             }
           }
         }
-        console.log(rr);
+        if (arrayOfDublWorksheets.length) {
+          const ttt = arrayOfDublWorksheets.reduce((group, item) => {
+            return [
+              ...group,
+              item.first,
+              item.second
+            ]
+          }, [])
+          console.log(ttt);
+          setDoubleResults(ttt)
+          setCalculating(false)
+        }
       }
       return
     }
@@ -179,6 +193,7 @@ const OverallResults = ({ id }) => {
       setCitiesUpload(uniqueCitites)
       // для отображения промежуточного положения checkbox-a 
       activeWorksheets.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
+      setDoubleResults(null)
     }
   }, [selectPool])
 
@@ -206,7 +221,7 @@ const OverallResults = ({ id }) => {
     }
   }, [activeFilters])
 
-  if (pollResultsLoading || !activeWorksheets || filtersResultsLoading) return (
+  if (pollResultsLoading || !activeWorksheets || calculating || filtersResultsLoading) return (
     <LoadingState />
   )
 
@@ -472,7 +487,13 @@ const OverallResults = ({ id }) => {
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
-              <a>Есть дубли</a>
+              <Badge badgeContent={doubleResults.length ? doubleResults.length : null} color="secondary" anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+                max={999}>
+                <Button color="secondary" disabled={!doubleResults.length}>{doubleResults.length ? "есть дубли" : ''}</Button>
+              </Badge>
             </Box>
           </Grid>
         </Grid>

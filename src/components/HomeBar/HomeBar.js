@@ -13,8 +13,6 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { NavLink } from 'react-router-dom'
-
 import UserProfile from '../../containers/UserProfile'
 import ServiceMenu from '../ServiceMenu'
 
@@ -79,11 +77,11 @@ const HomeBar = ({ title }) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const openServiceMenu = (e) => {
+  const openServiceMenu = () => {
     setMenuOpen(true)
   }
 
-  const closeServiceMenu = (e) => {
+  const closeServiceMenu = () => {
     setMenuOpen(false)
   }
 

@@ -54,7 +54,7 @@ const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
 
   const [delOpen, setDelOpen] = useState(false)
-  const [activeResults, setActiveResults] = useState(null)
+  const [activeWorksheets, setActiveWorksheets] = useState(null)                // отображаемые анкеты
   const [activeFilters, setActiveFilters] = useState(null)
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
@@ -73,8 +73,7 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: () => {
-      console.log(pollResults);
-      setActiveResults(pollResults.poll.results)
+      setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
     }
   });
@@ -108,7 +107,7 @@ const OverallResults = ({ id }) => {
     },
     update: (cache, { data }) => {
       const deletedPool = data.deleteResults.map(del => del.id)
-      setActiveResults(activeResults.filter(result => !deletedPool.includes(result.id)))
+      setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
       cache.modify({
         fields: {
           pollResults(existingRefs, { readField }) {
@@ -120,14 +119,66 @@ const OverallResults = ({ id }) => {
   })
 
   useEffect(() => {
+    if (activeWorksheets) {
+      // console.log(pollResults);
+      // анализ дублей
+      // если кол-во вопросов в опросе больше 5, то проходит анализ, в противном случае нет
+      if (pollResults.poll.questions.length > 4) {
+        const results = activeWorksheets.map(worksheet => (
+          {
+            id: worksheet.id,
+            answers: worksheet.result
+          }
+        ))
+        // процесс анализа дублей
+        const lResults = results.length - 1                                           // кол-во итераций N-1, т.к. предпоследний сравнивается с последним
+        let rr = []
+        for (let i = 0; i < lResults; i++) {
+          const result = results[i].answers
+          const lresult = result.length
+          for (let k = i + 1; k < lResults + 1; k++) {
+            const nextResult = results[k].answers                                           // следующий по очереди массив с ответами, с ним и происходит сравнение
+            // если размерность массива ответов разная -> дубли быть не могут
+            if (result.length === nextResult.length) {
+              // выстроить очередность
+              const resultOrd = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+              const nextResultOrd = nextResult.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+              let count = 0
+              for (let j = 0; j < lresult; j++) {
+                if (resultOrd[j].code === nextResultOrd[j].code) {
+                  // свободные отеты совпадают -> продолжаем анализ
+                  if (resultOrd[j].text !== nextResultOrd[j].text) {
+                    break
+                  }
+                  count++
+                  continue
+                }
+                break
+              }
+              if (count === result.length) {
+                rr.push({
+                  first: results[i].id,
+                  second: results[k].id
+                })
+              }
+            }
+          }
+        }
+        console.log(rr);
+      }
+      return
+    }
+  }, [activeWorksheets])
+
+  useEffect(() => {
     if (selectPool.length) {
-      const selectedData = activeResults
+      const selectedData = activeWorksheets
         .filter(result => selectPool.includes(result.id))
       // кол-во уникальных городов, которые были выбраны
       const uniqueCitites = selectedData.map(obj => obj.city ? obj.city.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
       setCitiesUpload(uniqueCitites)
       // для отображения промежуточного положения checkbox-a 
-      activeResults.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
+      activeWorksheets.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
     }
   }, [selectPool])
 
@@ -140,7 +191,7 @@ const OverallResults = ({ id }) => {
       }).filter(result => {
         return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
       }).filter(result => {
-        return activeFilters.date ? result.lastModified ? activeFilters.date == result.lastModified : true : true
+        return activeFilters.date ? result.lastModified ? activeFilters.date === result.lastModified : true : true
       })
       const newSelectPool = selectPool.filter(
         selectId => {
@@ -151,11 +202,11 @@ const OverallResults = ({ id }) => {
           return false
         })
       setSelectPool(newSelectPool)
-      setActiveResults(newResult)
+      setActiveWorksheets(newResult)
     }
   }, [activeFilters])
 
-  if (pollResultsLoading || !activeResults || filtersResultsLoading) return (
+  if (pollResultsLoading || !activeWorksheets || filtersResultsLoading) return (
     <LoadingState />
   )
 
@@ -177,7 +228,7 @@ const OverallResults = ({ id }) => {
   const selectAllActive = (event) => {
     setSelectAll(event.target.checked)
     if (event.target.checked) {
-      const selectPool = activeResults.map(result => result.id)
+      const selectPool = activeWorksheets.map(result => result.id)
       setSelectPool(selectPool)
     } else {
       setSelectPool([])
@@ -263,7 +314,7 @@ const OverallResults = ({ id }) => {
   }
 
   const exportAllRawData = () => {
-    const resultsPool = activeResults
+    const resultsPool = activeWorksheets
       .filter(result => selectPool.includes(result.id))
       .map(obj => obj.result)
     const allResults = prepareResultsDataToExport(resultsPool)
@@ -409,10 +460,10 @@ const OverallResults = ({ id }) => {
               <FormControlLabel id="selectall-checkbox"
                 control={
                   <Checkbox
-                    checked={selectAll && selectPool.length === activeResults.length}
+                    checked={selectAll && selectPool.length === activeWorksheets.length}
                     onChange={selectAllActive}
                     color="primary"
-                    indeterminate={selectPool.length > 0 & !selectAll}
+                    indeterminate={Boolean(selectPool.length > 0 & !selectAll)}
                   />
                 }
                 label="Выделить все"
@@ -421,16 +472,13 @@ const OverallResults = ({ id }) => {
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
-              <a href="">Есть дубли</a>
-            </Box>
-            <Box m={1}>
-              <a href="">Есть проблемы</a>
+              <a>Есть дубли</a>
             </Box>
           </Grid>
         </Grid>
         <Filters filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters} />
         <DataGrid
-          data={activeResults}
+          data={activeWorksheets}
           selectPool={selectPool}
           setSelectPool={setSelectPool}
           showDetails={showOneResultDetails}

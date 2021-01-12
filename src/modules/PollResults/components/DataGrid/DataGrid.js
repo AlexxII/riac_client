@@ -67,7 +67,7 @@ const DataGrid = ({ data, selectPool, setSelectPool, showDetails, updateSingle }
 
   return (
     <Fragment>
-      <Grid container spacing={3} xs={12}>
+      <Grid item container spacing={3} xs={12}>
         {dataItems}
       </Grid>
     </Fragment>

@@ -34,7 +34,7 @@ const App = () => {
     }
   )
 
-  if (loading) return <LoadingSate />
+  if (loading) return <LoadingSate description="Запрос данных пользователя"/>
 
   if (error) {
     console.log(JSON.stringify(error));

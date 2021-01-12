@@ -79,7 +79,6 @@ const PollDrive = ({ id }) => {
   }
   const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
     onError: (e) => {
-      console.log(e);
       setNoti({
         type: 'error',
         text: 'Сохранить не удалось. Смотрите консоль.'

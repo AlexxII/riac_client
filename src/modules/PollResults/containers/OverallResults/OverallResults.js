@@ -53,6 +53,9 @@ const StyledBadge = withStyles((theme) => ({
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState({
+    title: 'Хм'
+  })
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState(null)                // отображаемые анкеты
@@ -126,7 +129,12 @@ const OverallResults = ({ id }) => {
       // console.log(pollResults);
       // анализ дублей
       // если кол-во вопросов в опросе больше 5, то проходит анализ, в противном случае нет
+      setLoadingMsg({
+        ...loadingMsg,
+        description: 'Анализ дублей'
+      })
       if (pollResults.poll.questions.length > 4) {
+        setCalculating(true)
         const results = activeWorksheets.map(worksheet => (
           {
             id: worksheet.id,
@@ -177,10 +185,11 @@ const OverallResults = ({ id }) => {
           }, [])
           console.log(ttt);
           setDoubleResults(ttt)
-          setCalculating(false)
+        } else {
+          setDoubleResults(null)
         }
+        setCalculating(false)
       }
-      return
     }
   }, [activeWorksheets])
 
@@ -193,7 +202,6 @@ const OverallResults = ({ id }) => {
       setCitiesUpload(uniqueCitites)
       // для отображения промежуточного положения checkbox-a 
       activeWorksheets.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
-      setDoubleResults(null)
     }
   }, [selectPool])
 
@@ -221,8 +229,15 @@ const OverallResults = ({ id }) => {
     }
   }, [activeFilters])
 
-  if (pollResultsLoading || !activeWorksheets || calculating || filtersResultsLoading) return (
-    <LoadingState />
+  if (calculating || !activeWorksheets || filtersResultsLoading || pollResultsLoading) return (
+    <LoadingState
+      {...(loadingMsg && loadingMsg.title && {
+        title: loadingMsg.title
+      })}
+      {...(loadingMsg && loadingMsg.description && {
+        description: loadingMsg.description
+      })}
+    />
   )
 
   if (pollResultsError || filtersResultsError) {
@@ -487,12 +502,14 @@ const OverallResults = ({ id }) => {
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
-              <Badge badgeContent={doubleResults.length ? `${doubleResults.length}/34` : null} color="secondary" anchorOrigin={{
+              <Badge badgeContent={doubleResults ? `${doubleResults.length}` : null} color="secondary" anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'left',
               }}
                 max={999}>
-                <Button color="secondary" disabled={!doubleResults.length}>{doubleResults.length ? "есть дубли" : ''}</Button>
+                <Button
+                  style={{marginBottom: '0px', padding: '4px 8px 0px 8px'}}
+                  color="secondary" disabled={!doubleResults}>{doubleResults ? "есть дубли" : ''}</Button>
               </Badge>
             </Box>
           </Grid>
@@ -509,6 +526,5 @@ const OverallResults = ({ id }) => {
     </Fragment>
   )
 }
-
 
 export default OverallResults

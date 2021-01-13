@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 500,
     '& > * + *': {
       marginTop: theme.spacing(3),
     },
@@ -29,7 +28,6 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
     const defVal = data.filter(val => {
       return val.selected
     })
-    console.log(data);
     const codesOfAnswers = data.map(val => val.code)
     setCodes(codesOfAnswers)
     setAnswers(defVal)

@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 import Answer from "../Answer";
-import Tags from '../MultipleAnswers'
+import MultipleAnswers from '../MultipleAnswers'
 
 const Question = ({ count, question, clickHandler, blurHandler, multipleHandler, settings }) => {
   const AnswersPool = () => {
@@ -14,7 +14,7 @@ const Question = ({ count, question, clickHandler, blurHandler, multipleHandler,
                 blurHandler={blurHandler}
                 settings={settings}
               />
-            )) : <Tags data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
+            )) : <MultipleAnswers data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
         }
       </Fragment>
     )

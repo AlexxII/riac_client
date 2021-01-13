@@ -170,7 +170,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
               setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
               setCount(result.count)
               setFinish(false)
-            // чтобы он не перешел к след. ответу
+              // чтобы он не перешел к след. ответу
               return true
             }
           } else {
@@ -229,7 +229,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         answer => true ? {
           ...answer,
           selected: false,
-          showFreeAnswer: false,                      
+          showFreeAnswer: false,
           freeAnswerText: '',                             // сбрасываем свободный ответ
           focus: true,                                    // чтобы фокус вернулся на свободеый ответ, т.к. он сброшен 
           disabled: false
@@ -616,7 +616,12 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   // !!!!!!!!!!!!!!!!!!!!Обработчик SELECTa - не доделана логика выбора!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const multipleHandler = (value, codes) => {
-    if (value.length) {
+    console.log(value);
+
+
+    /*
+    if (value) {
+      console.log(value);
       const codesPool = value.map(val => val.code)
       const resultsPool = value.map(val => {
         return {
@@ -654,6 +659,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       },
       pool: prevState.pool.filter(obj => !codes.includes(obj))
     }))
+    */
   }
 
   const cancelFinish = () => {

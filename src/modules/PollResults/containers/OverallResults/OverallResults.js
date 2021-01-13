@@ -13,6 +13,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
@@ -64,7 +65,7 @@ const OverallResults = ({ id }) => {
   const [calculating, setCalculating] = useState(true)
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
-  const [citiesUpload, setCitiesUpload] = useState(null)                    // количество н.п. для выгрузки -> файлов
+  const [citiesUpload, setCitiesUpload] = useState(null)                        // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
@@ -135,60 +136,64 @@ const OverallResults = ({ id }) => {
       })
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
-        const results = activeWorksheets.map(worksheet => (
-          {
-            id: worksheet.id,
-            answers: worksheet.result
-          }
-        ))
-        // процесс анализа дублей
-        const lResults = results.length - 1                                           // кол-во итераций N-1, т.к. предпоследний сравнивается с последним
-        let arrayOfDublWorksheets = []
-        for (let i = 0; i < lResults; i++) {
-          const result = results[i].answers
-          const lresult = result.length
-          for (let k = i + 1; k < lResults + 1; k++) {
-            const nextResult = results[k].answers                                           // следующий по очереди массив с ответами, с ним и происходит сравнение
-            // если размерность массива ответов разная -> дубли быть не могут
-            if (result.length === nextResult.length) {
-              // выстроить очередность
-              const resultOrd = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-              const nextResultOrd = nextResult.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-              let count = 0
-              for (let j = 0; j < lresult; j++) {
-                if (resultOrd[j].code === nextResultOrd[j].code) {
-                  // свободные отеты совпадают -> продолжаем анализ
-                  if (resultOrd[j].text !== nextResultOrd[j].text) {
-                    break
+        setTimeout(function () {
+
+          const results = activeWorksheets.map(worksheet => (
+            {
+              id: worksheet.id,
+              answers: worksheet.result
+            }
+          ))
+          // процесс анализа дублей
+          const lResults = results.length - 1                                                 // кол-во итераций N-1, т.к. предпоследний сравнивается с последним
+          let arrayOfDublWorksheets = []
+          for (let i = 0; i < lResults; i++) {
+            const result = results[i].answers
+            const lresult = result.length
+            for (let k = i + 1; k < lResults + 1; k++) {
+              const nextResult = results[k].answers                                           // следующий по очереди массив с ответами, с ним и происходит сравнение
+              // если размерность массива ответов разная -> дубли быть не могут
+              if (result.length === nextResult.length) {
+                // выстроить очередность
+                const resultOrd = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+                const nextResultOrd = nextResult.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+                let count = 0
+                for (let j = 0; j < lresult; j++) {
+                  if (resultOrd[j].code === nextResultOrd[j].code) {
+                    // свободные отеты совпадают -> продолжаем анализ
+                    if (resultOrd[j].text !== nextResultOrd[j].text) {
+                      break
+                    }
+                    count++
+                    continue
                   }
-                  count++
-                  continue
+                  break
                 }
-                break
-              }
-              if (count === result.length) {
-                arrayOfDublWorksheets.push({
-                  first: results[i].id,
-                  second: results[k].id
-                })
+                if (count === result.length) {
+                  arrayOfDublWorksheets.push({
+                    first: results[i].id,
+                    second: results[k].id
+                  })
+                }
               }
             }
           }
-        }
-        if (arrayOfDublWorksheets.length) {
-          const ttt = arrayOfDublWorksheets.reduce((group, item) => {
-            return [
-              ...group,
-              item.first,
-              item.second
-            ]
-          }, [])
-          console.log(ttt);
-          setDoubleResults(ttt)
-        } else {
-          setDoubleResults(null)
-        }
-        setCalculating(false)
+          if (arrayOfDublWorksheets.length) {
+            const ttt = arrayOfDublWorksheets.reduce((group, item) => {
+              return [
+                ...group,
+                item.first,
+                item.second
+              ]
+            }, [])
+            console.log(ttt);
+            setDoubleResults(ttt)
+          } else {
+            setDoubleResults(null)
+          }
+          setCalculating(false)
+
+        }, 2000)
       }
     }
   }, [activeWorksheets])
@@ -229,7 +234,7 @@ const OverallResults = ({ id }) => {
     }
   }, [activeFilters])
 
-  if (calculating || !activeWorksheets || filtersResultsLoading || pollResultsLoading) return (
+  if (!activeWorksheets || filtersResultsLoading || pollResultsLoading) return (
     <LoadingState
       {...(loadingMsg && loadingMsg.title && {
         title: loadingMsg.title
@@ -502,15 +507,21 @@ const OverallResults = ({ id }) => {
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
-              <Badge badgeContent={doubleResults ? `${doubleResults.length}` : null} color="secondary" anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-                max={999}>
-                <Button
-                  style={{marginBottom: '0px', padding: '4px 8px 0px 8px'}}
-                  color="secondary" disabled={!doubleResults}>{doubleResults ? "есть дубли" : ''}</Button>
-              </Badge>
+              {!calculating ?
+                <Badge badgeContent={doubleResults ? `${doubleResults.length}` : null} color="secondary" anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                  max={999}>
+                  <Button
+                    style={{ marginBottom: '0px', padding: '4px 8px 0px 8px' }}
+                    color="secondary" disabled={!doubleResults}>{doubleResults ? "есть дубли" : ''}</Button>
+                </Badge>
+                :
+                <Typography variant="button" display="block" gutterBottom id="blink-text">
+                  Анализ дублей
+                </Typography>
+              }
             </Box>
           </Grid>
         </Grid>

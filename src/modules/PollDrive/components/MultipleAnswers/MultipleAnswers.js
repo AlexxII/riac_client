@@ -28,6 +28,7 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
     const defVal = data.filter(val => {
       return val.selected
     })
+    console.log(data);
     const codesOfAnswers = data.map(val => val.code)
     setCodes(codesOfAnswers)
     setAnswers(defVal)

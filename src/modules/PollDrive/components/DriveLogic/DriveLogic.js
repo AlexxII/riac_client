@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Hidden from '@material-ui/core/Hidden';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import { Prompt } from 'react-router-dom'
@@ -728,7 +728,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Grid container direction="row" justify="space-between" alignItems="center">
-        <Grid container xs={6} md={3} justify="flex-start">
+        <Grid item container xs={6} md={3} justify="flex-start">
           <FormControlLabel
             value="end"
             control={<Checkbox color="primary" onChange={codesShow} defaultChecked={userSettings.codesShow} />}
@@ -737,15 +737,15 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
           />
         </Grid>
         <Hidden only={['sm', 'xs']}>
-          <Grid container md={6} justify="center">
+          <Grid item container md={6} justify="center">
             <InlineInformer />
           </Grid>
         </Hidden>
-        <Grid container xs={6} md={3} justify="flex-end">
+        <Grid item container xs={6} md={3} justify="flex-end">
           <p>Всего: <span><strong>{questionsLimit}</strong></span></p>
         </Grid>
         <Hidden mdUp>
-          <Grid container xs={12} justify="center">
+          <Grid item container xs={12} justify="center">
             <InlineInformer />
           </Grid>
         </Hidden>

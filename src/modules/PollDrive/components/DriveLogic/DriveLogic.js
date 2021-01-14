@@ -168,7 +168,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
             })
             if (r.length) {
               setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
-              setCount(result.count)
+              if (question.limit < 2) {
+                setCount(result.count)
+              }
               setFinish(false)
               // чтобы он не перешел к след. ответу
               return true
@@ -177,7 +179,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
             // пула критичных ответов нет -> запрещенных вопросов нет -> какой-то вопрос пропущен
             // ОПРЕДЕЛИТЬ какой номер вопроса
             setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
-            setCount(result.count)
+            if (question.limit < 2) {
+              setCount(result.count)
+            }
             setFinish(false)
             // чтобы он не перешел к след. ответу
             return true
@@ -327,8 +331,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       } else {
         // проверка на ЛИМИТ (для автоматического перехода к следующему вопросу)
         if (results[question.id].data.length >= question.limit) {
-          console.log(results[question.id].data.length);
-
           // переходим дальше
           setTimeout(() => {
             goToNext()

@@ -134,7 +134,6 @@ function rangeToArray(data) {
 }
 
 export const normalizeLogic = (logic) => {
-  // console.log(logic);
   let normalizedLogic = {}
   for (let key in logic) {
     switch (key) {
@@ -157,12 +156,26 @@ export const normalizeLogic = (logic) => {
         for (let i in exclude) {
           if (exclude[i].critical[0] === '1') {
             exclude[i].answers.map((answer) => {
-              criticalExclude[answer] = exclude[i].exclude
+              if (criticalExclude[answer] !== undefined) {
+                criticalExclude[answer] = [
+                  ...criticalExclude[answer],
+                  ...exclude[i].exclude
+                ]
+              } else {
+                criticalExclude[answer] = exclude[i].exclude
+              }
             })
           }
           if (exclude[i].critical[0] === '0') {
             exclude[i].answers.map((answer) => {
-              nonCriticalExclude[answer] = exclude[i].exclude
+              if (nonCriticalExclude[answer] !== undefined) {
+                nonCriticalExclude[answer] = [
+                  ...nonCriticalExclude[answer],
+                  ...exclude[i].exclude
+                ]
+              } else {
+                nonCriticalExclude[answer] = exclude[i].exclude
+              }
             })
           }
         }

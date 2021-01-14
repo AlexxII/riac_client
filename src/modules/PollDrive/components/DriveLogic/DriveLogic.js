@@ -272,11 +272,8 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     setFinish(false)
   }
 
-  // ОСНОВНОЙ обработчик логики
+  // ============ ОСНОВНОЙ обработчик логики ==============
   const mainLogic = (code, type) => {
-    if (type === 'select') {
-      
-    }
     const trueCode = +code
     // движение по опросу
     if (trueCode === 39) { // клавиша вправо
@@ -296,81 +293,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       const selectedAnswer = question.answers.filter(obj => obj.keyCode === trueCode)[0]
       // промежуточные результаты уже содержат выбранный код => удаляем промежуточный результат => обновляем текущий вью
       if (results.pool.includes(selectedAnswer.code)) {
-        let newResults = {}
-        for (let key in results) {
-          if (key === question.id) {
-            newResults = {
-              ...newResults,
-              [question.id]: {
-                ...results[question.id],
-                data: results[question.id].data.filter(el => el.answerCode !== selectedAnswer.code)
-              }
-            }
-          } else {
-            if (key !== 'pool') {
-              newResults = {
-                ...newResults,
-                [key]: results[key]
-              }
-            } else {
-              newResults = {
-                ...newResults,
-                pool: results.pool.filter(el => el !== selectedAnswer.code)
-              }
-            }
-          }
-        }
-        setResults(newResults)
-        setQuestion(prevState => ({
-          ...prevState,
-          answers: prevState.answers.map(
-            answer => answer.code === selectedAnswer.code ? {
-              ...answer, selected: false, showFreeAnswer: false, freeAnswerText: '', focus: true
-            } : answer
-          ).map(
-            answer => newResults[question.id].data.length ? answer : ({ ...answer, disabled: false })
-          ).map(
-            answer => {
-              let excludePool = []
-              // формирование пула кодов которые запрещены в результатах 
-              for (let code in logic.criticalExclude) {
-                if (code === answer.code) {
-                  excludePool = [
-                    ...excludePool,
-                    ...logic.criticalExclude[code]
-                  ]
-                }
-                if (logic.criticalExclude[code].includes(answer.code)) {
-                  excludePool = [
-                    ...excludePool,
-                    code
-                  ]
-                }
-              }
-              for (let i = 0; i < excludePool.length; i++) {
-                if (newResults.pool.includes(excludePool[i])) {
-                  return {
-                    ...answer,
-                    disabled: true,
-                    excludeM: `противоречит коду ${excludePool[i]}`
-                  }
-                }
-              }
-              return {
-                ...answer,
-                disabled: false,
-                excludeM: ''
-              }
-            }
-          ).map(answer => {
-            // проверка на уникальность
-            if (newResults[question.id].data.length) {
-              return answer.unique ? { ...answer, disabled: true } : answer
-            }
-            return answer
-          })
-        }))
-        checkRespondentFinish(newResults)
+        canclePreviousResult(selectedAnswer)
         return
       }
       // проверка на уникальность ответа и выбраннного до этого противоречивого ответа (ВНЕШНЯЯ ЛОГИКА - уникальность)
@@ -395,66 +318,17 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         }))
         return
       }
-      const result = {
-        answerCode: selectedAnswer.code,
-        answerId: selectedAnswer.id,
-        freeAnswer: false,
-        freeAnswerText: ''
-      }
-      // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - КРИТИЧНАЯ исключаемость) -> запретить ответы, которые указаны в конфиг файле
-      for (let code in logic.criticalExclude) {
-        // если в выбранных ответах присутствует код, который исключает другие ответы
-        if (results.pool.includes(code)) {
-          if (logic.criticalExclude[code].includes(selectedAnswer.code)) {
-            beep()
-            return
-          }
-        }
-      }
-      // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - НЕКРИТИЧНАЯ исключаемость) -> ОПОВЕСТИТЬ при ответе, которые указаны в конфиг файле
-      for (let code in logic.nonCriticalExclude) {
-        // если в выбранных ответах присутствует код, который исключает другие ответы
-        if (results.pool.includes(code)) {
-          if (logic.nonCriticalExclude[code].includes(selectedAnswer.code)) {
-            console.log('Ответ не совсем корректен');
-          }
-        }
-      }
 
-      let newResultState = Object.assign({}, results);
-      newResultState[question.id].data.push(result)
-      newResultState.pool.push(selectedAnswer.code)
-      setResults(newResultState)
-      setQuestion(prevState => ({
-        ...prevState,
-        answers: prevState.answers.map(
-          answer => answer.id === selectedAnswer.id ? { ...answer, selected: true } : answer
-        ).map(
-          answer => logic.unique.includes(answer.code) & answer.id !== selectedAnswer.id ? { ...answer, disabled: true } : answer
-        ).map(
-          answer => selectedAnswer.exclude.includes(answer.code) ? {
-            ...answer,
-            disabled: true,
-            excludeM: `противоречит коду ${selectedAnswer.code}`
-          } : answer
-        )
-      }))
-      // проверить на уникальность (ВНЕШНЯЯ ЛОГИКА - уникальность) -> запретить другие ответы
-      if (logic.unique.includes(selectedAnswer.code)) {
-        setQuestion(prevState => ({
-          ...prevState,
-          answers: prevState.answers.map(
-            answer => answer.id === selectedAnswer.id ? answer : { ...answer, disabled: true }
-          )
-        }))
-      }
+      const newResults = storeSelectedResult(selectedAnswer)
 
       // ПРОВЕРКА на окончание ввода
-      if (checkRespondentFinish(newResultState)) {
+      if (checkRespondentFinish(newResults)) {
         return
       } else {
         // проверка на ЛИМИТ (для автоматического перехода к следующему вопросу)
         if (results[question.id].data.length >= question.limit) {
+          console.log(results[question.id].data.length);
+
           // переходим дальше
           setTimeout(() => {
             goToNext()
@@ -467,10 +341,143 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     }
   }
 
-  const canclePreviousResult = () => {
-
+  // функция сохранения выбранного ответа
+  const storeSelectedResult = (selectedAnswer) => {
+    const result = {
+      answerCode: selectedAnswer.code,
+      answerId: selectedAnswer.id,
+      freeAnswer: false,
+      freeAnswerText: ''
+    }
+    // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - КРИТИЧНАЯ исключаемость) -> запретить ответы, которые указаны в конфиг файле
+    for (let code in logic.criticalExclude) {
+      // если в выбранных ответах присутствует код, который исключает другие ответы
+      if (results.pool.includes(code)) {
+        if (logic.criticalExclude[code].includes(selectedAnswer.code)) {
+          beep()
+          return
+        }
+      }
+    }
+    // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - НЕКРИТИЧНАЯ исключаемость) -> ОПОВЕСТИТЬ при ответе, которые указаны в конфиг файле
+    for (let code in logic.nonCriticalExclude) {
+      // если в выбранных ответах присутствует код, который исключает другие ответы
+      if (results.pool.includes(code)) {
+        if (logic.nonCriticalExclude[code].includes(selectedAnswer.code)) {
+          console.log('Ответ не совсем корректен');
+        }
+      }
+    }
+    let newResultState = Object.assign({}, results);
+    newResultState[question.id].data.push(result)
+    newResultState.pool.push(selectedAnswer.code)
+    setResults(newResultState)
+    setQuestion(prevState => ({
+      ...prevState,
+      answers: prevState.answers.map(
+        answer => answer.id === selectedAnswer.id ? { ...answer, selected: true } : answer
+      ).map(
+        answer => logic.unique.includes(answer.code) & answer.id !== selectedAnswer.id ? { ...answer, disabled: true } : answer
+      ).map(
+        answer => selectedAnswer.exclude.includes(answer.code) ? {
+          ...answer,
+          disabled: true,
+          excludeM: `противоречит коду ${selectedAnswer.code}`
+        } : answer
+      )
+    }))
+    // проверить на уникальность (ВНЕШНЯЯ ЛОГИКА - уникальность) -> запретить другие ответы
+    if (logic.unique.includes(selectedAnswer.code)) {
+      setQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.id === selectedAnswer.id ? answer : { ...answer, disabled: true }
+        )
+      }))
+    }
+    return newResultState
   }
 
+  // функция отмены ранее сохраненного ответа на вопрос
+  const canclePreviousResult = (selectedAnswer) => {
+    console.log(selectedAnswer);
+    let newResults = {}
+    for (let key in results) {
+      if (key === question.id) {
+        newResults = {
+          ...newResults,
+          [question.id]: {
+            ...results[question.id],
+            data: results[question.id].data.filter(el => el.answerCode !== selectedAnswer.code)
+          }
+        }
+      } else {
+        if (key !== 'pool') {
+          newResults = {
+            ...newResults,
+            [key]: results[key]
+          }
+        } else {
+          newResults = {
+            ...newResults,
+            pool: results.pool.filter(el => el !== selectedAnswer.code)
+          }
+        }
+      }
+    }
+    setResults(newResults)
+    setQuestion(prevState => ({
+      ...prevState,
+      answers: prevState.answers.map(
+        answer => answer.code === selectedAnswer.code ? {
+          ...answer, selected: false, showFreeAnswer: false, freeAnswerText: '', focus: true
+        } : answer
+      ).map(
+        answer => newResults[question.id].data.length ? answer : ({ ...answer, disabled: false })
+      ).map(
+        answer => {
+          let excludePool = []
+          // формирование пула кодов которые запрещены в результатах 
+          for (let code in logic.criticalExclude) {
+            if (code === answer.code) {
+              excludePool = [
+                ...excludePool,
+                ...logic.criticalExclude[code]
+              ]
+            }
+            if (logic.criticalExclude[code].includes(answer.code)) {
+              excludePool = [
+                ...excludePool,
+                code
+              ]
+            }
+          }
+          for (let i = 0; i < excludePool.length; i++) {
+            if (newResults.pool.includes(excludePool[i])) {
+              return {
+                ...answer,
+                disabled: true,
+                excludeM: `противоречит коду ${excludePool[i]}`
+              }
+            }
+          }
+          return {
+            ...answer,
+            disabled: false,
+            excludeM: ''
+          }
+        }
+      ).map(answer => {
+        // проверка на уникальность
+        if (newResults[question.id].data.length) {
+          return answer.unique ? { ...answer, disabled: true } : answer
+        }
+        return answer
+      })
+    }))
+    checkRespondentFinish(newResults)
+    return
+  }
 
   // ОСНОВНОЙ обработчик свободного ответа
   const blurHandler = (e) => {
@@ -564,9 +571,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       freeAnswer: false,
       freeAnswerText: value
     }
-
     /// опять новый СТЕЙТ результата!!!!!!!!!!!
-
     let newResultState = {}
     if (results.pool.includes(selectedCode)) {
       newResultState = Object.assign({}, results);
@@ -588,7 +593,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       setQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
-          answer => answer.keyCode === +selectedKeyCode ? answer : { ...answer, disabled: true }
+          answer => answer.id === selectedAnswer.id ? answer : { ...answer, disabled: true }
         )
       }))
     }
@@ -609,7 +614,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       )
     }))
 
-    // 
     if (checkRespondentFinish(newResultState)) {
       return
     } else {
@@ -625,10 +629,24 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   const multipleHandler = (option, type) => {
     switch (type) {
       case 'add':
-        console.log(type, option);
+        const newResults = storeSelectedResult(option.option)
+        // ПРОВЕРКА на окончание ввода
+        if (checkRespondentFinish(newResults)) {
+          return
+        } else {
+          // проверка на ЛИМИТ (для автоматического перехода к следующему вопросу)
+          if (results[question.id].data.length >= question.limit) {
+            // переходим дальше
+            setTimeout(() => {
+              goToNext()
+            }, STEP_DELAY)
+            return
+          }
+        }
         return
       case 'sub':
         console.log(type, option);
+        canclePreviousResult(option.option)
         return
       case 'clear':
         console.log(type, option);

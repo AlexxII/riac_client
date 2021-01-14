@@ -72,6 +72,7 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
         options={data}
         onChange={handleAnswerSelect}
         value={answers}
+        freeSolo
         disableCloseOnSelect={limit > 1}
         getOptionLabel={(option) => option.title}
         getOptionDisabled={(option) => option.disabled}

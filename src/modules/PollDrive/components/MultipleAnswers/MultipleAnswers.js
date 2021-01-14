@@ -27,8 +27,12 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
     const defVal = data.filter(val => {
       return val.selected
     })
-    const codesOfAnswers = data.map(val => val.code)
-    setAnswers(defVal)
+    if (limit < 2) {
+      // autocomplete при multiple не смотрит в массив
+      setAnswers(defVal !== undefined ? defVal[0] : [])
+    } else {
+      setAnswers(defVal)
+    }
   }, [])
 
   const handleAnswerSelect = (e, value, reason, option) => {
@@ -77,7 +81,6 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
           }
           return option.title
         }}
-        // onBlur={blurHandler}
         renderTags={(value, getTagProps) =>
           value.map((option, index) => (
             <Chip

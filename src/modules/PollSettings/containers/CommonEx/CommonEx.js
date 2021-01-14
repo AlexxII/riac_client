@@ -106,6 +106,7 @@ const CommonEx = ({ id }) => {
           </Box>
         </Grid>
         <FormControlLabel
+          style={{marginLeft: '0px'}}
           label="Активный"
           size="small"
           labelPlacement="start"

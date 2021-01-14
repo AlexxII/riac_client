@@ -116,7 +116,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     if (newQuestion.next) {
       if (direction) {
         if (count === questionsLimit - 1) {
-          console.log('END');
           setEarlyСompletion(true)
           return
         }
@@ -402,7 +401,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   // функция отмены ранее сохраненного ответа на вопрос
   const canclePreviousResult = (selectedAnswer) => {
-    console.log(selectedAnswer);
     let newResults = {}
     for (let key in results) {
       if (key === question.id) {
@@ -647,12 +645,12 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         }
         return
       case 'sub':
-        console.log(type, option);
         canclePreviousResult(option.option)
         return
       case 'clear':
-        console.log(type, option);
         resetAnswers()
+        return
+      default:
         return
     }
   }

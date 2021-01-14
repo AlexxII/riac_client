@@ -22,7 +22,6 @@ const ReoderEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       const questions = data.poll.questions
-      console.log(questions);
       setQuestions(questions.slice().sort((a, b) => (a.order > b.order) ? 1 : -1))
     }
   })
@@ -88,7 +87,6 @@ const ReoderEditor = ({ id }) => {
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     setPrevOrder({ ...questions })
-    console.log(oldIndex, newIndex);
     if (oldIndex !== newIndex) {
       const newArray = arrayMove(questions, oldIndex, newIndex)
       let deltaArray = []

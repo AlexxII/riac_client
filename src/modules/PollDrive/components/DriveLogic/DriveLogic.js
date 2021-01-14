@@ -275,9 +275,11 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
 
   // ОСНОВНОЙ обработчик логики
   const mainLogic = (code) => {
+    console.log(code);
     const trueCode = +code
     const keyCodesPool = question.keyCodesPool
     const selectedAnswer = question.answers.filter(obj => obj.keyCode === trueCode)[0]
+    console.log(selectedAnswer);
     // движение по опросу
     if (trueCode === 39) { // клавиша вправо
       setTimeout(() => {
@@ -615,13 +617,21 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   }
 
   // !!!!!!!!!!!!!!!!!!!!Обработчик SELECTa - не доделана логика выбора!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  const multipleHandler = (value, codes) => {
-    console.log(value);
-
-
+  const multipleHandler = (option, type) => {
+    switch (type) {
+      case 'add':
+        console.log(type, option);  
+        return
+      case 'sub':
+        console.log(type, option);
+        return
+      case 'clear':
+        console.log(type, option);
+        resetAnswers()
+        return
+    }
     /*
-    if (value) {
-      console.log(value);
+    if (value.length) {
       const codesPool = value.map(val => val.code)
       const resultsPool = value.map(val => {
         return {

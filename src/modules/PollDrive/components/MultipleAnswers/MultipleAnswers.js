@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
 const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
   const classes = useStyles();
   const [answers, setAnswers] = useState([])
-  const [codes, setCodes] = useState([])
   const [error, setError] = useState({
     state: false,
     text: ''
@@ -28,38 +27,37 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
     const defVal = data.filter(val => {
       return val.selected
     })
-    console.log(data);
     const codesOfAnswers = data.map(val => val.code)
-    setCodes(codesOfAnswers)
     setAnswers(defVal)
   }, [])
 
-  const handleAnswerSelect = (e, value, reason) => {
+  const handleAnswerSelect = (e, value, reason, option) => {
     switch (reason) {
       case 'select-option':
         if (value.length > limit) {
           setError({ state: true, text: 'Максимальное количество ответов' })
           return
         }
+        const addedOption = { ...option }
+        multipleHandler(addedOption, 'add')
         setAnswers(value)
         setError({ ...error, state: false })
         break
       case 'remove-option':
+        const deletedOption = { ...option }
+        multipleHandler(deletedOption, 'sub')
         setAnswers(value)
         setError({ ...error, state: false })
         break
       case 'clear':
+        // удалить все ответы
+        multipleHandler([], 'clear')
         setAnswers([])
         setError({ ...error, state: false })
         break
       default:
         break
     }
-  }
-
-  const blurHandler = (e) => {
-    setError({ ...error, state: false })
-    multipleHandler(answers, codes)
   }
 
   return (
@@ -70,6 +68,7 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
         options={data}
         onChange={handleAnswerSelect}
         value={answers}
+        disableCloseOnSelect={limit > 1}
         getOptionLabel={(option) => option.title}
         getOptionDisabled={(option) => option.disabled}
         renderOption={(option) => {

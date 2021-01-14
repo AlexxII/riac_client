@@ -3,7 +3,7 @@ import Answer from "../Answer";
 import MultipleAnswers from '../MultipleAnswers'
 
 const Question = ({ count, question, clickHandler, blurHandler, multipleHandler, settings }) => {
-  
+  console.log(question);
   const AnswersPool = () => {
     return (
       <Fragment>

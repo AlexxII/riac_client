@@ -13,15 +13,10 @@ const Answer = ({ answer, clickHandler, blurHandler, settings }) => {
   }
 
   const click = (e) => {
-    console.log(e.target.tagName);
     if (e.target.tagName === 'INPUT') {
       return
     }
     clickHandler(answer.keyCode)
-  }
-
-  const clickOnFreeAnswer = (e) => {
-    console.log('wwwwwww')
   }
 
   return (
@@ -45,7 +40,6 @@ const Answer = ({ answer, clickHandler, blurHandler, settings }) => {
         <div>
           {answer.showFreeAnswer && (
             <FreeAnswer
-              onClick={(e) => clickOnFreeAnswer(e)}
               answer={answer}
               blurHandler={blurHandler}
               id="free-answer-wrap"

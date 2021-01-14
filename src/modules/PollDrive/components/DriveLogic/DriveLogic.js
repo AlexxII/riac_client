@@ -270,16 +270,14 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       )
     }))
     setFinish(false)
-    // обновить логику и проверить запрещенные ответы для данного вопроса для их перерисовки!!!!!!
   }
 
   // ОСНОВНОЙ обработчик логики
-  const mainLogic = (code) => {
-    console.log(code);
+  const mainLogic = (code, type) => {
+    if (type === 'select') {
+      
+    }
     const trueCode = +code
-    const keyCodesPool = question.keyCodesPool
-    const selectedAnswer = question.answers.filter(obj => obj.keyCode === trueCode)[0]
-    console.log(selectedAnswer);
     // движение по опросу
     if (trueCode === 39) { // клавиша вправо
       setTimeout(() => {
@@ -292,8 +290,10 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       }, MOVE_DELAY)
       return
     }
+    const keyCodesPool = question.keyCodesPool
     // входит ли код клавиатуры в перечень ответов
-    if (keyCodesPool.includes(trueCode)) {
+    if (keyCodesPool !== undefined && keyCodesPool.includes(trueCode)) {
+      const selectedAnswer = question.answers.filter(obj => obj.keyCode === trueCode)[0]
       // промежуточные результаты уже содержат выбранный код => удаляем промежуточный результат => обновляем текущий вью
       if (results.pool.includes(selectedAnswer.code)) {
         let newResults = {}
@@ -428,9 +428,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       setQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
-          answer => answer.keyCode === trueCode ? { ...answer, selected: true } : answer
+          answer => answer.id === selectedAnswer.id ? { ...answer, selected: true } : answer
         ).map(
-          answer => logic.unique.includes(answer.code) & answer.keyCode !== trueCode ? { ...answer, disabled: true } : answer
+          answer => logic.unique.includes(answer.code) & answer.id !== selectedAnswer.id ? { ...answer, disabled: true } : answer
         ).map(
           answer => selectedAnswer.exclude.includes(answer.code) ? {
             ...answer,
@@ -444,7 +444,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         setQuestion(prevState => ({
           ...prevState,
           answers: prevState.answers.map(
-            answer => answer.keyCode === trueCode ? answer : { ...answer, disabled: true }
+            answer => answer.id === selectedAnswer.id ? answer : { ...answer, disabled: true }
           )
         }))
       }
@@ -466,6 +466,11 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       beep()
     }
   }
+
+  const canclePreviousResult = () => {
+
+  }
+
 
   // ОСНОВНОЙ обработчик свободного ответа
   const blurHandler = (e) => {
@@ -620,7 +625,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   const multipleHandler = (option, type) => {
     switch (type) {
       case 'add':
-        console.log(type, option);  
+        console.log(type, option);
         return
       case 'sub':
         console.log(type, option);
@@ -630,46 +635,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         resetAnswers()
         return
     }
-    /*
-    if (value.length) {
-      const codesPool = value.map(val => val.code)
-      const resultsPool = value.map(val => {
-        return {
-          answerCode: val.code,
-          freeAnswer: false,
-          freeAnswerText: ''
-        }
-      })
-      const clearPool = results.pool.filter(val => !codes.includes(val))
-      setResults(prevState => ({
-        ...prevState,
-        [question.id]: {
-          ...prevState[question.id],
-          data: [
-            ...resultsPool
-          ]
-        },
-        pool: [
-          ...clearPool,
-          ...codesPool
-        ]
-      }))
-      if (value.length) {
-        setTimeout(() => {
-          goToNext()
-        }, STEP_DELAY)
-      }
-      return
-    }
-    setResults(prevState => ({
-      ...prevState,
-      [question.id]: {
-        ...prevState[question.id],
-        data: []
-      },
-      pool: prevState.pool.filter(obj => !codes.includes(obj))
-    }))
-    */
   }
 
   const cancelFinish = () => {

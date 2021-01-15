@@ -59,7 +59,7 @@ const OverallResults = ({ id }) => {
   })
 
   const [delOpen, setDelOpen] = useState(false)
-  const [activeWorksheets, setActiveWorksheets] = useState(null)                // отображаемые анкеты
+  const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты
   const [doubleResults, setDoubleResults] = useState(null)
   const [activeFilters, setActiveFilters] = useState(null)
   const [calculating, setCalculating] = useState(true)
@@ -90,7 +90,9 @@ const OverallResults = ({ id }) => {
     fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
+        console.log(text);
         const normalizedLogic = normalizeLogic(parseIni(text))
+        console.log(normalizedLogic);
         setLogic(normalizedLogic)
       })
   }
@@ -113,6 +115,7 @@ const OverallResults = ({ id }) => {
       console.log(e);
     },
     update: (cache, { data }) => {
+      
       const deletedPool = data.deleteResults.map(del => del.id)
       setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
       cache.modify({
@@ -122,11 +125,15 @@ const OverallResults = ({ id }) => {
           }
         }
       })
+    },
+    onCompleted: () => {
+      setSelectPool([])
+      setSelectAll(false)
     }
   })
 
   useEffect(() => {
-    if (activeWorksheets) {
+    if (activeWorksheets.length) {
       // console.log(pollResults);
       // анализ дублей
       // если кол-во вопросов в опросе больше 5, то проходит анализ, в противном случае нет
@@ -134,6 +141,7 @@ const OverallResults = ({ id }) => {
         ...loadingMsg,
         description: 'Анализ дублей'
       })
+      console.log('11111111');
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {
@@ -195,6 +203,8 @@ const OverallResults = ({ id }) => {
 
         }, 2000)
       }
+    } else {
+      setCalculating(false)
     }
   }, [activeWorksheets])
 
@@ -261,13 +271,15 @@ const OverallResults = ({ id }) => {
   }
 
   const selectAllActive = (event) => {
-    setSelectAll(event.target.checked)
-    if (event.target.checked) {
-      const selectPool = activeWorksheets.map(result => result.id)
-      setSelectPool(selectPool)
-    } else {
-      setSelectPool([])
-      setSelectAll()
+    if (activeWorksheets.length) {
+      setSelectAll(event.target.checked)
+      if (event.target.checked) {
+        const selectPool = activeWorksheets.map(result => result.id)
+        setSelectPool(selectPool)
+      } else {
+        setSelectPool([])
+        setSelectAll()
+      }
     }
   }
 

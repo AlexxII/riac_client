@@ -8,6 +8,7 @@ export const parseIni = (configData) => {
   };
   let config = {};
   let lines = configData.split(/[\r\n]+/);
+  console.log(lines);
   let section = null;
   lines.forEach(function (line) {
     if (regex.comment.test(line)) {
@@ -35,7 +36,7 @@ export const parseIni = (configData) => {
         config[match[1]] = {};
         section = match[1];
       }
-    } else if (line.length == 0 && section) {
+    } else if (line.length === 0 && section) {
       section = null;
     }
   });
@@ -134,6 +135,7 @@ function rangeToArray(data) {
 }
 
 export const normalizeLogic = (logic) => {
+  console.log(logic);
   let normalizedLogic = {}
   for (let key in logic) {
     switch (key) {
@@ -192,6 +194,7 @@ export const normalizeLogic = (logic) => {
         }
         break
       case 'header':
+        console.log(logic[key]);
         normalizedLogic = {
           ...normalizedLogic,
           header: logic[key]
@@ -214,6 +217,8 @@ export const normalizeLogic = (logic) => {
           invisible: invisiblePool
         }
         break
+      default:
+        return
     }
   }
   return normalizedLogic

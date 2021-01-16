@@ -14,8 +14,8 @@ export const GET_FILTER_SELECTS = gql`
       value
       title
     }
-    age {
-      value
+    ageCategories {
+      id
       title
     }
   }

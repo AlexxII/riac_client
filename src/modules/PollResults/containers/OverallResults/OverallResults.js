@@ -54,9 +54,7 @@ const StyledBadge = withStyles((theme) => ({
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
-  const [loadingMsg, setLoadingMsg] = useState({
-    title: 'Хм'
-  })
+  const [loadingMsg, setLoadingMsg] = useState()
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты

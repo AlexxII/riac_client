@@ -13,7 +13,12 @@ import Button from '@material-ui/core/Button';
 
 const Filters = ({ filters, cities, setActiveFilters }) => {
   const [avaiableFilters] = useState({
-    age: filters.age,
+    age: filters.ageCategories.map(
+      age => ({
+        value: age.id,
+        title: age.title
+      })
+    ),
     cities: cities
       .slice()
       .sort((a, b) => a.category.id > b.category.id ? 1 : -1)

@@ -3,7 +3,6 @@ import React, { Fragment, useState } from 'react'
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -12,20 +11,22 @@ import LoadingStatus from '../../../../components/LoadingStatus'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
-import CategoryCard from '../../components/CategoryCard'
 import CategoriesList from '../../components/CategoriesList'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_CITIES_CATEGORIES } from './queries'
-import { CHANGE_CATEGORY_STATUS, SAVE_NEW_CATEGORY, DELETE_CATEGORY } from './mutaions'
+import {
+  CHANGE_CATEGORY_STATUS, CHANGE_CATEGORY_ORDER,
+  SAVE_NEW_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY
+} from './mutaions'
 
 const CityCategory = () => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
   const [delId, setDelId] = useState(false)
-  const [newCat, setNewCat] = useState(false)
+  const [newOrder, setNewOrder] = useState([])
 
   const {
     data: citiesCategories,
@@ -68,6 +69,22 @@ const CityCategory = () => {
     })
   })
 
+  const [updateCategory, { loading: updateCategoryLoading }] = useMutation(UPDATE_CATEGORY, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Обновить информацию не удалось. Смотрите консоль.'
+      })
+      console.log(e);
+    },
+    update: (cache, { data: { updateCityCategory } }) => cache.writeQuery({
+      query: GET_CITIES_CATEGORIES,
+      data: {
+        cityCategories: citiesCategories.cityCategories.map(category => category.id === updateCityCategory.id ? updateCityCategory : category)
+      }
+    })
+  })
+
   const [deleteCityCategory, { loading: deleteCategoryLoading }] = useMutation(DELETE_CATEGORY, {
     onError: (e) => {
       setNoti({
@@ -84,8 +101,29 @@ const CityCategory = () => {
     })
   })
 
+  const [saveNewOrder, { loading: saveNewOrderLoading }] = useMutation(CHANGE_CATEGORY_ORDER, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Изменить порядок не удалось. Смотрите консоль.'
+      })
+      console.log(e);
+    },
+    update: (cache, { data: { saveCityCategoryOrder } }) => cache.writeQuery({
+      query: GET_CITIES_CATEGORIES,
+      data: {
+        cityCategories: newOrder
+      }
+    })
+  })
+
   const Loading = () => {
-    if (changeActiveStatusLoading || saveNewCategoryLoading) return <LoadingStatus />
+    if (changeActiveStatusLoading
+      || saveNewCategoryLoading
+      || updateCategoryLoading
+      || deleteCategoryLoading
+      || saveNewOrderLoading
+    ) return <LoadingStatus />
     return null
   }
 
@@ -119,10 +157,6 @@ const CityCategory = () => {
     setDelId(false)
   }
 
-  const handleCategoryAdd = () => {
-    setNewCat(true)
-  }
-
   const changeActive = (category) => {
     changeActiveStatus({
       variables: {
@@ -132,8 +166,13 @@ const CityCategory = () => {
     })
   }
 
-  const handleCategoryEdit = (data) => {
-    console.log(data);
+  const handleEditSave = (data) => {
+    updateCategory({
+      variables: {
+        id: data.id,
+        title: data.title
+      }
+    })
   }
 
   const handleCategorySave = (data) => {
@@ -142,7 +181,15 @@ const CityCategory = () => {
         title: data
       }
     })
-    setNewCat(false)
+  }
+
+  const saveNewSort = (data) => {
+    saveNewOrder({
+      variables: {
+        categories: data.deltaArray
+      }
+    })
+    setNewOrder(data.newOrder)
   }
 
   return (
@@ -159,19 +206,9 @@ const CityCategory = () => {
       </div>
       <Divider />
       <div className="info-zone">
-        <Typography  variant="body2" gutterBottom>
+        <Typography variant="body2" gutterBottom>
           Внимание! Данная настройка формирует типы населенных пунктов. Изменяйте их в случае крайней необходимости.
         </Typography>
-      </div>
-      <div className="categories-add-zone">
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          onClick={handleCategoryAdd}
-        >
-          Добавить
-        </Button>
       </div>
       <ConfirmDialog
         open={delId}
@@ -190,13 +227,12 @@ const CityCategory = () => {
       />
       <Grid container spacing={3} xs={12}>
         <CategoriesList
-          newCat={newCat}
           categories={citiesCategories.cityCategories}
           handleChangeActive={changeActive}
           handleCategoryDelete={deleteCategory}
           handleNewSave={handleCategorySave}
-          close={() => setNewCat(false)}
-          handleEdit={handleCategoryEdit}
+          handleEdit={handleEditSave}
+          saveNewSort={saveNewSort}
         />
       </Grid>
     </Fragment>

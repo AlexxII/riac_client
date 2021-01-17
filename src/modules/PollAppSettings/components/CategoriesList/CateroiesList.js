@@ -13,6 +13,10 @@ import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import EditIcon from '@material-ui/icons/Edit';
+import Button from '@material-ui/core/Button';
+
+import { sortableContainer, sortableElement } from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -26,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CategoryInput = ({ onChange, handleClose, value }) => {
-
   return (
     <Fragment>
       <Grid item container style={{ width: '100%' }}
@@ -45,9 +48,72 @@ const CategoryInput = ({ onChange, handleClose, value }) => {
   )
 }
 
-const CategoriesList = ({ categories, newCat, handleChangeActive, handleCategoryDelete, handleEdit, handleNewSave, close }) => {
+const ListInput = ({ value, hanldeClose, handleInput, handleNewSave, handleSaveEdit, edit }) => {
+
+  const hanldeSaveClick = (value) => {
+    edit ? handleSaveEdit() : handleNewSave(value)
+  }
+
+  return (
+    <ListItem key={'hgj12g3hg2'} role={undefined} dense>
+      <ListItemIcon>
+        <Checkbox
+          edge="start"
+          checked={true}
+          disableRipple
+          inputProps={{ 'aria-labelledby': 'new-category' }}
+        />
+      </ListItemIcon>
+      <ListItemText id={'new-category'} primary={
+        <CategoryInput onChange={(e) => handleInput(e)} value={value} handleClose={hanldeClose} />
+      } secondary={edit ? "Отредактируйте тип НП" : "Введите тип населенного пункта"} />
+      <ListItemSecondaryAction>
+        <IconButton edge="end" disabled={value === ""}>
+          <SaveIcon onClick={() => hanldeSaveClick(value)} />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
+  )
+}
+
+const SortableItem = sortableElement(({ category, labelId, handleChangeActive, handleEditCat, handleCategoryDelete }) => (
+  <ListItem key={category.id} role={undefined} dense button={false} >
+    <ListItemIcon>
+      <Checkbox
+        edge="start"
+        checked={category.active}
+        disableRipple
+        onClick={() => handleChangeActive(category)}
+        inputProps={{ 'aria-labelledby': labelId }}
+      />
+    </ListItemIcon>
+    <ListItemText className="category-list-title" id={labelId} primary={category.title} />
+    <ListItemSecondaryAction>
+      <Fragment>
+        <IconButton edge="end" onClick={() => handleEditCat(category)}>
+          <EditIcon />
+        </IconButton>
+        <IconButton edge="end" onClick={() => handleCategoryDelete(category.id)} >
+          <DeleteIcon />
+        </IconButton>
+      </Fragment>
+    </ListItemSecondaryAction>
+  </ListItem>
+))
+
+const SortableContainer = sortableContainer(({ children }) => {
   const classes = useStyles();
+  return (
+    <List className={classes.root} >
+      {children}
+    </List>
+  )
+})
+
+const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCategoryDelete, handleEdit, handleNewSave }) => {
+  const [newCat, setNewCat] = useState(false)
   const [value, setValue] = useState('')
+  const [edit, setEdit] = useState(false)
 
   const handleInput = (e) => {
     const val = e.currentTarget.value
@@ -56,63 +122,116 @@ const CategoriesList = ({ categories, newCat, handleChangeActive, handleCategory
     }
   }
 
-  const handleEditCat = () => {
-    return
+  const handleEditCat = (category) => {
+    setValue(category.title)
+    setEdit(category.id)
+  }
+
+  const handleSaveClick = () => {
+    handleNewSave(value)
+    setValue('')
+    setNewCat(false)
+  }
+
+  const handleEditSave = () => {
+    handleEdit({
+      id: edit,
+      title: value
+    })
+    setValue('')
+    setEdit(false)
   }
 
   const hanldeClose = () => {
-    setValue('')
-    close()
+    if (edit) {
+      setValue('')
+      setEdit(false)
+    } else {
+      setValue('')
+      setNewCat(false)
+    }
+  }
+
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    console.log(oldIndex, newIndex);
+
+    if (oldIndex !== newIndex) {
+      const newArray = arrayMove(categories, oldIndex, newIndex)
+      let deltaArray = []
+      const newOrder = newArray.reduce((acum, val, index) => {
+        if (val.order === index + 1) {
+          acum.push(val)
+        } else {
+          deltaArray.push({
+            id: val.id,
+            order: index + 1
+          })
+          acum.push({ ...val, order: index + 1 })
+        }
+        return acum
+      }, [])
+      saveNewSort({
+        newOrder,
+        deltaArray
+      })
+    }
+
   }
 
   return (
-    <List className={classes.root} >
-      {newCat &&
-        <ListItem key={'hgj12g3hg2'} role={undefined} dense>
-          <ListItemIcon>
-            <Checkbox
-              edge="start"
-              checked={true}
-              disableRipple
-              inputProps={{ 'aria-labelledby': 'new-category' }}
-            />
-          </ListItemIcon>
-          <ListItemText id={'new-category'} primary={
-            <CategoryInput onChange={(e) => handleInput(e)} value={value} handleClose={hanldeClose} />
-          } secondary="Введите тип населенного пункта" />
-          <ListItemSecondaryAction>
-            <IconButton edge="end" disabled={value === ""}>
-              <SaveIcon onClick={() => handleNewSave(value)} />
-            </IconButton>
-          </ListItemSecondaryAction>
-        </ListItem>
-      }
-
-      {categories.map((category) => {
-        const labelId = `checkbox-list-label-${category}`;
-        return (
-          <ListItem key={category.id} role={undefined} dense button onClick={() => handleChangeActive(category)}>
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={category.active}
-                disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
-              />
-            </ListItemIcon>
-            <ListItemText className="category-list-title" id={labelId} primary={category.title} />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" onClick={() => handleEditCat()}>
-                <EditIcon />
-              </IconButton>
-              <IconButton edge="end" onClick={() => handleCategoryDelete(category.id)} >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        );
-      })}
-    </List>
+    <Fragment>
+      <Grid container
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
+        <div className="categories-add-zone">
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => setNewCat(true)}
+          >
+            Добавить
+        </Button>
+        </div>
+        <div>
+          <SortableContainer onSortEnd={onSortEnd}>
+            {newCat &&
+              <ListInput value={value} hanldeClose={hanldeClose} handleInput={handleInput} handleNewSave={handleSaveClick} />
+            }
+            {categories.map((category, index) => {
+              const labelId = `checkbox-list-label-${category}`;
+              return (
+                <Fragment>
+                  {edit === category.id ?
+                    <ListInput
+                      key="223dskjhflaskjh"
+                      value={value}
+                      hanldeClose={hanldeClose}
+                      edit={edit}
+                      handleInput={handleInput}
+                      handleSaveEdit={handleEditSave}
+                      handleNewSave={handleSaveClick}
+                    />
+                    :
+                    <SortableItem
+                      key={`item-${category.id}`}
+                      index={index}
+                      category={category}
+                      labelId={labelId}
+                      handleChangeActive={handleChangeActive}
+                      handleEditCat={handleEditCat}
+                      handleCategoryDelete={handleCategoryDelete}
+                    />
+                  }
+                </Fragment>
+              );
+            })}
+          </SortableContainer>
+        </div>
+      </Grid>
+    </Fragment>
   );
 }
 export default CategoriesList

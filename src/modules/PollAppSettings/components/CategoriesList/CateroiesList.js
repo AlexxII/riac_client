@@ -14,8 +14,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import Grid from '@material-ui/core/Grid';
 import EditIcon from '@material-ui/icons/Edit';
 import Button from '@material-ui/core/Button';
+import DragHandleIcon from '@material-ui/icons/DragHandle';
 
-import { sortableContainer, sortableElement } from 'react-sortable-hoc';
+import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,11 +24,13 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    maxWidth: 500,
+    maxWidth: 560,
     margin: '10px 0 0 10px',
     backgroundColor: theme.palette.background.paper,
   },
 }));
+
+const DragHandle = sortableHandle(() => <DragHandleIcon className="drag-hanler" />);
 
 const CategoryInput = ({ onChange, handleClose, value }) => {
   return (
@@ -48,15 +51,13 @@ const CategoryInput = ({ onChange, handleClose, value }) => {
   )
 }
 
-const ListInput = ({ value, hanldeClose, handleInput, handleNewSave, handleSaveEdit, edit }) => {
-
+const ListInput = ({ value, startInput, hanldeClose, handleInput, handleNewSave, handleSaveEdit, edit }) => {
   const hanldeSaveClick = (value) => {
     edit ? handleSaveEdit() : handleNewSave(value)
   }
-
   return (
     <ListItem key={'hgj12g3hg2'} role={undefined} dense>
-      <ListItemIcon>
+      <ListItemIcon className="city-list-item-icon">
         <Checkbox
           edge="start"
           checked={true}
@@ -68,8 +69,8 @@ const ListInput = ({ value, hanldeClose, handleInput, handleNewSave, handleSaveE
         <CategoryInput onChange={(e) => handleInput(e)} value={value} handleClose={hanldeClose} />
       } secondary={edit ? "Отредактируйте тип НП" : "Введите тип населенного пункта"} />
       <ListItemSecondaryAction>
-        <IconButton edge="end" disabled={value === ""}>
-          <SaveIcon onClick={() => hanldeSaveClick(value)} />
+        <IconButton edge="end" disabled={!startInput} onClick={() => hanldeSaveClick(value)}>
+          <SaveIcon />
         </IconButton>
       </ListItemSecondaryAction>
     </ListItem>
@@ -78,7 +79,7 @@ const ListInput = ({ value, hanldeClose, handleInput, handleNewSave, handleSaveE
 
 const SortableItem = sortableElement(({ category, labelId, handleChangeActive, handleEditCat, handleCategoryDelete }) => (
   <ListItem key={category.id} role={undefined} dense button={false} >
-    <ListItemIcon>
+    <ListItemIcon className="city-list-item-icon">
       <Checkbox
         edge="start"
         checked={category.active}
@@ -86,6 +87,7 @@ const SortableItem = sortableElement(({ category, labelId, handleChangeActive, h
         onClick={() => handleChangeActive(category)}
         inputProps={{ 'aria-labelledby': labelId }}
       />
+      <DragHandle />
     </ListItemIcon>
     <ListItemText className="category-list-title" id={labelId} primary={category.title} />
     <ListItemSecondaryAction>
@@ -112,14 +114,14 @@ const SortableContainer = sortableContainer(({ children }) => {
 
 const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCategoryDelete, handleEdit, handleNewSave }) => {
   const [newCat, setNewCat] = useState(false)
+  const [startInput, setStartInput] = useState(false)
   const [value, setValue] = useState('')
   const [edit, setEdit] = useState(false)
 
   const handleInput = (e) => {
     const val = e.currentTarget.value
-    if (val !== '') {
-      setValue(val)
-    }
+    setStartInput(true)
+    setValue(val)
   }
 
   const handleEditCat = (category) => {
@@ -130,6 +132,7 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
   const handleSaveClick = () => {
     handleNewSave(value)
     setValue('')
+    setStartInput(false)
     setNewCat(false)
   }
 
@@ -138,23 +141,22 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
       id: edit,
       title: value
     })
+    setStartInput(false)
     setValue('')
     setEdit(false)
   }
 
   const hanldeClose = () => {
     if (edit) {
-      setValue('')
       setEdit(false)
     } else {
-      setValue('')
       setNewCat(false)
     }
+    setValue('')
+    setStartInput(false)
   }
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
-    console.log(oldIndex, newIndex);
-
     if (oldIndex !== newIndex) {
       const newArray = arrayMove(categories, oldIndex, newIndex)
       let deltaArray = []
@@ -175,7 +177,6 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
         deltaArray
       })
     }
-
   }
 
   return (
@@ -196,7 +197,7 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
         </Button>
         </div>
         <div>
-          <SortableContainer onSortEnd={onSortEnd}>
+          <SortableContainer onSortEnd={onSortEnd} useDragHandle>
             {newCat &&
               <ListInput value={value} hanldeClose={hanldeClose} handleInput={handleInput} handleNewSave={handleSaveClick} />
             }
@@ -207,6 +208,7 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
                   {edit === category.id ?
                     <ListInput
                       key="223dskjhflaskjh"
+                      startInput={startInput}
                       value={value}
                       hanldeClose={hanldeClose}
                       edit={edit}

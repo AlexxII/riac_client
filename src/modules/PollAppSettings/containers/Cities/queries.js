@@ -15,6 +15,7 @@ query {
   cityCategories{
     id
     title
+    active
   }
 }
 `

@@ -252,11 +252,13 @@ const Cities = () => {
               helperText="Категория н.п."
             >
               <option key={0} disabled selected value=""></option>
-              {citiesData.cityCategories.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.title}
-                </option>
-              ))}
+              {citiesData.cityCategories
+                .filter(option => option.active)
+                .map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.title}
+                  </option>
+                ))}
             </TextField>
             <Button
               className="city-dialog-save"

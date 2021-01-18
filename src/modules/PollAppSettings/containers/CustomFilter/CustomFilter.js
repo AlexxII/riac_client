@@ -16,10 +16,11 @@ import SortableEditList from '../../components/SortableEditList'
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
-import { GET_CITIES_CATEGORIES } from './queries'
+import { GET_CUSTOM_FILTERS } from './queries'
 import {
-  CHANGE_CATEGORY_STATUS, CHANGE_CATEGORY_ORDER,
-  SAVE_NEW_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY
+  SAVE_NEW_FILTER, CHANGE_FILTERS_ORDER,
+  CHANGE_FILTER_STATUS,
+  DELETE_FILTER, UPDATE_FILTER
 } from './mutaions'
 
 const CityCategory = () => {
@@ -29,47 +30,47 @@ const CityCategory = () => {
   const [newOrder, setNewOrder] = useState([])
 
   const {
-    data: citiesCategories,
-    loading: citiesCategoriesLoading,
-    error: citiesCategoriesError
-  } = useQuery(GET_CITIES_CATEGORIES)
+    data: customFilters,
+    loading: customFiltersLoading,
+    error: customFiltersError
+  } = useQuery(GET_CUSTOM_FILTERS)
 
-  const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_CATEGORY_STATUS, {
+  const [changeFilterStatus, { loading: changeFilterStatusLoading }] = useMutation(CHANGE_FILTER_STATUS, {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Изменить статус не удалось. Смотрите консоль.'
+        text: 'Отключить активность не удалось. Смотрите консоль.'
       })
       console.log(e);
     },
-    update: (cache, { data: { changeCityCategoryStatus } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { changeCustomFilterStatus } }) => cache.writeQuery({
+      query: GET_CUSTOM_FILTERS,
       data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === changeCityCategoryStatus.id ? changeCityCategoryStatus : category)
+        customFilters: customFilters.customFilters.map(category => category.id === changeCustomFilterStatus.id ? changeCustomFilterStatus : category)
       }
     })
   })
 
-  const [saveNewCategory, { loading: saveNewCategoryLoading }] = useMutation(SAVE_NEW_CATEGORY, {
+  const [saveNewFilter, { loading: saveNewFilterLoading }] = useMutation(SAVE_NEW_FILTER, {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Сохранить ТНП не удалось. Смотрите консоль.'
+        text: 'Сохранить фильтр не удалось. Смотрите консоль.'
       })
       console.log(e);
     },
-    update: (cache, { data: { saveNewCityCategory } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { saveNewFilter } }) => cache.writeQuery({
+      query: GET_CUSTOM_FILTERS,
       data: {
-        cityCategories: [
-          ...citiesCategories.cityCategories,
-          saveNewCityCategory
+        customFilters: [
+          ...customFilters.customFilters,
+          saveNewFilter
         ]
       }
     })
   })
 
-  const [updateCategory, { loading: updateCategoryLoading }] = useMutation(UPDATE_CATEGORY, {
+  const [updateFilter, { loading: updateFilterLoading }] = useMutation(UPDATE_FILTER, {
     onError: (e) => {
       setNoti({
         type: 'error',
@@ -77,31 +78,31 @@ const CityCategory = () => {
       })
       console.log(e);
     },
-    update: (cache, { data: { updateCityCategory } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { updateCustomFilter } }) => cache.writeQuery({
+      query: GET_CUSTOM_FILTERS,
       data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === updateCityCategory.id ? updateCityCategory : category)
+        customFilters: customFilters.customFilters.map(category => category.id === updateCustomFilter.id ? updateCustomFilter : category)
       }
     })
   })
 
-  const [deleteCityCategory, { loading: deleteCategoryLoading }] = useMutation(DELETE_CATEGORY, {
+  const [deleteCustomFilter, { loading: deleteCusomFilterLoading }] = useMutation(DELETE_FILTER, {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Удалить ТНП не удалось. Смотрите консоль.'
+        text: 'Удалить категорию не удалось. Смотрите консоль.'
       })
       console.log(e);
     },
-    update: (cache, { data: { deleteCityCategory } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { deleteCustomFilter } }) => cache.writeQuery({
+      query: GET_CUSTOM_FILTERS,
       data: {
-        cityCategories: citiesCategories.cityCategories.filter(city => city.id === deleteCityCategory.id ? false : true)
+        customFilters: customFilters.customFilters.filter(city => city.id === deleteCustomFilter.id ? false : true)
       }
     })
   })
 
-  const [saveNewOrder, { loading: saveNewOrderLoading }] = useMutation(CHANGE_CATEGORY_ORDER, {
+  const [saveNewOrder, { loading: saveNewOrderLoading }] = useMutation(CHANGE_FILTERS_ORDER, {
     onError: (e) => {
       setNoti({
         type: 'error',
@@ -109,30 +110,30 @@ const CityCategory = () => {
       })
       console.log(e);
     },
-    update: (cache, { data: { saveCityCategoryOrder } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data }) => cache.writeQuery({
+      query: GET_CUSTOM_FILTERS,
       data: {
-        cityCategories: newOrder
+        customFilters: newOrder
       }
     })
   })
 
   const Loading = () => {
-    if (changeActiveStatusLoading
-      || saveNewCategoryLoading
-      || updateCategoryLoading
-      || deleteCategoryLoading
+    if (changeFilterStatusLoading
+      || saveNewFilterLoading
+      || updateFilterLoading
+      || deleteCusomFilterLoading
       || saveNewOrderLoading
     ) return <LoadingStatus />
     return null
   }
 
-  if (citiesCategoriesLoading) return (
+  if (customFiltersLoading) return (
     <LoadingState />
   )
 
-  if (citiesCategoriesError) {
-    console.log(JSON.stringify(citiesCategoriesError));
+  if (customFiltersError) {
+    console.log(JSON.stringify(customFiltersError));
     return (
       <ErrorState
         title="Что-то пошло не так"
@@ -145,7 +146,7 @@ const CityCategory = () => {
     setDelId(id)
   }
   const handleDelConfirm = () => {
-    deleteCityCategory({
+    deleteCustomFilter({
       variables: {
         id: delId
       }
@@ -158,7 +159,7 @@ const CityCategory = () => {
   }
 
   const changeActive = (category) => {
-    changeActiveStatus({
+    changeFilterStatus({
       variables: {
         id: category.id,
         status: !category.active
@@ -167,7 +168,7 @@ const CityCategory = () => {
   }
 
   const handleEditSave = (data) => {
-    updateCategory({
+    updateFilter({
       variables: {
         id: data.id,
         title: data.title
@@ -176,7 +177,7 @@ const CityCategory = () => {
   }
 
   const handleCategorySave = (data) => {
-    saveNewCategory({
+    saveNewFilter({
       variables: {
         title: data
       }
@@ -187,7 +188,7 @@ const CityCategory = () => {
     setNewOrder(data.newOrder)
     saveNewOrder({
       variables: {
-        categories: data.deltaArray
+        filters: data.deltaArray
       }
     })
   }
@@ -201,14 +202,13 @@ const CityCategory = () => {
         close={() => setNoti(false)}
       />
       <Loading />
-      <div className="category-service-zone">
-        <Typography variant="h5" gutterBottom className="header">Типы населенных пунктов</Typography>
+      <div className="age-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Настриваемый фильтр</Typography>
       </div>
       <Divider />
       <div className="info-zone">
         <Typography variant="body2" gutterBottom>
-          Внимание! Необдуманная манипуляция этими данными приведет к потере части статистики. Изменяйте их в случае крайней необходимости. 
-          Если необходимо изменить категории, лучше отредактируйте существующие. При необходимости, добавьте недостающие.
+          В данном разделе настраивается фильтрация по полям, которые может задать сам пользователь.
         </Typography>
       </div>
       <ConfirmDialog
@@ -221,14 +221,13 @@ const CityCategory = () => {
         }}
         data={
           {
-            title: 'Удалить тип населенного пункта?',
-            content: `Внимание! Результаты опросов учитывают тип населенного пункта, удаление приведет к потере части статистики и некорректности ее отображения.`
+            title: 'Удалить фильтр?'
           }
         }
       />
       <Grid container spacing={3} xs={12}>
         <SortableEditList
-          data={citiesCategories.cityCategories}
+          data={customFilters.customFilters}
           handleChangeActive={changeActive}
           handleCategoryDelete={deleteCategory}
           handleNewSave={handleCategorySave}

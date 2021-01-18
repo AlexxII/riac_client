@@ -44,14 +44,14 @@ const CategoryInput = ({ onChange, handleClose, value }) => {
           <TextField id="standard-basic" onChange={onChange} autoFocus={true} value={value} fullWidth />
         </Grid>
         <Grid xs={1}>
-          <CloseIcon id="close-new-category-input" onClick={() => handleClose()} />
+          <CloseIcon id="close-new-sortitem-input" onClick={() => handleClose()} />
         </Grid>
       </Grid>
     </Fragment>
   )
 }
 
-const ListInput = ({ value, startInput, hanldeClose, handleInput, handleNewSave, handleSaveEdit, edit }) => {
+const ListInput = ({ value, hanldeClose, handleInput, handleNewSave, handleSaveEdit, edit }) => {
   const hanldeSaveClick = (value) => {
     edit ? handleSaveEdit() : handleNewSave(value)
   }
@@ -62,14 +62,14 @@ const ListInput = ({ value, startInput, hanldeClose, handleInput, handleNewSave,
           edge="start"
           checked={true}
           disableRipple
-          inputProps={{ 'aria-labelledby': 'new-category' }}
+          inputProps={{ 'aria-labelledby': 'new-sortitem' }}
         />
       </ListItemIcon>
-      <ListItemText id={'new-category'} primary={
+      <ListItemText id={'new-sortitem'} primary={
         <CategoryInput onChange={(e) => handleInput(e)} value={value} handleClose={hanldeClose} />
-      } secondary={edit ? "Отредактируйте тип НП" : "Введите тип населенного пункта"} />
+      } secondary={edit ? "Отредактируйте наименование" : "Введите наименование"} />
       <ListItemSecondaryAction>
-        <IconButton edge="end" disabled={!startInput} onClick={() => hanldeSaveClick(value)}>
+        <IconButton edge="end" disabled={!value} onClick={() => hanldeSaveClick(value)}>
           <SaveIcon />
         </IconButton>
       </ListItemSecondaryAction>
@@ -77,25 +77,25 @@ const ListInput = ({ value, startInput, hanldeClose, handleInput, handleNewSave,
   )
 }
 
-const SortableItem = sortableElement(({ category, labelId, handleChangeActive, handleEditCat, handleCategoryDelete }) => (
-  <ListItem key={category.id} role={undefined} dense button={false} >
+const SortableItem = sortableElement(({ item, labelId, handleChangeActive, handleEditCat, handleCategoryDelete }) => (
+  <ListItem key={item.id} role={undefined} dense button={false} >
     <ListItemIcon className="city-list-item-icon">
       <Checkbox
         edge="start"
-        checked={category.active}
+        checked={item.active}
         disableRipple
-        onClick={() => handleChangeActive(category)}
+        onClick={() => handleChangeActive(item)}
         inputProps={{ 'aria-labelledby': labelId }}
       />
       <DragHandle />
     </ListItemIcon>
-    <ListItemText className="category-list-title" id={labelId} primary={category.title} />
+    <ListItemText className="category-list-title" id={labelId} primary={item.title} />
     <ListItemSecondaryAction>
       <Fragment>
-        <IconButton edge="end" onClick={() => handleEditCat(category)}>
+        <IconButton edge="end" onClick={() => handleEditCat(item)}>
           <EditIcon />
         </IconButton>
-        <IconButton edge="end" onClick={() => handleCategoryDelete(category.id)} >
+        <IconButton edge="end" onClick={() => handleCategoryDelete(item.id)} >
           <DeleteIcon />
         </IconButton>
       </Fragment>
@@ -112,7 +112,7 @@ const SortableContainer = sortableContainer(({ children }) => {
   )
 })
 
-const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCategoryDelete, handleEdit, handleNewSave }) => {
+const SortableEditList = ({ data, handleChangeActive, saveNewSort, handleCategoryDelete, handleEdit, handleNewSave }) => {
   const [newCat, setNewCat] = useState(false)
   const [startInput, setStartInput] = useState(false)
   const [value, setValue] = useState('')
@@ -158,7 +158,7 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
-      const newArray = arrayMove(categories, oldIndex, newIndex)
+      const newArray = arrayMove(data, oldIndex, newIndex)
       let deltaArray = []
       const newOrder = newArray.reduce((acum, val, index) => {
         if (val.order === index + 1) {
@@ -186,7 +186,7 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
         justify="flex-start"
         alignItems="flex-start"
       >
-        <div className="categories-add-zone">
+        <div className="sotable-add-zone">
           <Button
             variant="contained"
             color="primary"
@@ -201,11 +201,11 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
             {newCat &&
               <ListInput value={value} hanldeClose={hanldeClose} handleInput={handleInput} handleNewSave={handleSaveClick} />
             }
-            {categories.map((category, index) => {
-              const labelId = `checkbox-list-label-${category}`;
+            {data.map((item, index) => {
+              const labelId = `checkbox-list-label-${item}`;
               return (
                 <Fragment>
-                  {edit === category.id ?
+                  {edit === item.id ?
                     <ListInput
                       key="223dskjhflaskjh"
                       startInput={startInput}
@@ -218,9 +218,9 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
                     />
                     :
                     <SortableItem
-                      key={`item-${category.id}`}
+                      key={`item-${item.id}`}
                       index={index}
-                      category={category}
+                      item={item}
                       labelId={labelId}
                       handleChangeActive={handleChangeActive}
                       handleEditCat={handleEditCat}
@@ -236,4 +236,4 @@ const CategoriesList = ({ categories, handleChangeActive, saveNewSort, handleCat
     </Fragment>
   );
 }
-export default CategoriesList
+export default SortableEditList

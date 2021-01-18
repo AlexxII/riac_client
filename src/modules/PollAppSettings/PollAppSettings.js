@@ -4,9 +4,9 @@ import AdaptiveTabs from '../../components/AdaptiveTabs'
 
 import Cities from './containers/Cities'
 import Sample from './containers/Sample'
-import Sex from './containers/Sex'
-import Age from './containers/Age'
+import AgeCategory from './containers/AgeCategory'
 import CityCategory from './containers/CityCategory'
+import CustomFilter from './containers/CustomFilter'
 
 const PollAppSettings = () => {
   const data = [
@@ -19,16 +19,16 @@ const PollAppSettings = () => {
       component: <Sample />
     },
     {
-      label: 'Пол',
-      component: <Sex />
-    },
-    {
-      label: 'Возраст',
-      component: <Age />
+      label: 'Фильтр',
+      component: <CustomFilter />
     },
     {
       label: 'ТНП',
       component: <CityCategory />
+    },
+    {
+      label: 'Возраст',
+      component: <AgeCategory />
     }
   ]
   return (

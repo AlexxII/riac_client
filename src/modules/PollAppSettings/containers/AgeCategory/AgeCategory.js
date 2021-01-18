@@ -16,9 +16,9 @@ import SortableEditList from '../../components/SortableEditList'
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
-import { GET_CITIES_CATEGORIES } from './queries'
+import { GET_AGE_CATEGORIES } from './queries'
 import {
-  CHANGE_CATEGORY_STATUS, CHANGE_CATEGORY_ORDER,
+  CHANGE_AGE_CATEGORY_STATUS, CHANGE_CATEGORY_ORDER,
   SAVE_NEW_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY
 } from './mutaions'
 
@@ -29,23 +29,23 @@ const CityCategory = () => {
   const [newOrder, setNewOrder] = useState([])
 
   const {
-    data: citiesCategories,
-    loading: citiesCategoriesLoading,
-    error: citiesCategoriesError
-  } = useQuery(GET_CITIES_CATEGORIES)
+    data: ageCategories,
+    loading: ageCategoriesLoading,
+    error: ageCategoriesError
+  } = useQuery(GET_AGE_CATEGORIES)
 
-  const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_CATEGORY_STATUS, {
+  const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_AGE_CATEGORY_STATUS, {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Изменить статус не удалось. Смотрите консоль.'
+        text: 'Изменить статус категории не удалось. Смотрите консоль.'
       })
       console.log(e);
     },
-    update: (cache, { data: { changeCityCategoryStatus } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { changeAgeCategoryStatus } }) => cache.writeQuery({
+      query: GET_AGE_CATEGORIES,
       data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === changeCityCategoryStatus.id ? changeCityCategoryStatus : category)
+        ageCategories: ageCategories.ageCategories.map(category => category.id === changeAgeCategoryStatus.id ? changeAgeCategoryStatus : category)
       }
     })
   })
@@ -54,16 +54,16 @@ const CityCategory = () => {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Сохранить ТНП не удалось. Смотрите консоль.'
+        text: 'Сохранить категорию не удалось. Смотрите консоль.'
       })
       console.log(e);
     },
-    update: (cache, { data: { saveNewCityCategory } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { saveNewAgeCategory } }) => cache.writeQuery({
+      query: GET_AGE_CATEGORIES,
       data: {
-        cityCategories: [
-          ...citiesCategories.cityCategories,
-          saveNewCityCategory
+        ageCategories: [
+          ...ageCategories.ageCategories,
+          saveNewAgeCategory
         ]
       }
     })
@@ -77,10 +77,10 @@ const CityCategory = () => {
       })
       console.log(e);
     },
-    update: (cache, { data: { updateCityCategory } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { updateAgeCategory } }) => cache.writeQuery({
+      query: GET_AGE_CATEGORIES,
       data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === updateCityCategory.id ? updateCityCategory : category)
+        ageCategories: ageCategories.ageCategories.map(category => category.id === updateAgeCategory.id ? updateAgeCategory : category)
       }
     })
   })
@@ -89,14 +89,14 @@ const CityCategory = () => {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Удалить ТНП не удалось. Смотрите консоль.'
+        text: 'Удалить категорию не удалось. Смотрите консоль.'
       })
       console.log(e);
     },
-    update: (cache, { data: { deleteCityCategory } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data: { deleteAgeCategory } }) => cache.writeQuery({
+      query: GET_AGE_CATEGORIES,
       data: {
-        cityCategories: citiesCategories.cityCategories.filter(city => city.id === deleteCityCategory.id ? false : true)
+        ageCategories: ageCategories.ageCategories.filter(city => city.id === deleteAgeCategory.id ? false : true)
       }
     })
   })
@@ -109,10 +109,10 @@ const CityCategory = () => {
       })
       console.log(e);
     },
-    update: (cache, { data: { saveCityCategoryOrder } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
+    update: (cache, { data }) => cache.writeQuery({
+      query: GET_AGE_CATEGORIES,
       data: {
-        cityCategories: newOrder
+        ageCategories: newOrder
       }
     })
   })
@@ -127,12 +127,12 @@ const CityCategory = () => {
     return null
   }
 
-  if (citiesCategoriesLoading) return (
+  if (ageCategoriesLoading) return (
     <LoadingState />
   )
 
-  if (citiesCategoriesError) {
-    console.log(JSON.stringify(citiesCategoriesError));
+  if (ageCategoriesError) {
+    console.log(JSON.stringify(ageCategoriesError));
     return (
       <ErrorState
         title="Что-то пошло не так"
@@ -187,7 +187,7 @@ const CityCategory = () => {
     setNewOrder(data.newOrder)
     saveNewOrder({
       variables: {
-        categories: data.deltaArray
+        ages: data.deltaArray
       }
     })
   }
@@ -201,13 +201,13 @@ const CityCategory = () => {
         close={() => setNoti(false)}
       />
       <Loading />
-      <div className="category-service-zone">
-        <Typography variant="h5" gutterBottom className="header">Типы населенных пунктов</Typography>
+      <div className="age-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Категории возраста</Typography>
       </div>
       <Divider />
       <div className="info-zone">
         <Typography variant="body2" gutterBottom>
-          Внимание! Необдуманная манипуляция этими данными приведет к потере части статистики. Изменяйте их в случае крайней необходимости. 
+          Внимание! Необдуманная манипуляция этими данными приведет к потере части статистики. Изменяйте их в случае крайней необходимости.
           Если необходимо изменить категории, лучше отредактируйте существующие. При необходимости, добавьте недостающие.
         </Typography>
       </div>
@@ -221,14 +221,14 @@ const CityCategory = () => {
         }}
         data={
           {
-            title: 'Удалить тип населенного пункта?',
-            content: `Внимание! Результаты опросов учитывают тип населенного пункта, удаление приведет к потере части статистики и некорректности ее отображения.`
+            title: 'Удалить категорию возраста?',
+            content: `Внимание! Результаты опросов учитывают возраст респондента, удаление приведет к потере части статистики и некорректности ее отображения.`
           }
         }
       />
       <Grid container spacing={3} xs={12}>
         <SortableEditList
-          data={citiesCategories.cityCategories}
+          data={ageCategories.ageCategories}
           handleChangeActive={changeActive}
           handleCategoryDelete={deleteCategory}
           handleNewSave={handleCategorySave}

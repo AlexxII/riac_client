@@ -150,7 +150,8 @@ const questionFormation = (poll, count, result, logic, setResults) => {
       [question.id]: {
         data: [],
         codesPool,
-        count
+        count, 
+        title: question.title
       }
     }))
     return {

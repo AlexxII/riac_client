@@ -117,7 +117,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     if (newQuestion.next) {
       if (direction) {
         if (count === questionsLimit - 1) {
-          console.log();
+          console.log(results);
           checkRespondentFinish(results)
           // setEarlyСompletion(true)
           return

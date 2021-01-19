@@ -36,6 +36,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   const [direction, setDirection] = useState(1)
   const [logic] = useState(logics)
   const [count, setCount] = useState(0)
+  const [visibleCount, setVisibleCount] = useState(0)
   const [results, setResults] = useState(
     {
       pool: []
@@ -116,7 +117,9 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     if (newQuestion.next) {
       if (direction) {
         if (count === questionsLimit - 1) {
-          setEarlyСompletion(true)
+          console.log();
+          checkRespondentFinish(results)
+          // setEarlyСompletion(true)
           return
         }
         setCount(count + 1)
@@ -126,6 +129,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       return
     }
     setQuestion(newQuestion.data)
+    setVisibleCount(count)
     setCurrentQuestion(newQuestion.data)
   }, [count])
 
@@ -146,6 +150,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     }
     // проверка - если не дошли до конца анкета, нет смысла анализировать концовку
     if (count < poll.questions.length) {
+      console.log('не до конца');
       return false
     }
     for (let key in newResults) {
@@ -746,7 +751,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       </Grid>
       {question &&
         <Question
-          count={count}
+          count={visibleCount}
           question={question}
           settings={userSettings}
           clickHandler={mainLogic}

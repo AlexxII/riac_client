@@ -8,7 +8,6 @@ export const parseIni = (configData) => {
   };
   let config = {};
   let lines = configData.split(/[\r\n]+/);
-  console.log(lines);
   let section = null;
   lines.forEach(function (line) {
     if (regex.comment.test(line)) {
@@ -135,7 +134,6 @@ function rangeToArray(data) {
 }
 
 export const normalizeLogic = (logic) => {
-  console.log(logic);
   let normalizedLogic = {}
   for (let key in logic) {
     switch (key) {
@@ -194,7 +192,6 @@ export const normalizeLogic = (logic) => {
         }
         break
       case 'header':
-        console.log(logic[key]);
         normalizedLogic = {
           ...normalizedLogic,
           header: logic[key]

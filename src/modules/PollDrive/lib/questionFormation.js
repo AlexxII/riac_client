@@ -145,16 +145,25 @@ const questionFormation = (poll, count, result, logic, setResults) => {
   }, 0)
 
   if (countSkipAnswers === newAnswers.length) {
-    setResults(prevState => ({
-      ...prevState,
-      [question.id]: {
-        data: [],
-        codesPool,
-        count, 
-        title: question.title
-      }
-    }))
+    let newResultState = Object.assign({}, result);
+    newResultState[question.id] = {
+      data: [],
+      codesPool,
+      count
+    }
+    setResults(newResultState)
+
+    // setResults(prevState => ({
+    //   ...prevState,
+    //   [question.id]: {
+    //     data: [],
+    //     codesPool,
+    //     count,
+    //     title: question.title
+    //   }
+    // }))
     return {
+      results: newResultState,
       next: true
     }
   }

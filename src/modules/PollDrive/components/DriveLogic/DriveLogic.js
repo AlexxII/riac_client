@@ -118,7 +118,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
       if (direction) {
         if (count === questionsLimit - 1) {
           console.log(results);
-          checkRespondentFinish(results)
+          checkRespondentFinish(newQuestion.results)
           // setEarlyСompletion(true)
           return
         }
@@ -148,6 +148,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
         count++
       }
     }
+    console.log(count, poll.questions.length);
     // проверка - если не дошли до конца анкета, нет смысла анализировать концовку
     if (count < poll.questions.length) {
       console.log('не до конца');
@@ -179,6 +180,7 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
               // чтобы он не перешел к след. ответу
               return true
             }
+            console.log('22222222');
           } else {
             // пула критичных ответов нет -> запрещенных вопросов нет -> какой-то вопрос пропущен
             // ОПРЕДЕЛИТЬ какой номер вопроса

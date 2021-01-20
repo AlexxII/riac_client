@@ -7,6 +7,8 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
+import iconv from 'iconv-lite'
+
 import xmlparser from '../../lib/utils'
 
 const useStyles = makeStyles((theme) => ({
@@ -40,6 +42,13 @@ const XmlImport = ({ field, ...props }) => {
     if (file) {
       reader.onloadend = () => {
         const xmlText = reader.result
+
+        let  body = new Buffer(xmlText, 'binary');
+        let conv = iconv.Iconv('windows-1251', 'utf8');
+        body = conv.convert(body).toString();
+        console.log(body);
+
+
         const xml = xmlparser(xmlText)
         if (xml) {
           setProcessing(false)

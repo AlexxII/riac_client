@@ -14,6 +14,21 @@ Polls
 + набивка -> проверка на окончание опроса -> возможность для множественного вопроса - к
 + проверка дублей в результатах - о
 
+
+const Iconv = require('iconv').Iconv;
+
+request({ 
+    uri: website_url,
+    method: 'GET',
+    encoding: 'binary'
+}, function (error, response, body) {
+
+        const body = new Buffer(body, 'binary');
+        conv = Iconv('windows-1251', 'utf8');
+        body = conv.convert(body).toString();
+
+});
+
 ======= к =======
 - редактирование инф.данных самого опроса - к
 - набивка -> select со свободным ответом - ККК

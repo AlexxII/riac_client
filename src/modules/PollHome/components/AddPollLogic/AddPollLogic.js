@@ -3,6 +3,8 @@ import React, { Fragment, useState, useRef } from 'react'
 import PollIcon from '@material-ui/icons/Poll';
 import CalendarTodayRoundedIcon from '@material-ui/icons/CalendarTodayRounded';
 
+import iconv from 'iconv-lite'
+
 import { useHistory } from "react-router-dom";
 
 import AddPollForm from '../AddPollForm'
@@ -66,6 +68,14 @@ const AddPollLogic = ({ addPoll }) => {
     return new Promise((resolve, reject) => {
       reader.onloadend = () => {
         const xmlText = reader.result
+
+        let  body = new Buffer(body, 'binary');
+        let conv = iconv.Iconv('windows-1251', 'utf8');
+        body = conv.convert(body).toString();
+        console.log(body);
+        return
+
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(xmlText, 'text/xml');
         const questions = doc.getElementsByTagName('vopros')

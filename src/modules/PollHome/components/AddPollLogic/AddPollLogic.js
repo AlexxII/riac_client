@@ -3,13 +3,14 @@ import React, { Fragment, useState, useRef } from 'react'
 import PollIcon from '@material-ui/icons/Poll';
 import CalendarTodayRoundedIcon from '@material-ui/icons/CalendarTodayRounded';
 
-import iconv from 'iconv-lite'
-
 import { useHistory } from "react-router-dom";
+
 
 import AddPollForm from '../AddPollForm'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import SpeedDialFab from '../../../../components/SpeedDealFab'
+
+const iconvlite = require('iconv-lite')
 
 const AddPollLogic = ({ addPoll }) => {
   const formRef = useRef()
@@ -68,16 +69,10 @@ const AddPollLogic = ({ addPoll }) => {
     return new Promise((resolve, reject) => {
       reader.onloadend = () => {
         const xmlText = reader.result
-
-        let  body = new Buffer(body, 'binary');
-        let conv = iconv.Iconv('windows-1251', 'utf8');
-        body = conv.convert(body).toString();
-        console.log(body);
-        return
-
-
+        const buf = Buffer.from(xmlText);
+        const utf8Text = iconvlite.decode(buf, 'utf8')
         const parser = new DOMParser();
-        const doc = parser.parseFromString(xmlText, 'text/xml');
+        const doc = parser.parseFromString(utf8Text, 'text/xml');
         const questions = doc.getElementsByTagName('vopros')
         const questionsLen = questions.length
         for (let i = 0; i < questionsLen; i++) {
@@ -129,7 +124,7 @@ const AddPollLogic = ({ addPoll }) => {
         }
         resolve(result)
       }
-      reader.readAsText(file);
+      reader.readAsText(file, 'cp1251');
     })
   }
 

@@ -38,6 +38,8 @@ import { useMutation } from '@apollo/react-hooks'
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import { DELETE_RESULTS } from './mutations'
 
+const iconvlite = require('iconv-lite')
+
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
@@ -113,7 +115,7 @@ const OverallResults = ({ id }) => {
       console.log(e);
     },
     update: (cache, { data }) => {
-      
+
       const deletedPool = data.deleteResults.map(del => del.id)
       setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
       cache.modify({
@@ -140,6 +142,10 @@ const OverallResults = ({ id }) => {
         description: 'Анализ дублей'
       })
       console.log('11111111');
+
+
+
+
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {
@@ -331,7 +337,8 @@ const OverallResults = ({ id }) => {
         outData += '\n' + exportData[city].interviewer + '\n\n'
         count++
       }
-      downloadIt(outData, 'allData.opr')
+      const outDataCp866 = utfTocp866(outData)
+      downloadIt(outDataCp866, 'allData.opr')
     } else {
       for (let city in exportData) {
         let outData = ''
@@ -353,9 +360,25 @@ const OverallResults = ({ id }) => {
         outData += '==='
         outData += '\n' + exportData[city].interviewer
         count++
-        downloadIt(outData, rusToLatin(city))                                     // транслит для имени файла
+
+        const outDataCp866 = utfTocp866(outData)
+        downloadIt(outDataCp866, rusToLatin(city))                                  // транслит для имени файла
       }
     }
+  }
+
+  const utfTocp866 = (data) => {
+    // let encoder = new TextEncoder();
+    // let uint8Array = encoder.encode(data);
+    // console.log(uint8Array);
+
+    // let decoder = new TextDecoder('cp1251')
+    // const dd = decoder.decode(uint8Array)
+    
+    // return dd
+    const buf = Buffer.from(data);
+    const result = iconvlite.decode(buf, 'cp1251').toString()
+    return result
   }
 
   const exportAllRawData = () => {

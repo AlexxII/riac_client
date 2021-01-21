@@ -7,9 +7,9 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
-import iconv from 'iconv-lite'
-
 import xmlparser from '../../lib/utils'
+
+const iconvlite = require('iconv-lite')
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -34,6 +34,8 @@ const XmlImport = ({ field, ...props }) => {
     }
   }
 
+  var CHARSET_RE = /charset=([\w-]+)/i;
+
   const handleChg = (e) => {
     e.preventDefault()
     setProcessing(true)
@@ -42,14 +44,10 @@ const XmlImport = ({ field, ...props }) => {
     if (file) {
       reader.onloadend = () => {
         const xmlText = reader.result
-
-        let  body = new Buffer(xmlText, 'binary');
-        let conv = iconv.Iconv('windows-1251', 'utf8');
-        body = conv.convert(body).toString();
-        console.log(body);
-
-
-        const xml = xmlparser(xmlText)
+        // преобразуем к utf8
+        const buf = Buffer.from(xmlText);
+        const utf8Text = iconvlite.decode(buf, 'utf8')
+        const xml = xmlparser(utf8Text)
         if (xml) {
           setProcessing(false)
           const regEx = /^(\d{2}).(\d{2}).(\d{4})$/;
@@ -64,7 +62,9 @@ const XmlImport = ({ field, ...props }) => {
           return
         }
       }
-      reader.readAsText(file);
+      // reader.readAsText(file, 'windows-1251');
+      // reader.readAsText(file, 'win1251');
+      reader.readAsText(file, 'cp1251');
     }
   }
 

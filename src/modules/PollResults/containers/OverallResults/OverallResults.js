@@ -377,7 +377,13 @@ const OverallResults = ({ id }) => {
     
     // return dd
     const buf = Buffer.from(data);
-    const result = iconvlite.decode(buf, 'cp1251').toString()
+    console.log(buf);
+    const buff = iconvlite.encode(data, 'utf8');
+    console.log(buff);
+
+    // const decoder = new TextDecoder('866')
+    // const result = decoder.decode(buf)
+    const result = iconvlite.decode(buff, 'cp866')
     return result
   }
 

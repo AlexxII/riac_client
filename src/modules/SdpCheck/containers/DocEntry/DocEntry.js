@@ -11,44 +11,21 @@ import LoadingStatus from '../../../../components/LoadingStatus'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
-import SortableEditList from '../../components/SortableEditList'
-
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_CITIES_CATEGORIES } from './queries'
-import {
-  CHANGE_CATEGORY_STATUS, CHANGE_CATEGORY_ORDER,
-  SAVE_NEW_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY
-} from './mutations'
+import { SAVE_NEW_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY } from './mutations'
 
-const CityCategory = () => {
+const DocEntry = () => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
-  const [delId, setDelId] = useState(false)
-  const [newOrder, setNewOrder] = useState([])
 
   const {
     data: citiesCategories,
     loading: citiesCategoriesLoading,
     error: citiesCategoriesError
   } = useQuery(GET_CITIES_CATEGORIES)
-
-  const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_CATEGORY_STATUS, {
-    onError: (e) => {
-      setNoti({
-        type: 'error',
-        text: 'Изменить статус не удалось. Смотрите консоль.'
-      })
-      console.log(e);
-    },
-    update: (cache, { data: { changeCityCategoryStatus } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
-      data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === changeCityCategoryStatus.id ? changeCityCategoryStatus : category)
-      }
-    })
-  })
 
   const [saveNewCategory, { loading: saveNewCategoryLoading }] = useMutation(SAVE_NEW_CATEGORY, {
     onError: (e) => {
@@ -101,28 +78,10 @@ const CityCategory = () => {
     })
   })
 
-  const [saveNewOrder, { loading: saveNewOrderLoading }] = useMutation(CHANGE_CATEGORY_ORDER, {
-    onError: (e) => {
-      setNoti({
-        type: 'error',
-        text: 'Изменить порядок не удалось. Смотрите консоль.'
-      })
-      console.log(e);
-    },
-    update: (cache, { data: { saveCityCategoryOrder } }) => cache.writeQuery({
-      query: GET_CITIES_CATEGORIES,
-      data: {
-        cityCategories: newOrder
-      }
-    })
-  })
-
   const Loading = () => {
-    if (changeActiveStatusLoading
-      || saveNewCategoryLoading
+    if (saveNewCategoryLoading
       || updateCategoryLoading
       || deleteCategoryLoading
-      || saveNewOrderLoading
     ) return <LoadingStatus />
     return null
   }
@@ -139,31 +98,6 @@ const CityCategory = () => {
         description="Не удалось загрузить критические данные. Смотрите консоль"
       />
     )
-  }
-
-  const deleteCategory = (id) => {
-    setDelId(id)
-  }
-  const handleDelConfirm = () => {
-    deleteCityCategory({
-      variables: {
-        id: delId
-      }
-    })
-    setDelId(false)
-  }
-
-  const handleDelDialogClose = () => {
-    setDelId(false)
-  }
-
-  const changeActive = (category) => {
-    changeActiveStatus({
-      variables: {
-        id: category.id,
-        status: !category.active
-      }
-    })
   }
 
   const handleEditSave = (data) => {
@@ -183,15 +117,6 @@ const CityCategory = () => {
     })
   }
 
-  const saveNewSort = (data) => {
-    setNewOrder(data.newOrder)
-    saveNewOrder({
-      variables: {
-        categories: data.deltaArray
-      }
-    })
-  }
-
   return (
     <Fragment>
       <SystemNoti
@@ -202,42 +127,17 @@ const CityCategory = () => {
       />
       <Loading />
       <div className="category-service-zone">
-        <Typography variant="h5" gutterBottom className="header">Типы населенных пунктов</Typography>
+        <Typography variant="h5" gutterBottom className="header">Ввод документов</Typography>
       </div>
       <Divider />
       <div className="info-zone">
         <Typography variant="body2" gutterBottom>
-          Внимание! Необдуманная манипуляция этими данными приведет к потере части статистики. Изменяйте их в случае крайней необходимости. 
-          Если необходимо изменить категории, лучше отредактируйте существующие. При необходимости, добавьте недостающие.
         </Typography>
       </div>
-      <ConfirmDialog
-        open={delId}
-        confirm={handleDelConfirm}
-        close={handleDelDialogClose}
-        config={{
-          closeBtn: "Отмена",
-          confirmBtn: "Удалить"
-        }}
-        data={
-          {
-            title: 'Удалить тип населенного пункта?',
-            content: `Внимание! Результаты опросов учитывают тип населенного пункта, удаление приведет к потере части статистики и некорректности ее отображения.`
-          }
-        }
-      />
       <Grid container spacing={3} xs={12}>
-        <SortableEditList
-          data={citiesCategories.cityCategories}
-          handleChangeActive={changeActive}
-          handleCategoryDelete={deleteCategory}
-          handleNewSave={handleCategorySave}
-          handleEdit={handleEditSave}
-          saveNewSort={saveNewSort}
-        />
       </Grid>
     </Fragment>
   )
 }
 
-export default CityCategory
+export default DocEntry

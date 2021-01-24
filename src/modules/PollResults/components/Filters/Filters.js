@@ -11,6 +11,8 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
 
+import DatepickerRange from '../../components/DatepickerRange'
+
 const Filters = ({ filters, cities, setActiveFilters }) => {
   const [avaiableFilters] = useState({
     age: filters.ageCategories.map(
@@ -116,7 +118,8 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
     <Fragment>
       <Grid container justify="flex-start" alignItems="center" spacing={2}>
         <Grid item xs={12} sm={6} md={3} lg={3}>
-          <TextField
+          <DatepickerRange />
+          {/* <TextField
             style={{ width: '100%' }}
             id="date"
             type="date"
@@ -139,7 +142,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
                 </InputAdornment>
               )
             }}
-          />
+          /> */}
         </Grid>
         <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
@@ -238,7 +241,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             )}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3} lg={3}>
+        {/* <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
             options={avaiableFilters.status}
             onChange={handleStatusChange}
@@ -249,7 +252,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
               <TextField {...params} variant="outlined" label="Статус" />
             )}
           />
-        </Grid>
+        </Grid> */}
         <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
           <Button
             variant="contained"

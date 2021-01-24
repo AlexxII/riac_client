@@ -141,11 +141,6 @@ const OverallResults = ({ id }) => {
         ...loadingMsg,
         description: 'Анализ дублей'
       })
-      console.log('11111111');
-
-
-
-
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {
@@ -315,7 +310,6 @@ const OverallResults = ({ id }) => {
     let count = 1
     // одним файлом или множество
     if (singleFile) {
-      console.log(logic.header);
       let outData = ''
       for (let city in exportData) {
         const mapObj = {
@@ -384,7 +378,7 @@ const OverallResults = ({ id }) => {
     // const decoder = new TextDecoder('866')
     // const result = decoder.decode(buf)
     const result = iconvlite.decode(buff, 'cp866')
-    return result
+    return data
   }
 
   const exportAllRawData = () => {
@@ -419,7 +413,8 @@ const OverallResults = ({ id }) => {
   }
 
   const showOneResultDetails = (respondent) => {
-    console.log(respondent);
+    setSelectPool([respondent.id])
+    setBatchOpen(true)
   }
 
   const updateSingleResult = (respondent) => {
@@ -500,7 +495,7 @@ const OverallResults = ({ id }) => {
                 <EqualizerIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Обновить">
+            <Tooltip title="Просмотр">
               <IconButton
                 color="primary"
                 component="span"
@@ -510,7 +505,7 @@ const OverallResults = ({ id }) => {
                 <DynamicFeedIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Изменить статус">
+            {/* <Tooltip title="Изменить статус">
               <IconButton
                 color="primary"
                 component="span"
@@ -519,7 +514,7 @@ const OverallResults = ({ id }) => {
               >
                 <CheckCircleOutlineOutlinedIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title="Удалить">
               <IconButton
                 color="secondary"

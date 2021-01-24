@@ -38,11 +38,14 @@ const BatchUpdate = ({ data, selectPool, open, close }) => {
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={close} color="primary">
+          Закрыть
+        </Button>
+        {/* <Button autoFocus onClick={close} color="primary">
           Отмена
-          </Button>
+        </Button>
         <Button onClick={close} color="primary" autoFocus>
           Сохранить
-          </Button>
+        </Button> */}
       </DialogActions>
     </Dialog>
   );

@@ -2,6 +2,7 @@ import React, { Fragment } from 'react'
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -41,9 +42,15 @@ const LinearDistribution = ({ id }) => {
 
   return (
     <Fragment>
-      <Typography variant="h6" gutterBottom>
-        Линейное распределение ответов
-      </Typography>
+      <div className="liner-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Линейное распределение ответов</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Линейное распределение всех ответов опроса. Столбцы графиков распределены по номерам ответов.
+        </Typography>
+      </div>
       <Grid item container className="linear-distribution">
         {pollResults.poll.questions.map((question, index) => (
           <Fragment>

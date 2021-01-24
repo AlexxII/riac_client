@@ -69,8 +69,11 @@ const AddPollLogic = ({ addPoll }) => {
     return new Promise((resolve, reject) => {
       reader.onloadend = () => {
         const xmlText = reader.result
+
         const buf = Buffer.from(xmlText);
         const utf8Text = iconvlite.decode(buf, 'utf8')
+        // const utf8Text = xmlText
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(utf8Text, 'text/xml');
         const questions = doc.getElementsByTagName('vopros')
@@ -124,6 +127,7 @@ const AddPollLogic = ({ addPoll }) => {
         }
         resolve(result)
       }
+      // reader.readAsText(file);
       reader.readAsText(file, 'cp1251');
     })
   }

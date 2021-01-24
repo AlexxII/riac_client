@@ -45,9 +45,14 @@ const XmlImport = ({ field, ...props }) => {
       reader.onloadend = () => {
         const xmlText = reader.result
         // преобразуем к utf8
+
         const buf = Buffer.from(xmlText);
         const utf8Text = iconvlite.decode(buf, 'utf8')
         const xml = xmlparser(utf8Text)
+
+        // const xml = xmlparser(xmlText)
+
+
         if (xml) {
           setProcessing(false)
           const regEx = /^(\d{2}).(\d{2}).(\d{4})$/;
@@ -62,8 +67,7 @@ const XmlImport = ({ field, ...props }) => {
           return
         }
       }
-      // reader.readAsText(file, 'windows-1251');
-      // reader.readAsText(file, 'win1251');
+      // reader.readAsText(file);
       reader.readAsText(file, 'cp1251');
     }
   }

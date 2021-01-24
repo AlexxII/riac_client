@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -10,6 +9,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
+import { makeStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
 

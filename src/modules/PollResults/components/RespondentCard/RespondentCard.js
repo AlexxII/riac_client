@@ -45,9 +45,9 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
             className="card-button"
             aria-label="delete"
             onClick={() => edit(respondent)}
-            disabled={count > 1}
+            disabled={true}
           >
-            <EditIcon fontSize="small" />
+            {/* <EditIcon fontSize="small" /> */}
           </IconButton>
           <IconButton
             className="card-button"

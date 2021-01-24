@@ -25,30 +25,6 @@ import UserAddDialog from '../UserAddDialog'
 import UserUpdateDialog from '../UserUpdateDialog'
 import PassResetDialog from '../PassResetDialog'
 
-// const users = [
-//   {
-//     id: '1111',
-//     username: 'Петров И.В.',
-//     login: 'PtrovIV',
-//     status: 'военнослужащий',
-//     rights: 'Пользователь'
-//   },
-//   {
-//     id: '22222',
-//     username: 'Иванов С.В.',
-//     login: 'IvanovSV',
-//     status: 'военнослужащий',
-//     rights: 'Пользователь'
-//   },
-//   {
-//     id: '33333',
-//     username: 'Сидорова С.В.',
-//     login: 'SidorovaSV',
-//     status: 'гражданский служащий',
-//     rights: 'Админ'
-//   },
-// ]
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;

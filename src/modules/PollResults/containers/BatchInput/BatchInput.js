@@ -1,7 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react'
 
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -10,6 +12,8 @@ import LoadingStatus from '../../../../components/LoadingStatus'
 
 import LinearTable from '../../components/LinearTable'
 import BarChart from '../../components/BarChart'
+
+import ConfirmDialog from '../../../../components/ConfirmDialog'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 
@@ -23,6 +27,9 @@ const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const BatchInput = ({ id }) => {
+  const [noti, setNoti] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState()
+  const [delId, setDelId] = useState(false)
   const [dataPool, setDataPool] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -127,6 +134,14 @@ const BatchInput = ({ id }) => {
     <LoadingState type="card" />
   )
 
+  const handleDelConfirm = () => {
+
+  }
+
+  const handleDelDialogClose = () => {
+
+  }
+
   if (pollDataError) {
     console.log(JSON.stringify(pollDataError));
     return (
@@ -143,20 +158,58 @@ const BatchInput = ({ id }) => {
   }
 
   return (
+
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
       <Loading />
-      <p> Пакетный ввод данных</p>
-      <Grid container spacing={3} xs={12}>
-        <Grid item xs={12}>
-          <Box>
-            <label>Подгрузите файл с результатами</label>
-            <br />
-            <input
-              type="file"
-              onInput={handleWarInput}
-            />
-          </Box>
-        </Grid>
+      <div className="batchinput-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Пакетный ввод данных</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Подгрузите данные в формате кодов.
+        </Typography>
+      </div>
+      <div className="bachinput-add-zone">
+        <input
+          accept="*.opr"
+          id="contained-button-file"
+          onInput={handleWarInput}
+          type="file"
+        />
+        <label htmlFor="contained-button-file">
+          <Button
+            variant="contained"
+            color="primary"
+            component="span"
+            size="small"
+          >
+            Выбрать
+        </Button>
+        </label>
+      </div>
+      <ConfirmDialog
+        open={delId}
+        confirm={handleDelConfirm}
+        close={handleDelDialogClose}
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Удалить"
+        }}
+        data={
+          {
+            title: 'Удалить результат?',
+            content: `Внимание! Результаты опросов учитывают возраст респондента, удаление приведет к потере части статистики и некорректности ее отображения.`
+          }
+        }
+      />
+      <Grid container spacing={3} xs={12} className="batchinput-result-zone">
         {displayData &&
           displayData.map((question, index) => (
             <Fragment>

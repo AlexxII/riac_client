@@ -26,7 +26,7 @@ export const prepareResultsDataToExport = (resultsPool) => {
     const oderedResults = resultsPool[i].slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
     const details = oderedResults.map(obj => {
       if (obj.text !== '') {
-        return obj.code + ' ' + obj.text.replaceAll(regExp, ';')
+        return obj.code + ' ' + obj.text.replace(regExp, ';')
       }
       return obj.code
     })

@@ -118,8 +118,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
     <Fragment>
       <Grid container justify="flex-start" alignItems="center" spacing={2}>
         <Grid item xs={12} sm={6} md={3} lg={3}>
-          <DatepickerRange />
-          {/* <TextField
+          <TextField
             style={{ width: '100%' }}
             id="date"
             type="date"
@@ -142,7 +141,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
                 </InputAdornment>
               )
             }}
-          /> */}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete

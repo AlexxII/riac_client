@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flex: 1,
-    padding: '10px 16px 0 16px'
+    padding: '0 16px 0 16px'
   },
 }));
 
@@ -109,18 +109,18 @@ const PollCard = ({ data }) => {
         <CardContent className={classes.content}>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="button" display="block" gutterBottom>
+              <Typography variant="button" display="block" gutterBottom className="poll-card-text">
                 Метод проведения: {pollWays[data.way]}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Typography variant="button" display="block" gutterBottom>
+              <Typography variant="button" display="block" gutterBottom className="poll-card-text">
                 Респондентов: {data.sample}
               </Typography>
             </Grid>
           </Grid>
         </CardContent>
-        <CardActions disableSpacing>
+        <CardActions disableSpacing className="poll-card-bottom-space">
           <Grid container item xs={12}>
             <Results />
           </Grid>

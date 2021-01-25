@@ -37,23 +37,8 @@ const ServiceIcons = ({ answer }) => {
   return r
 }
 
-const AnswerCard = ({ answer, index, pool, totalAnswers }) => {
+const AnswerCard = ({ answer, index, }) => {
   const [checked, setChecked] = useState(false)
-
-  const CountR = () => {
-    let count = null
-    if (answer.results.length) {
-      const len = answer.results.length
-      for (let i = 0; i < len; i++) {
-        if (pool.includes(answer.results[i].respondent.id)) {
-          count++
-          setChecked(true)
-        }
-      }
-      return count ? (count / totalAnswers * 100).toFixed(1) : null
-    }
-    return null
-  }
 
   return (
     <div className={answer.disabled ? "answer-card invisible" : "answer-card"}>
@@ -73,7 +58,6 @@ const AnswerCard = ({ answer, index, pool, totalAnswers }) => {
         </Box>
         <Box m={1}>
           <ServiceIcons answer={answer} />
-          <CountR />
           {checked && <CheckIcon />}
         </Box>
       </Grid>

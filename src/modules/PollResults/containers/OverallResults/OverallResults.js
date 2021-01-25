@@ -28,6 +28,7 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
 import BatchUpdate from '../../components/BatchUpdate'
+import SingleUpdate from '../../components/SingleUpdate'
 import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
@@ -67,6 +68,7 @@ const OverallResults = ({ id }) => {
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                        // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
+  const [singleUpdate, setSingleUpdate] = useState(false)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
   const [logic, setLogic] = useState(false)
@@ -90,9 +92,7 @@ const OverallResults = ({ id }) => {
     fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
-        console.log(text);
         const normalizedLogic = normalizeLogic(parseIni(text))
-        console.log(normalizedLogic);
         setLogic(normalizedLogic)
       })
   }
@@ -193,7 +193,6 @@ const OverallResults = ({ id }) => {
                 item.second
               ]
             }, [])
-            console.log(ttt);
             setDoubleResults(ttt)
           } else {
             setDoubleResults(null)
@@ -368,12 +367,10 @@ const OverallResults = ({ id }) => {
 
     // let decoder = new TextDecoder('cp1251')
     // const dd = decoder.decode(uint8Array)
-    
+
     // return dd
     const buf = Buffer.from(data);
-    console.log(buf);
     const buff = iconvlite.encode(data, 'utf8');
-    console.log(buff);
 
     // const decoder = new TextDecoder('866')
     // const result = decoder.decode(buf)
@@ -419,10 +416,7 @@ const OverallResults = ({ id }) => {
 
   const updateSingleResult = (respondent) => {
     console.log(respondent);
-    setNoti({
-      type: 'info',
-      text: 'Опция пока не доступна'
-    })
+    setSingleUpdate(respondent)
   }
 
   return (
@@ -437,6 +431,12 @@ const OverallResults = ({ id }) => {
         selectPool={selectPool}
         open={briefOpen}
         close={() => setBrifOpen(false)} />
+      <SingleUpdate
+        data={pollResults}
+        logic={logic}
+        respondent={singleUpdate}
+        open={singleUpdate}
+        close={() => setSingleUpdate(false)} />
       <BatchUpdate
         data={pollResults}
         selectPool={selectPool}
@@ -495,7 +495,7 @@ const OverallResults = ({ id }) => {
                 <EqualizerIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Просмотр">
+            {/* <Tooltip title="Просмотр">
               <IconButton
                 color="primary"
                 component="span"
@@ -504,7 +504,7 @@ const OverallResults = ({ id }) => {
               >
                 <DynamicFeedIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             {/* <Tooltip title="Изменить статус">
               <IconButton
                 color="primary"

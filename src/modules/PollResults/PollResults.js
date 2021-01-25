@@ -21,10 +21,10 @@ const PollResults = ({ id }) => {
       label: 'Пакетный',
       component: <BatchInput id={id} />
     },
-    {
-      label: 'Тестирование',
-      component: <Generation id={id} />
-    }
+    // {
+    //   label: 'Тестирование',
+    //   component: <Generation id={id} />
+    // }
   ]
   return (
     <AdaptiveTabs data={data} />

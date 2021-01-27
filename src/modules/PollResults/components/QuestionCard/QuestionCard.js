@@ -12,6 +12,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 
 import OtherRadio from '../../components/OtherRadio'
+import OtherCheckbox from '../../components/OtherCheckbox'
 
 import { Fragment } from 'react';
 
@@ -29,7 +30,6 @@ const QuestionCard = ({ question, index, settings }) => {
 
     }
   }
-  console.log(question.selectedAnswer);
 
   const handleRadioChange = (event, value) => {
     const currentQuestion = event.target.name
@@ -55,29 +55,33 @@ const QuestionCard = ({ question, index, settings }) => {
   return (
     <Card className="question-card">
       <CardContent>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">{`${index + 1}. ${question.title}`}</FormLabel>
+        <FormControl component="fieldset" className="question-form-control">
+          <FormLabel className="question-title" component="legend">{`${index + 1}. ${question.title}`}</FormLabel>
           {
             question.limit > 1 ?
               (
                 <FormGroup>
                   {
                     question.answers.map((answer, index) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            key={answer.id}
-                            onChange={handleChange}
-                            checked={answer.selected}
-                            value={answer.id}
-                            disabled={index === 3}
-                          />
-                        }
-                        name={question.id}
-                        label={
-                          <AnswerTitle answer={answer} />
-                        }
-                      />
+                      index === 3 ?
+                        <OtherCheckbox placeholder={answer.title} />
+                        :
+                        <FormControlLabel
+                          className="checkbox-control-label"
+                          control={
+                            <Checkbox
+                              key={answer.id}
+                              onChange={handleChange}
+                              checked={answer.selected}
+                              value={answer.id}
+                            // disabled={index === 3}
+                            />
+                          }
+                          name={question.id}
+                          label={
+                            <AnswerTitle answer={answer} />
+                          }
+                        />
                     ))
                   }
                 </FormGroup>
@@ -89,6 +93,7 @@ const QuestionCard = ({ question, index, settings }) => {
                   name={question.id}
                   onChange={handleRadioChange}
                   value={question.selectedAnswer}
+
                 >
                   {
                     question.answers.map((answer, index) => (
@@ -96,13 +101,14 @@ const QuestionCard = ({ question, index, settings }) => {
                         <OtherRadio placeholder={answer.title} />
                         :
                         <FormControlLabel
+                          className="radio-control-label"
                           value={answer.id}
                           key={answer.id}
                           control={<Radio />}
                           label={
                             <AnswerTitle answer={answer} />
                           }
-                          disabled={index === 2}
+                        // disabled={index === 2}
                         />
                     ))
                   }

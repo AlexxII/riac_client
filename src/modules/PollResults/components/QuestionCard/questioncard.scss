@@ -1,6 +1,12 @@
 .question-card {
   min-width: 100%;
   margin: 0 0 10px 0;
+  .question-form-control {
+    width: 100%;
+  }
+  .question-title {
+    line-height: 1.5;
+  }
 }
 .question-header {
   position: relative;
@@ -12,9 +18,25 @@
   font-weight: 800;
   position: absolute;
   top: -16px;
-  right: -10px
+  right: -10px;
 }
 .question-title {
   font-size: 16px !important;
   color: black !important;
+}
+.radio-control-label {
+  width: 100%;
+}
+.other-radio-label {
+  .MuiFormControlLabel-label {
+    width: 100%;
+  }
+}
+.checkbox-control-label {
+  width: 100%;
+}
+.other-check-label {
+  .MuiFormControlLabel-label {
+    width: 100%;
+  }
 }

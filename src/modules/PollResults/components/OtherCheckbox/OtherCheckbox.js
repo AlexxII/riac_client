@@ -1,10 +1,10 @@
 import React from "react";
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
 import TextField from '@material-ui/core/TextField';
+import Checkbox from '@material-ui/core/Checkbox';
 
-const OtherRadio = ({ placeholder }) => {
+const OtherCheckbox = ({ placeholder }) => {
 
   const onChange = () => {
 
@@ -16,22 +16,25 @@ const OtherRadio = ({ placeholder }) => {
 
   return (
     <FormControlLabel
-      // value={value}
-      onChange={onChange}
-      checked={false}
-      control={<Radio />}
-      className="other-radio-label"
+      className="other-check-label"
+      control={
+        <Checkbox
+          onChange={onChange}
+          checked={false}
+        // disabled={index === 3}
+        />
+      }
       label={
         <TextField
           id="standard-bare"
           placeholder={placeholder}
           margin="normal"
           onChange={onTextChange}
-          className="radio-control-label"
+          className="checkbox-control-label"
         />
       }
     />
   )
 }
 
-export default OtherRadio
+export default OtherCheckbox

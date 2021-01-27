@@ -28,13 +28,15 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
       const oderedResults = respondent.result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
       // console.log(oderedResults);
       const poolOfResultsIds = respondent.result.map(result => result.id)
-      console.log(poolOfResultsIds);
+      // console.log(poolOfResultsIds);
       const questionsEx = data.poll.questions.map(question => {
-
+        let questionSuffix = {
+          selectedAnswer: ''
+        }
         // selectedAnswer: answerId                                 // if limit === 1
         const answersEx = question.answers.map(answer => {
           const results = answer.results
-          let suffix = {
+          let answerSuffix = {
             selected: false,
             text: ''
           }
@@ -42,37 +44,39 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
             const lResults = results.length
             for (let i = 0; i < lResults; i++) {
               if (poolOfResultsIds.includes(results[i].id)) {
-                suffix = {
-                  ...suffix,
+                answerSuffix = {
+                  ...answerSuffix,
                   selected: true,
                   text: results[i].text
+                }
+                questionSuffix = {
+                  ...questionSuffix,
+                  selectedAnswer: answer.id
                 }
                 // TODO вписать сюда ЛОГИКУ !!!!!!!!
                 break
               }
             }
           } else {
-            suffix = {
-              ...suffix,
+            answerSuffix = {
+              ...answerSuffix,
               selected: false
             }
           }
           return {
             ...answer,
-            ...suffix
+            ...answerSuffix
           }
         })
-
-        
-
-
         return {
           ...question,
+          ...questionSuffix,
           answers: answersEx
         }
       })
       console.log(questionsEx);
-      setQuestions(data.poll.questions)
+      // setQuestions(data.poll.questions)
+      setQuestions(questionsEx)
     }
   }, [respondent])
 

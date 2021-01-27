@@ -11,6 +11,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 
+import OtherRadio from '../../components/OtherRadio'
+
 import { Fragment } from 'react';
 
 const QuestionCard = ({ question, index, settings }) => {
@@ -18,7 +20,16 @@ const QuestionCard = ({ question, index, settings }) => {
     const currentQuestion = event.target.name
     const selectedAnswer = event.target.value
     console.log(currentQuestion, selectedAnswer, value);
+
+    if (value) {
+      // выбор нового ответа
+
+    } else {
+      // снятие выбора
+
+    }
   }
+  console.log(question.selectedAnswer);
 
   const handleRadioChange = (event, value) => {
     const currentQuestion = event.target.name
@@ -57,7 +68,7 @@ const QuestionCard = ({ question, index, settings }) => {
                           <Checkbox
                             key={answer.id}
                             onChange={handleChange}
-                            checked={false}
+                            checked={answer.selected}
                             value={answer.id}
                             disabled={index === 3}
                           />
@@ -73,18 +84,26 @@ const QuestionCard = ({ question, index, settings }) => {
               )
               :
               (
-                <RadioGroup aria-label={question.id} name={question.id} onChange={handleRadioChange} >
+                <RadioGroup
+                  aria-label={question.id}
+                  name={question.id}
+                  onChange={handleRadioChange}
+                  value={question.selectedAnswer}
+                >
                   {
                     question.answers.map((answer, index) => (
-                      <FormControlLabel
-                        value={answer.id}
-                        key={answer.id}
-                        control={<Radio />}
-                        label={
-                          <AnswerTitle answer={answer} />
-                        }
-                        disabled={index === 2}
-                      />
+                      index === 3 ?
+                        <OtherRadio placeholder={answer.title} />
+                        :
+                        <FormControlLabel
+                          value={answer.id}
+                          key={answer.id}
+                          control={<Radio />}
+                          label={
+                            <AnswerTitle answer={answer} />
+                          }
+                          disabled={index === 2}
+                        />
                     ))
                   }
                 </RadioGroup>

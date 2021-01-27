@@ -415,7 +415,6 @@ const OverallResults = ({ id }) => {
   }
 
   const updateSingleResult = (respondent) => {
-    console.log(respondent);
     setSingleUpdate(respondent)
   }
 

@@ -60,6 +60,7 @@ query ($id: ID!) {
       lastModified
       processed
       result {
+        id
         answer
         code
         text

@@ -11,8 +11,6 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
 
-import DatepickerRange from '../../components/DatepickerRange'
-
 const Filters = ({ filters, cities, setActiveFilters }) => {
   const [avaiableFilters] = useState({
     age: filters.ageCategories.map(

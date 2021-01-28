@@ -4,11 +4,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import TextField from '@material-ui/core/TextField';
 
-const OtherRadio = ({ placeholder }) => {
+const OtherRadio = ({ answer, onChange, settings }) => {
 
-  const onChange = () => {
+  // const onChange = () => {
 
-  }
+  // }
 
   const onTextChange = () => {
 
@@ -16,20 +16,21 @@ const OtherRadio = ({ placeholder }) => {
 
   return (
     <FormControlLabel
-      // value={value}
-      onChange={onChange}
-      checked={false}
+      value={answer.id}
+      key={answer.id}
       control={<Radio />}
       className="other-radio-label"
       label={
         <TextField
           id="standard-bare"
-          placeholder={placeholder}
+          value={answer.text}
+          placeholder={answer.title}
           margin="normal"
           onChange={onTextChange}
           className="radio-control-label"
         />
       }
+      disabled={answer.disabled}
     />
   )
 }

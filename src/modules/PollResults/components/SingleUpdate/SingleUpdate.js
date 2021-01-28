@@ -25,25 +25,24 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
 
   useEffect(() => {
     if (respondent) {
-      const oderedResults = respondent.result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-      // console.log(oderedResults);
-      const poolOfResultsIds = respondent.result.map(result => result.id)
-      // console.log(poolOfResultsIds);
+      // console.log(logic)
+      const poolOfResultsCodes = respondent.result.map(result => result.code)
       const questionsEx = data.poll.questions.map(question => {
         let questionSuffix = {
           selectedAnswer: ''
         }
-        // selectedAnswer: answerId                                 // if limit === 1
         const answersEx = question.answers.map(answer => {
           const results = answer.results
           let answerSuffix = {
             selected: false,
-            text: ''
+            text: '',
+            freeAnswer: false,
+            disabled: false
           }
           if (results.length) {
             const lResults = results.length
             for (let i = 0; i < lResults; i++) {
-              if (poolOfResultsIds.includes(results[i].id)) {
+              if (poolOfResultsCodes.includes(results[i].code)) {
                 answerSuffix = {
                   ...answerSuffix,
                   selected: true,
@@ -54,6 +53,8 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
                   selectedAnswer: answer.id
                 }
                 // TODO вписать сюда ЛОГИКУ !!!!!!!!
+                // exclude & unique
+
                 break
               }
             }
@@ -63,8 +64,18 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
               selected: false
             }
           }
+          //проверка на свободные ответы
+          if (logic.freeAnswers.includes(answer.code)) {
+            answerSuffix = {
+              ...answerSuffix,
+              freeAnswer: true
+            }
+          }
           return {
-            ...answer,
+            id: answer.id,
+            title: answer.title,
+            code: answer.code,
+            order: answer.order,
             ...answerSuffix
           }
         })
@@ -75,7 +86,6 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
         }
       })
       console.log(questionsEx);
-      // setQuestions(data.poll.questions)
       setQuestions(questionsEx)
     }
   }, [respondent])

@@ -17,24 +17,44 @@ import OtherCheckbox from '../../components/OtherCheckbox'
 import { Fragment } from 'react';
 
 const QuestionCard = ({ question, index, settings }) => {
-  const handleChange = (event, value) => {
-    const currentQuestion = event.target.name
-    const selectedAnswer = event.target.value
-    console.log(currentQuestion, selectedAnswer, value);
+  const [currentQuestion, setCurrentQuestion] = useState(question)
 
+  //в обработчиках  
+  // ОБНОВЛЕНИЕ ЛОГИКИ !!!!!!! + ПОДНЯТЬ ЛОГИКУ ВВЕРХ
+  // сохранить и поднять состояние об изменениях, для сохранения
+
+  const handleCheckboxChange = (event, value) => {
+    const selectedAnswerId = event.target.value
     if (value) {
       // выбор нового ответа
+      setCurrentQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.id === selectedAnswerId ? { ...answer, selected: true } : answer
+        )
+      }))
 
     } else {
       // снятие выбора
-
+      setCurrentQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.id === selectedAnswerId ? { ...answer, selected: false } : answer
+        )
+      }))
     }
   }
 
   const handleRadioChange = (event, value) => {
-    const currentQuestion = event.target.name
-    const selectedAnswer = value
-    console.log(currentQuestion, selectedAnswer);
+    const selectedAnswerId = value
+    setCurrentQuestion(prevState => ({
+      ...prevState,
+      selectedAnswer: selectedAnswerId
+    }))
+  }
+
+  const handleOtherRadioChange = (_, __, ___) => {
+    console.log(_, __, ___);
   }
 
   const AnswerTitle = ({ answer }) => {
@@ -56,28 +76,32 @@ const QuestionCard = ({ question, index, settings }) => {
     <Card className="question-card">
       <CardContent>
         <FormControl component="fieldset" className="question-form-control">
-          <FormLabel className="question-title" component="legend">{`${index + 1}. ${question.title}`}</FormLabel>
+          <FormLabel className="question-title" component="legend">{`${index + 1}. ${currentQuestion.title}`}</FormLabel>
           {
-            question.limit > 1 ?
+            currentQuestion.limit > 1 ?
               (
                 <FormGroup>
                   {
-                    question.answers.map((answer, index) => (
-                      index === 3 ?
-                        <OtherCheckbox placeholder={answer.title} />
+                    currentQuestion.answers.map(answer => (
+                      answer.freeAnswer ?
+                        <OtherCheckbox
+                          answer={answer}
+                          onChange={handleCheckboxChange}
+                          settings={settings}
+                        />
                         :
                         <FormControlLabel
                           className="checkbox-control-label"
                           control={
                             <Checkbox
                               key={answer.id}
-                              onChange={handleChange}
+                              onChange={handleCheckboxChange}
                               checked={answer.selected}
                               value={answer.id}
-                            // disabled={index === 3}
+                              disabled={answer.disabled}
                             />
                           }
-                          name={question.id}
+                          name={currentQuestion.id}
                           label={
                             <AnswerTitle answer={answer} />
                           }
@@ -89,16 +113,18 @@ const QuestionCard = ({ question, index, settings }) => {
               :
               (
                 <RadioGroup
-                  aria-label={question.id}
-                  name={question.id}
+                  aria-label={currentQuestion.id}
+                  name={currentQuestion.id}
                   onChange={handleRadioChange}
-                  value={question.selectedAnswer}
-
+                  value={currentQuestion.selectedAnswer}
                 >
                   {
-                    question.answers.map((answer, index) => (
-                      index === 3 ?
-                        <OtherRadio placeholder={answer.title} />
+                    currentQuestion.answers.map(answer => (
+                      answer.freeAnswer ?
+                        <OtherRadio
+                          answer={answer}
+                          settings={settings}
+                        />
                         :
                         <FormControlLabel
                           className="radio-control-label"
@@ -108,7 +134,7 @@ const QuestionCard = ({ question, index, settings }) => {
                           label={
                             <AnswerTitle answer={answer} />
                           }
-                        // disabled={index === 2}
+                          disabled={answer.disabled}
                         />
                     ))
                   }

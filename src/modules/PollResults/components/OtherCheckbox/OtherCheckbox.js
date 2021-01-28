@@ -4,11 +4,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 
-const OtherCheckbox = ({ placeholder }) => {
+const OtherCheckbox = ({ answer, onChange, settings }) => {
 
-  const onChange = () => {
+  // const onChange = () => {
 
-  }
+  // }
 
   const onTextChange = () => {
 
@@ -17,17 +17,20 @@ const OtherCheckbox = ({ placeholder }) => {
   return (
     <FormControlLabel
       className="other-check-label"
+      key={answer.id}
       control={
         <Checkbox
           onChange={onChange}
-          checked={false}
-        // disabled={index === 3}
+          checked={answer.selected}
+          disabled={answer.disabled}
+          value={answer.id}
         />
       }
       label={
         <TextField
           id="standard-bare"
-          placeholder={placeholder}
+          placeholder={answer.title}
+          value={answer.text}
           margin="normal"
           onChange={onTextChange}
           className="checkbox-control-label"

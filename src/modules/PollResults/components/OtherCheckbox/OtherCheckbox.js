@@ -32,16 +32,20 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
         />
       }
       label={
-        <TextField
-          id="standard-bare"
-          autoFocus={false}
-          name={answer.id}
-          placeholder={answer.title}
-          margin="normal"
-          onChange={onTextChange}
-          onBlur={handleBlur}
-          className="checkbox-control-label"
-        />
+        <input placeholder={answer.title} ref={inputEl}/>
+
+
+
+        // <TextField
+        //   id="standard-bare"
+        //   autoFocus={false}
+        //   name={answer.id}
+        //   placeholder={answer.title}
+        //   margin="normal"
+        //   onChange={onTextChange}
+        //   onBlur={handleBlur}
+        //   className="checkbox-control-label"
+        // />
       }
     />
   )

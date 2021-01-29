@@ -7,7 +7,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
   const inputEl = useRef(null)
   useEffect(() => {
-    console.log(inputEl.current);
     inputEl.current.value = answer.text
   })
 
@@ -16,7 +15,9 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
   }
 
   const handleBlur = () => {
-    onBlur()
+    const val = inputEl.current.value
+    console.log(val);
+    onBlur(val)
   }
 
   return (
@@ -32,20 +33,17 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
         />
       }
       label={
-        <input placeholder={answer.title} ref={inputEl}/>
-
-
-
-        // <TextField
-        //   id="standard-bare"
-        //   autoFocus={false}
-        //   name={answer.id}
-        //   placeholder={answer.title}
-        //   margin="normal"
-        //   onChange={onTextChange}
-        //   onBlur={handleBlur}
-        //   className="checkbox-control-label"
-        // />
+        <TextField
+          id="standard-bare"
+          inputRef={inputEl}
+          autoFocus={false}
+          name={answer.id}
+          placeholder={answer.title}
+          margin="normal"
+          onChange={onTextChange}
+          onBlur={handleBlur}
+          className="checkbox-control-label"
+        />
       }
     />
   )

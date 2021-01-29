@@ -18,6 +18,8 @@ import { Fragment } from 'react';
 
 const QuestionCard = ({ question, index, settings }) => {
   const [currentQuestion, setCurrentQuestion] = useState(question)
+  const [deletedAnswers, setDeletedAnswers] = useState([])
+  const [newAnswers, setNewAnswers] = useState([])
 
   //в обработчиках  
   // ОБНОВЛЕНИЕ ЛОГИКИ !!!!!!! + ПОДНЯТЬ ЛОГИКУ ВВЕРХ
@@ -27,15 +29,21 @@ const QuestionCard = ({ question, index, settings }) => {
     const selectedAnswerId = event.target.value
     if (value) {
       // выбор нового ответа
+      setNewAnswers(prevState => ([
+        ...prevState, selectedAnswerId
+      ]))
       setCurrentQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
           answer => answer.id === selectedAnswerId ? { ...answer, selected: true } : answer
         )
       }))
-
     } else {
       // снятие выбора
+      setDeletedAnswers(prevState => ([
+        ...prevState, selectedAnswerId
+      ]))
+
       setCurrentQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
@@ -57,6 +65,13 @@ const QuestionCard = ({ question, index, settings }) => {
     console.log(_, __, ___);
   }
 
+  const checkboxFreeBlur = (e) => {
+  }
+
+  const radioFreeEdit = () => {
+
+  }
+
   const AnswerTitle = ({ answer }) => {
     if (settings.codesShow) {
       return (
@@ -71,6 +86,7 @@ const QuestionCard = ({ question, index, settings }) => {
       )
     }
   }
+  if (question.disabled) return null
 
   return (
     <Card className="question-card">
@@ -87,6 +103,7 @@ const QuestionCard = ({ question, index, settings }) => {
                         <OtherCheckbox
                           answer={answer}
                           onChange={handleCheckboxChange}
+                          onBlur={checkboxFreeBlur}
                           settings={settings}
                         />
                         :
@@ -116,6 +133,7 @@ const QuestionCard = ({ question, index, settings }) => {
                   aria-label={currentQuestion.id}
                   name={currentQuestion.id}
                   onChange={handleRadioChange}
+                  onTextChange={radioFreeEdit}
                   value={currentQuestion.selectedAnswer}
                 >
                   {

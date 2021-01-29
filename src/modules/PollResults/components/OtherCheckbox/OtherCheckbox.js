@@ -1,17 +1,22 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 
-const OtherCheckbox = ({ answer, onChange, settings }) => {
-
-  // const onChange = () => {
-
-  // }
+const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
+  const inputEl = useRef(null)
+  useEffect(() => {
+    console.log(inputEl.current);
+    inputEl.current.value = answer.text
+  })
 
   const onTextChange = () => {
 
+  }
+
+  const handleBlur = () => {
+    onBlur()
   }
 
   return (
@@ -29,10 +34,12 @@ const OtherCheckbox = ({ answer, onChange, settings }) => {
       label={
         <TextField
           id="standard-bare"
+          autoFocus={false}
+          name={answer.id}
           placeholder={answer.title}
-          value={answer.text}
           margin="normal"
           onChange={onTextChange}
+          onBlur={handleBlur}
           className="checkbox-control-label"
         />
       }

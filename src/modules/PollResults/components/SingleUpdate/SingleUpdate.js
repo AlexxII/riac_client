@@ -25,20 +25,31 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
 
   useEffect(() => {
     if (respondent) {
-      // console.log(logic)
+      console.log(logic)
       const poolOfResultsCodes = respondent.result.map(result => result.code)
       const questionsEx = data.poll.questions.map(question => {
         let questionSuffix = {
-          selectedAnswer: ''
+          selectedAnswer: '',
+          disabled: false
         }
         const answersEx = question.answers.map(answer => {
+
           const results = answer.results
           let answerSuffix = {
             selected: false,
+            resultId: '',
             text: '',
             freeAnswer: false,
             disabled: false
           }
+          // убираем невидимые вопросы
+          if (logic.invisible && logic.invisible.includes(answer.code)) {
+            answerSuffix = {
+              ...answerSuffix,
+              disabled: true
+            }
+          }
+
           if (results.length) {
             const lResults = results.length
             for (let i = 0; i < lResults; i++) {
@@ -46,6 +57,7 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
                 answerSuffix = {
                   ...answerSuffix,
                   selected: true,
+                  resultId: results[i].id,
                   text: results[i].text
                 }
                 questionSuffix = {
@@ -79,6 +91,15 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
             ...answerSuffix
           }
         })
+        const disabledCount = answersEx.reduce((acum, item) => {
+          return acum += item.disabled ? 1 : 0
+        }, 0)
+        if (disabledCount === answersEx.length) {
+          questionSuffix = {
+            ...questionSuffix,
+            disabled: true
+          }
+        }
         return {
           ...question,
           ...questionSuffix,

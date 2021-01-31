@@ -15,7 +15,7 @@ import { useTheme } from '@material-ui/core/styles';
 
 import QuestionCard from '../QuestionCard'
 
-const SingleUpdate = ({ data, respondent, logic, open, close }) => {
+const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [questions, setQuestions] = useState(false)
@@ -40,7 +40,8 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
             resultId: '',
             text: '',
             freeAnswer: false,
-            disabled: false
+            disabled: false,
+            focus: false
           }
           // убираем невидимые вопросы
           if (logic.invisible && logic.invisible.includes(answer.code)) {
@@ -91,6 +92,7 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
             ...answerSuffix
           }
         })
+        // если все пропущены, то пропускаем ответ
         const disabledCount = answersEx.reduce((acum, item) => {
           return acum += item.disabled ? 1 : 0
         }, 0)
@@ -113,6 +115,10 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
 
   if (!open) {
     return null
+  }
+
+  const updateState = () => {
+    
   }
 
   const codesShow = (e) => {
@@ -176,7 +182,7 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
             )
             :
             questions.map((question, index) => (
-              <QuestionCard settings={userSettings} index={index} key={question.id} question={question} />
+              <QuestionCard settings={userSettings} index={index} key={question.id} question={question} updateState={updateState} />
             ))
           }
         </DialogContentText>
@@ -185,9 +191,13 @@ const SingleUpdate = ({ data, respondent, logic, open, close }) => {
         <Button autoFocus onClick={onClose} color="primary">
           Отмена
         </Button>
-        <Button onClick={saveEditResult} color="primary" autoFocus>
-          Сохранить
+        {edit ?
+          <Button onClick={saveEditResult} color="primary" autoFocus>
+            Сохранить
         </Button>
+          :
+          null
+        }
       </DialogActions>
     </Dialog>
   );

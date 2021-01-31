@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
@@ -6,41 +6,55 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { Fragment } from "react";
 
-const OtherRadio = ({ answer, onChange, settings }) => {
+const OtherRadio = ({ answer, settings, onBlur }) => {
+  const inputEl = useRef(null)
+  useEffect(() => {
+    inputEl.current.value = answer.text
+    if (answer.focus) {
+      inputEl.current.focus()
+    }
+  })
 
-  // const onChange = () => {
+  const keyDownHandle = (e) => {
+    if (e.keyCode === 13) {
+      inputEl.current.blur()
+    }
+  }
 
-  // }
-
-  const onTextChange = () => {
-
+  const handleBlur = () => {
+    const val = inputEl.current.value
+    onBlur(answer.id, val)
   }
 
   const AnswerTitle = () => {
     if (settings.codesShow) {
       return (
         <Fragment>
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <span className={"answer-code"}>{answer.code} - </span>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                id="standard-bare"
-                value={answer.text}
-                placeholder={answer.title}
-                margin="normal"
-                onChange={onTextChange}
-                className="radio-control-label"
-              />
-            </Grid>
-          </Grid>
-
+          <span className="other-title-container">
+            <span className="answer-code">{answer.code} - </span>
+            <TextField
+              id="standard-bare"
+              inputRef={inputEl}
+              placeholder={answer.title}
+              margin="normal"
+              onBlur={handleBlur}
+              onKeyDown={keyDownHandle}
+              className="radio-control-label"
+            />
+          </span>
         </Fragment>
       )
     } else {
       return (
-        answer.title
+        <TextField
+          id="standard-bare"
+          inputRef={inputEl}
+          placeholder={answer.title}
+          margin="normal"
+          onBlur={handleBlur}
+          onKeyDown={keyDownHandle}
+          className="radio-control-label"
+        />
       )
     }
   }
@@ -54,12 +68,6 @@ const OtherRadio = ({ answer, onChange, settings }) => {
       label={
         <AnswerTitle />
       }
-      // label={
-      //   <Fragment>
-      //     <span className={"answer-code"}>{answer.code} - </span>
-
-      //   </Fragment>
-      // }
       disabled={answer.disabled}
     />
   )

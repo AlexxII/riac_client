@@ -435,7 +435,8 @@ const OverallResults = ({ id }) => {
         logic={logic}
         respondent={singleUpdate}
         open={singleUpdate}
-        close={() => setSingleUpdate(false)} />
+        close={() => setSingleUpdate(false)}
+        edit={true} />
       <BatchUpdate
         data={pollResults}
         selectPool={selectPool}

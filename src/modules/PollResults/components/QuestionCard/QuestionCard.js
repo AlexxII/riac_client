@@ -19,6 +19,8 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
   const [newAnswers, setNewAnswers] = useState([])
 
   useEffect(() => {
+    console.log('1');
+    // попробовать не инициировать каждый раз! -> reset-true??
     setCurrentQuestion(question)
   }, [question])
 
@@ -27,7 +29,8 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
   // сохранить и поднять состояние об изменениях, для сохранения
   const handleCheckboxChange = (event, value) => {
     const selectedAnswerId = event.target.value
-    const selectedCode = event.target.code
+    console.log(event.target);
+    const selectedCode = event.target.dataset.code
     if (value) {
       // выбор нового ответа
       setNewAnswers(prevState => ([
@@ -41,8 +44,8 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
           } : answer
         )
       }
-      // setCurrentQuestion(newCurrentQuestion)
-      updateState(newCurrentQuestion, selectedCode)
+      // передаем состояние наверх
+      updateState(newCurrentQuestion, selectedCode, 'setCheckbox')
     } else {
       // снятие выбора
       setDeletedAnswers(prevState => ([
@@ -56,7 +59,7 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
           } : answer
         )
       }
-      setCurrentQuestion(newCurrentQuestion)
+      updateState(newCurrentQuestion, selectedCode, 'unsetCheckbox')
     }
   }
 
@@ -145,7 +148,7 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
       )
     }
   }
-  if (question.disabled) return null
+  if (question.skip) return null
 
   return (
     <Card className="question-card">
@@ -168,14 +171,16 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
                         :
                         <FormControlLabel
                           className="checkbox-control-label"
+                          key={answer.id}
                           control={
                             <Checkbox
-                              key={answer.id}
-                              code={answer.code}
+                              inputProps={{
+                                'data-code': answer.code
+                              }}
                               onChange={handleCheckboxChange}
                               checked={answer.selected}
                               value={answer.id}
-                              disabled={answer.disabled}
+                              disabled={answer.skip || answer.disabled}
                             />
                           }
                           name={currentQuestion.id}

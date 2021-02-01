@@ -152,16 +152,6 @@ const questionFormation = (poll, count, result, logic, setResults) => {
       count
     }
     setResults(newResultState)
-
-    // setResults(prevState => ({
-    //   ...prevState,
-    //   [question.id]: {
-    //     data: [],
-    //     codesPool,
-    //     count,
-    //     title: question.title
-    //   }
-    // }))
     return {
       results: newResultState,
       next: true
@@ -180,7 +170,7 @@ const questionFormation = (poll, count, result, logic, setResults) => {
   }
 
   // определение выбранных ответов и их уникальность для вопроса при восстановлении результатов
-  const mAnswers = newAnswers.map((answer, index) => {
+  const mAnswers = newAnswers.map(answer => {
     if (selectedIn) {
       if (uniqueIn) {
         if (uniqueSelected) {

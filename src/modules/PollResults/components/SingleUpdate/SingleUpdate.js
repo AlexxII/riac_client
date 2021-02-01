@@ -32,8 +32,8 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
           selectedAnswer: '',
           disabled: false
         }
-        const answersEx = question.answers.map(answer => {
 
+        const answersEx = question.answers.map(answer => {
           const results = answer.results
           let answerSuffix = {
             selected: false,
@@ -78,7 +78,7 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
             }
           }
           //проверка на свободные ответы
-          if (logic.freeAnswers.includes(answer.code)) {
+          if (logic.freeAnswers && logic.freeAnswers.includes(answer.code)) {
             answerSuffix = {
               ...answerSuffix,
               freeAnswer: true
@@ -108,7 +108,6 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
           answers: answersEx
         }
       })
-      console.log(questionsEx);
       setQuestions(questionsEx)
     }
   }, [respondent])
@@ -117,7 +116,13 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
     return null
   }
 
-  const updateState = () => {
+  const updateState = (newQuestion, answerCode) => {
+
+    const newQuestions = questions.map(question => (
+      question.id === newQuestion.id ?
+        newQuestion : question
+    ))
+    setQuestions(newQuestions)
     
   }
 

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -13,17 +13,21 @@ import FormLabel from '@material-ui/core/FormLabel';
 import OtherRadio from '../../components/OtherRadio'
 import OtherCheckbox from '../../components/OtherCheckbox'
 
-const QuestionCard = ({ question, index, settings, edit, updateState }) => {
+const QuestionCard = ({ question, index, settings, updateState }) => {
   const [currentQuestion, setCurrentQuestion] = useState(question)
   const [deletedAnswers, setDeletedAnswers] = useState([])
   const [newAnswers, setNewAnswers] = useState([])
 
+  useEffect(() => {
+    setCurrentQuestion(question)
+  }, [question])
+
   // в обработчиках  
   // ОБНОВЛЕНИЕ ЛОГИКИ !!!!!!! + ПОДНЯТЬ ЛОГИКУ ВВЕРХ
   // сохранить и поднять состояние об изменениях, для сохранения
-
   const handleCheckboxChange = (event, value) => {
     const selectedAnswerId = event.target.value
+    const selectedCode = event.target.code
     if (value) {
       // выбор нового ответа
       setNewAnswers(prevState => ([
@@ -37,7 +41,8 @@ const QuestionCard = ({ question, index, settings, edit, updateState }) => {
           } : answer
         )
       }
-      setCurrentQuestion(newCurrentQuestion)
+      // setCurrentQuestion(newCurrentQuestion)
+      updateState(newCurrentQuestion, selectedCode)
     } else {
       // снятие выбора
       setDeletedAnswers(prevState => ([
@@ -57,7 +62,7 @@ const QuestionCard = ({ question, index, settings, edit, updateState }) => {
 
   const handleRadioChange = (e, value) => {
     const selectedAnswerId = value
-    const newQuestion = {
+    const newCurrentQuestion = {
       ...currentQuestion,
       selectedAnswer: selectedAnswerId,
       answers: currentQuestion.answers.map(
@@ -73,7 +78,7 @@ const QuestionCard = ({ question, index, settings, edit, updateState }) => {
           }
       )
     }
-    setCurrentQuestion(newQuestion)
+    setCurrentQuestion(newCurrentQuestion)
   }
 
   const checkboxFreeBlur = (selectedAnswerId, text) => {
@@ -102,25 +107,27 @@ const QuestionCard = ({ question, index, settings, edit, updateState }) => {
 
   const radioFreeBlur = (selectedAnswerId, text) => {
     if (text !== '') {
-      setCurrentQuestion(prevState => ({
-        ...prevState,
+      const newCurrentQuestion = {
+        ...currentQuestion,
         selectedAnswer: selectedAnswerId,
-        answers: prevState.answers.map(
+        answers: currentQuestion.answers.map(
           answer => answer.id === selectedAnswerId ? {
             ...answer, text: text, focus: false
           } : answer
         )
-      }))
+      }
+      setCurrentQuestion(newCurrentQuestion)
     } else {
-      setCurrentQuestion(prevState => ({
-        ...prevState,
+      const newCurrentQuestion = {
+        ...currentQuestion,
         selectedAnswer: '',
-        answers: prevState.answers.map(
+        answers: currentQuestion.answers.map(
           answer => answer.id === selectedAnswerId ? {
             ...answer, text: '', focus: false
           } : answer
         )
-      }))
+      }
+      setCurrentQuestion(newCurrentQuestion)
     }
   }
 
@@ -164,6 +171,7 @@ const QuestionCard = ({ question, index, settings, edit, updateState }) => {
                           control={
                             <Checkbox
                               key={answer.id}
+                              code={answer.code}
                               onChange={handleCheckboxChange}
                               checked={answer.selected}
                               value={answer.id}

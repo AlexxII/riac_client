@@ -204,6 +204,9 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
         }
         break
       case 'unsetCheckbox':
+
+        
+
         newQuestions = questions.map(question => (
           question.id === newQuestion.id ?
             newQuestion : question

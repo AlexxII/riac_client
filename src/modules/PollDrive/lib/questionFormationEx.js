@@ -1,5 +1,7 @@
 import { keycodes } from './keycodes'
 
+// режим - обновление, вколачивание
+
 const questionFormationEx = (question, poolOfResultsCodes, logic) => {
   let questionSuffix = {
     selectedAnswer: '',
@@ -9,7 +11,7 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
   let uniqueIn = false
   let uniqueSelected = false
   const answersEx = question.answers.map(answer => {
-    const results = answer.results
+    const results = answer.results ? answer.results : []
     let answerSuffix = {
       selected: false,
       resultId: '',
@@ -47,7 +49,6 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
         }
       }
       // проверяем не исключен ли данный ответ кодами, которые указаны в поле exclude
-
       const lExclude = answerSuffix.exclude.length
       for (let j = 0; j < lExclude; j++) {
         const code = answerSuffix.exclude[j]
@@ -86,14 +87,14 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       }
     }
     // проверка на блокировку ответа (ВНЕШНЯЯ ЛОГИКА - уникальность)
-    if (logic.unique.includes(answer.code)) {
+    if (logic.unique && logic.unique.includes(answer.code)) {
       uniqueIn = true
       answerSuffix = {
         ...answerSuffix,
         unique: true
       }
     }
-    if (logic.unique.includes(answer.code) & poolOfResultsCodes.includes(answer.code)) uniqueSelected = true
+    if (logic.unique && logic.unique.includes(answer.code) && poolOfResultsCodes.includes(answer.code)) uniqueSelected = true
 
     //проверка на свободные ответы
     if (logic.freeAnswers && logic.freeAnswers.includes(answer.code)) {

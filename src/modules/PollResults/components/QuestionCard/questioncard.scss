@@ -1,11 +1,14 @@
 .question-card {
   min-width: 100%;
   margin: 0 0 10px 0;
+  text-align: left;
   .question-form-control {
     width: 100%;
   }
   .question-title {
+    font-weight: 700;
     line-height: 1.5;
+    margin-bottom: 15px;
   }
 }
 .question-header {
@@ -34,6 +37,7 @@
 }
 .checkbox-control-label {
   width: 100%;
+  padding: 5px;
 }
 .other-check-label {
   .MuiFormControlLabel-label {

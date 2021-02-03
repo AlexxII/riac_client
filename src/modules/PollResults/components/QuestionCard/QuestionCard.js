@@ -45,6 +45,8 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
       }
       // передаем состояние наверх
       updateState(newCurrentQuestion, selectedCode, 'setCheckbox')
+      setCurrentQuestion(newCurrentQuestion)
+
     } else {
       // снятие выбора
       setDeletedAnswers(prevState => ([
@@ -59,6 +61,7 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
         )
       }
       updateState(newCurrentQuestion, selectedCode, 'unsetCheckbox')
+      setCurrentQuestion(newCurrentQuestion)
     }
   }
 
@@ -160,7 +163,7 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
                 <FormGroup>
                   {
                     currentQuestion.answers.map(answer => (
-                      answer.freeAnswer ?
+                      answer.freeAnswer && answer.selected ?
                         <OtherCheckbox
                           answer={answer}
                           onChange={handleCheckboxChange}

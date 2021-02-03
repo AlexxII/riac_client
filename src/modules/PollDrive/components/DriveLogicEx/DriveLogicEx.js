@@ -58,7 +58,9 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
 
-    const nextQuestion = questionFormationEx(poll.questions[count], count, results, logic, setResults);
+    console.log(logic);
+    const poolOfResultsCodes = []
+    const nextQuestion = questionFormationEx(poll.questions[count], poolOfResultsCodes, logic);
     console.log(nextQuestion);
 
     // const newQuestion = questionFormation(poll, count, results, logic, setResults);
@@ -109,7 +111,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     if (finish) {
       finishRespondent()
     } else {
-      if (results[question.id].data.length) {
+      if (results[question.id] && results[question.id].data.length) {
         goToNext()
         return
       }

@@ -26,7 +26,7 @@ const RESET_RESULTS = 2
 const CONFIRM_QUESTION = 3
 const SKIP = 4
 
-const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksheet }) => {
+const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksheet }) => {
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
   const [userSettings, setUserSettings] = useState({
@@ -632,7 +632,6 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
     }
   }
 
-  // !!!!!!!!!!!!!!!!!!!!Обработчик SELECTa - не доделана логика выбора!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const multipleHandler = (option, type) => {
     switch (type) {
       case 'add':
@@ -770,4 +769,4 @@ const PollDrive = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksh
   )
 }
 
-export default PollDrive
+export default DriveLogic

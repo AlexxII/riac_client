@@ -33,9 +33,9 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
   if (!open) {
     return null
   }
+  const poolOfResultsCodes = respondent.result.map(result => result.code)
 
-  const questionsFormation = (data, respondent, logic) => {
-    const poolOfResultsCodes = respondent.result.map(result => result.code)
+  const questionsFormation = (data, poolOfResultsCodes, logic) => {
     const questionsEx = data.poll.questions.map(question => {
       let questionSuffix = {
         selectedAnswer: '',
@@ -204,9 +204,6 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
         }
         break
       case 'unsetCheckbox':
-
-        
-
         newQuestions = questions.map(question => (
           question.id === newQuestion.id ?
             newQuestion : question
@@ -224,14 +221,6 @@ const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
         ))
     }
     setQuestions(newQuestions)
-  }
-
-  const uniqueCheck = () => {
-
-  }
-
-  const excludeCheck = () => {
-
   }
 
   const codesShow = (e) => {

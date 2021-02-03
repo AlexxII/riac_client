@@ -1,7 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
-import DriveLogic from "./components/DriveLogic";
+// import DriveLogic from "./components/DriveLogic";
+import DriveLogicEx from "./components/DriveLogicEx";
 import DialogWithSelect from '../../components/DialogWithSelect';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -221,7 +222,7 @@ const PollDrive = ({ id }) => {
             save={saveCity}
             handleClose={closeDialog}
           />
-          <DriveLogic
+          <DriveLogicEx
             poll={poll}
             logics={logic}
             setCurrentQuestion={setCurrentQuestion}

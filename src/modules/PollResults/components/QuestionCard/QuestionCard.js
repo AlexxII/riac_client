@@ -29,7 +29,6 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
   // сохранить и поднять состояние об изменениях, для сохранения
   const handleCheckboxChange = (event, value) => {
     const selectedAnswerId = event.target.value
-    console.log(event.target);
     const selectedCode = event.target.dataset.code
     if (value) {
       // выбор нового ответа

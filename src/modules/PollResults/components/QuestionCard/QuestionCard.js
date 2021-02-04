@@ -175,15 +175,18 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
                           className="checkbox-control-label"
                           key={answer.id}
                           control={
-                            <Checkbox
-                              inputProps={{
-                                'data-code': answer.code
-                              }}
-                              onChange={handleCheckboxChange}
-                              checked={answer.selected}
-                              value={answer.id}
-                              disabled={answer.skip || answer.disabled}
-                            />
+                            <Fragment>
+                              <span style={{fontSize:'25px', fontWeight: 700}}>1</span>
+                              <Checkbox
+                                inputProps={{
+                                  'data-code': answer.code
+                                }}
+                                onChange={handleCheckboxChange}
+                                checked={answer.selected}
+                                value={answer.id}
+                                disabled={answer.skip || answer.disabled}
+                              />
+                            </Fragment>
                           }
                           name={currentQuestion.id}
                           label={

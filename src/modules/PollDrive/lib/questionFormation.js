@@ -94,6 +94,7 @@ const questionFormation = (poll, count, result, logic, setResults) => {
         focus: true
       }
     }
+    // восстанавливаем свободный ответ из результатов
     if (result[question.id]) {
       let data = result[question.id].data
       for (let i = 0; i < data.length; i++) {

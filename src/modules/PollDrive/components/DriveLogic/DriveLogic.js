@@ -15,6 +15,7 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
 import questionFormation from '../../lib/questionFormation'
+import questionFormationEx from '../../lib/questionFormationEx'
 import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
@@ -283,7 +284,7 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
   }
 
   // ============ ОСНОВНОЙ обработчик логики ==============
-  const mainLogic = (code, type) => {
+  const mainLogic = (code) => {
     const trueCode = +code
     // движение по опросу
     if (trueCode === 39) { // клавиша вправо
@@ -300,7 +301,7 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
     const keyCodesPool = question.keyCodesPool
     // входит ли код клавиатуры в перечень ответов
     if (keyCodesPool !== undefined && keyCodesPool.includes(trueCode)) {
-      const selectedAnswer = question.answers.filter(obj => obj.keyCode === trueCode)[0]
+      const selectedAnswer = question.answers.filter(answer => answer.keyCode === trueCode)[0]
       // промежуточные результаты уже содержат выбранный код => удаляем промежуточный результат => обновляем текущий вью
       if (results.pool.includes(selectedAnswer.code)) {
         canclePreviousResult(selectedAnswer)

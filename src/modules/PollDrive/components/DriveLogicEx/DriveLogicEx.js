@@ -26,11 +26,15 @@ const RESET_RESULTS = 2
 const CONFIRM_QUESTION = 3
 const SKIP = 4
 
+// автоПереход по настройке пользователя !!!!!!!!!!!!!!
+
 const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksheet }) => {
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
   const [userSettings, setUserSettings] = useState({
-    codesShow: true
+    codesShow: true,
+    autoStep: true,                    // автоматический переход к другому вопросу
+    cityAgain: false                   // повтор вопроса с выбором города!!!!
   })
   const [direction, setDirection] = useState(1)
   const [logic] = useState(logics)
@@ -57,14 +61,8 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
 
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
-
-    console.log(logic);
     const poolOfResultsCodes = []
     const nextQuestion = questionFormationEx(poll.questions[count], poolOfResultsCodes, logic);
-    console.log(nextQuestion);
-
-    // const newQuestion = questionFormation(poll, count, results, logic, setResults);
-    // if (!nextQuestion) return
     if (!nextQuestion) {
       if (direction) {
         if (count === questionsLimit - 1) {
@@ -84,6 +82,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   const keyUpHandler = ({ target, keyCode }) => {
     if (target.nodeName === 'BODY') {
       const nextStep = defineSelectedAnswer(keyCode)
+      console.log(nextStep);
       switch (nextStep.do) {
         case ANSWER_SELECTED: {
           mainLogic(nextStep.trueCode)
@@ -137,7 +136,9 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     }
   }
 
-  const mainLogic = () => {
+  const mainLogic = (code) => {
+    const trueCode = +code
+    
 
   }
 

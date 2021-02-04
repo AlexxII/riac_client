@@ -10,7 +10,20 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
   let selectedIn = false
   let uniqueIn = false
   let uniqueSelected = false
-  const answersEx = question.answers.map(answer => {
+  let keyCodesPool = []
+
+  // проверка на видимость ответа в перечне (ВНЕШНЯЯ ЛОГИКА - видимость)
+  const visibleAnswers = logic.invisible ? question.answers.filter(answer => !logic.invisible.includes(answer.code))
+    : question.answers
+  console.log(question);
+  // если пропущены все ответы, то пропускаем вопрос и выходим из функции
+  if (!visibleAnswers.length) {
+    return {
+      skip: true
+    }
+  }
+
+  const answersEx = visibleAnswers.map((answer, index) => {
     const results = answer.results ? answer.results : []
     let answerSuffix = {
       selected: false,
@@ -18,17 +31,9 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       text: '',
       freeAnswer: false,
       disabled: false,
-      skip: false,
       focus: false,
       exclude: [],
       excludeM: ''
-    }
-    // убираем невидимые вопросы
-    if (logic.invisible && logic.invisible.includes(answer.code)) {
-      answerSuffix = {
-        ...answerSuffix,
-        skip: true
-      }
     }
 
     const exclude = logic.criticalExclude ? logic.criticalExclude : false
@@ -61,6 +66,19 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
         }
       }
     }
+
+    // коды клавиатуры
+    if (visibleAnswers.length > keycodes.length) {
+      keyCodesPool[index] = [index, index + 1]
+    } else {
+      keyCodesPool[index] = keycodes[index][1]
+      answerSuffix = {
+        ...answerSuffix,
+        showIndex: keycodes[index][0],
+        keyCode: keycodes[index][1],
+      }
+    }
+
 
     if (results.length) {
       const lResults = results.length
@@ -111,16 +129,6 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       ...answerSuffix
     }
   })
-  // если все пропущены, то пропускаем ответ
-  const disabledCount = answersEx.reduce((acum, item) => {
-    return acum += item.skip ? 1 : 0
-  }, 0)
-  if (disabledCount === answersEx.length) {
-    questionSuffix = {
-      ...questionSuffix,
-      skip: true
-    }
-  }
   // проверка на уникальность и исключаемость
   const newAnswers = answersEx.map(answer => {
     if (selectedIn) {

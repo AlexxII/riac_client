@@ -24,9 +24,6 @@ const QuestionCard = ({ question, index, settings, updateState }) => {
     setCurrentQuestion(question)
   }, [question])
 
-  // в обработчиках  
-  // ОБНОВЛЕНИЕ ЛОГИКИ !!!!!!! + ПОДНЯТЬ ЛОГИКУ ВВЕРХ
-  // сохранить и поднять состояние об изменениях, для сохранения
   const handleCheckboxChange = (event, value) => {
     const selectedAnswerId = event.target.value
     const selectedCode = event.target.dataset.code

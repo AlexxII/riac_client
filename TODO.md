@@ -22,7 +22,7 @@ Cleavejs - форматированный INPUT !!!!!!
 CountUp.js - интересный счетчик
 Countdown.js - обратный отсчет
 Rallax - parallax библиотека
-
+smooth-scrollbar
 
 ======= к =======
 - flatpickr - календарь

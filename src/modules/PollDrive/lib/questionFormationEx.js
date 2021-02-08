@@ -2,20 +2,20 @@ import { keycodes } from './keycodes'
 
 // режим - обновление, вколачивание
 
-const questionFormationEx = (question, poolOfResultsCodes, logic) => {
+const questionFormationEx = (question, count, logic, results, setResults) => {
   let questionSuffix = {
     selectedAnswer: '',
-    skip: false
+    skip: false,
+    multiple: question.limit > 1
   }
   let selectedIn = false
   let uniqueIn = false
   let uniqueSelected = false
   let keyCodesPool = []
-
+  const codesPool = []
   // проверка на видимость ответа в перечне (ВНЕШНЯЯ ЛОГИКА - видимость)
   const visibleAnswers = logic.invisible ? question.answers.filter(answer => !logic.invisible.includes(answer.code))
     : question.answers
-  console.log(question);
   // если пропущены все ответы, то пропускаем вопрос и выходим из функции
   if (!visibleAnswers.length) {
     return {
@@ -24,7 +24,6 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
   }
 
   const answersEx = visibleAnswers.map((answer, index) => {
-    const results = answer.results ? answer.results : []
     let answerSuffix = {
       selected: false,
       resultId: '',
@@ -35,7 +34,6 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       exclude: [],
       excludeM: ''
     }
-
     const exclude = logic.criticalExclude ? logic.criticalExclude : false
     if (exclude) {
       // заполняем поле exclude, в котором указаны все коды, которые будут исключены при выборе данного ответа
@@ -57,7 +55,7 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       const lExclude = answerSuffix.exclude.length
       for (let j = 0; j < lExclude; j++) {
         const code = answerSuffix.exclude[j]
-        if (poolOfResultsCodes.includes(code)) {
+        if (results.pool.includes(code)) {
           answerSuffix = {
             ...answerSuffix,
             disabled: true,
@@ -79,31 +77,19 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       }
     }
 
-
-    if (results.length) {
-      const lResults = results.length
-      for (let i = 0; i < lResults; i++) {
-        if (poolOfResultsCodes.includes(results[i].code)) {
-          answerSuffix = {
-            ...answerSuffix,
-            selected: true,
-            resultId: results[i].id,
-            text: results[i].text
-          }
-          questionSuffix = {
-            ...questionSuffix,
-            selectedAnswer: answer.id
-          }
-          selectedIn = true
-          break
-        }
-      }
-    } else {
+    // восстанавливаем ответы !
+    if (results.pool.includes(answer.code)) {
+      selectedIn = true
       answerSuffix = {
         ...answerSuffix,
-        selected: false
+        selected: true
+      }
+      questionSuffix = {
+        ...questionSuffix,
+        selectedAnswer: answer.id
       }
     }
+
     // проверка на блокировку ответа (ВНЕШНЯЯ ЛОГИКА - уникальность)
     if (logic.unique && logic.unique.includes(answer.code)) {
       uniqueIn = true
@@ -112,7 +98,7 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
         unique: true
       }
     }
-    if (logic.unique && logic.unique.includes(answer.code) && poolOfResultsCodes.includes(answer.code)) uniqueSelected = true
+    if (logic.unique && logic.unique.includes(answer.code) && results.pool.includes(answer.code)) uniqueSelected = true
 
     //проверка на свободные ответы
     if (logic.freeAnswers && logic.freeAnswers.includes(answer.code)) {
@@ -121,6 +107,22 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
         freeAnswer: true
       }
     }
+
+    if (results[question.id]) {
+      let data = results[question.id].data
+      for (let i = 0; i < data.length; i++) {
+        if (answer.code === data[i].answerCode && data[i].freeAnswerText !== '') {
+          answerSuffix = {
+            ...answerSuffix,
+            freeAnswer: true,
+            showFreeAnswer: true,
+            text: data[i].freeAnswerText,
+            focus: false
+          }
+        }
+      }
+    }
+
     return {
       id: answer.id,
       title: answer.title,
@@ -129,6 +131,50 @@ const questionFormationEx = (question, poolOfResultsCodes, logic) => {
       ...answerSuffix
     }
   })
+
+  const countSkipAnswers = answersEx.reduce((acum, answer) => {
+    return acum + answer.disabled
+  }, 0)
+
+  if (countSkipAnswers === answersEx.length) {
+    let newResultState = Object.assign({}, results);
+    newResultState[question.id] = {
+      data: [],
+      codesPool,
+      count
+    }
+    setResults(newResultState)
+    return {
+      skip: true,
+      results: newResultState
+    }
+  }
+
+  if (results[question.id] === undefined) {
+    setResults(prevState => ({
+      ...prevState,
+      [question.id]: {
+        data: [],
+        codesPool,
+        count
+      }
+    }))
+  }
+
+  // проверка сколько всего ответов в вопросе -> если много, то формируем multiple select
+  if (visibleAnswers.length > keycodes.length) {
+    questionSuffix = {
+      ...questionSuffix,
+      mega: true,
+      megaMltp: question.limit
+    }
+  } else {
+    questionSuffix = {
+      ...questionSuffix,
+      keyCodesPool
+    }
+  }
+
   // проверка на уникальность и исключаемость
   const newAnswers = answersEx.map(answer => {
     if (selectedIn) {

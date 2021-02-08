@@ -19,12 +19,20 @@ import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
 const STEP_DELAY = 0
-const MOVE_DELAY = 0
+const MOVE_DELAY = 200
 
-const ANSWER_SELECTED = 1
+const VALID_CODE = 1
 const RESET_RESULTS = 2
 const CONFIRM_QUESTION = 3
 const SKIP = 4
+
+const TRUE_ANSWER = 1
+const MOVE_FORWARD = 2
+const MOVE_BACK = 3
+
+const SET_ANSWER = 1
+const UNSET_ANSWER = 2
+const SET_RADIO_ANSWER = 3
 
 // автоПереход по настройке пользователя !!!!!!!!!!!!!!
 
@@ -61,9 +69,8 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
 
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
-    const poolOfResultsCodes = []
-    const nextQuestion = questionFormationEx(poll.questions[count], poolOfResultsCodes, logic);
-    if (!nextQuestion) {
+    const nextQuestion = questionFormationEx(poll.questions[count], count, logic, results, setResults);
+    if (nextQuestion.skip) {
       if (direction) {
         if (count === questionsLimit - 1) {
           checkRespondentFinish(nextQuestion.results)
@@ -76,17 +83,52 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       }
       return
     }
+    setVisibleCount(count)
     setQuestion(nextQuestion)
   }, [count])
 
   const keyUpHandler = ({ target, keyCode }) => {
     if (target.nodeName === 'BODY') {
       const nextStep = defineSelectedAnswer(keyCode)
-      console.log(nextStep);
       switch (nextStep.do) {
-        case ANSWER_SELECTED: {
-          mainLogic(nextStep.trueCode)
-          return
+        case VALID_CODE: {
+          const decideStep = whatDoNext(+nextStep.trueCode)
+          switch (decideStep) {
+            case TRUE_ANSWER: {
+              const selectedAnswer = question.answers.filter(answer => answer.keyCode === +nextStep.trueCode)[0]
+              const mainAction = checkSetOrUnset(selectedAnswer)
+              switch (mainAction) {
+                case SET_ANSWER: {
+                  setAnswer(selectedAnswer)
+                  return
+                }
+                case UNSET_ANSWER: {
+                  unsetAnswer(selectedAnswer)
+                  return
+                }
+                case SET_RADIO_ANSWER: {
+                  setRadioAnswer(selectedAnswer)
+                  return
+                }
+                default: {
+                  return
+                }
+              }
+              return
+            }
+            case MOVE_FORWARD: {
+              goToNext()
+              return
+            }
+            case MOVE_BACK: {
+              goToPrevious()
+              return
+            }
+            default: {
+              beep()
+              return
+            }
+          }
         }
         case CONFIRM_QUESTION: {
           confirmResults()
@@ -104,6 +146,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         }
       }
     }
+    return
   }
 
   const confirmResults = () => {
@@ -136,11 +179,97 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     }
   }
 
-  const mainLogic = (code) => {
-    const trueCode = +code
-    
-
+  // функция проверки 
+  const whatDoNext = (trueCode) => {
+    if (trueCode === 39) {                              // клавиша вправо
+      return MOVE_FORWARD
+    }
+    if (trueCode === 37) {                              // клавиша влево
+      return MOVE_BACK
+    }
+    if (question.keyCodesPool !== undefined && question.keyCodesPool.includes(trueCode)) {
+      return TRUE_ANSWER
+    }
+    return false
   }
+
+  const checkSetOrUnset = (selectedAnswer) => {
+    if (question.multiple) {
+      if (results.pool.includes(selectedAnswer.code)) {
+        return UNSET_ANSWER
+      } else {
+        return SET_ANSWER
+      }
+    } else {
+      return SET_RADIO_ANSWER
+    }
+  }
+
+  // выбран новый ответ на вопрос
+  const setAnswer = (selectedAnswer) => {
+    // если ответ не активен -> выбрать не можем
+    if (selectedAnswer.disabled) return
+    // проверка на уникальность ответа и выбраннного до этого противоречивого ответа (ВНЕШНЯЯ ЛОГИКА - уникальность)
+    if (logic.unique.includes(selectedAnswer.code)) {
+      if (results[question.id].data.length) {
+        beep()
+        return
+      }
+    }
+
+    if (selectedAnswer.freeAnswer) {
+      setQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.keyCode === selectedAnswer.keyCode ? { ...answer, selected: true, focus: true } : answer
+        )
+      }))
+      return
+    }
+
+    // проверка на активность ответа и ограничение по количеству ответов
+    const newResults = storeSelectedResult(selectedAnswer)
+
+    if (newResults[question.id].data.length >= question.limit) {
+      setQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.selected ? answer : { ...answer, disabled: true }
+        )
+      }))
+      return
+    }
+  }
+
+  const setRadioAnswer = (selectedAnswer) => {
+    // проверить если выбран уже сохраненный ответ
+    if (results.pool.includes(selectedAnswer.code)) return
+    canclePreviousResult(selectedAnswer)
+    storeSelectedResult(selectedAnswer)
+
+    if (selectedAnswer.freeAnswer) {
+      setQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.keyCode === selectedAnswer.keyCode ? { ...answer, selected: true, focus: true } : answer
+        )
+      }))
+      return
+    }
+
+    // автопереход -> зависит от настроек пользователя
+    if (userSettings.autoStep) {
+      setTimeout(() => {
+        goToNext()
+      }, MOVE_DELAY)
+    }
+  }
+
+  // снят ответ на вопрос
+  const unsetAnswer = (selectedAnswer) => {
+    const newResults = canclePreviousResult(selectedAnswer)
+  }
+
 
   const checkRespondentFinish = () => {
 
@@ -151,8 +280,244 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   }
 
   /// ПОКА НЕ ЗНАЮ!!!!!!!!!!!!1
-  const updateState = () => {
+  const updateState = (selectedAnswer, currentQuestion, mode) => {
+    switch (mode) {
+      case 'set': {
+        setAnswer(selectedAnswer)
+        break
+      }
+      case 'unset': {
+        unsetAnswer(selectedAnswer)
+        break
+      }
+      case 'radio': {
+        setRadioAnswer(selectedAnswer)
+        break
+      }
+      default: {
+        return
+      }
+    }
+  }
 
+  // функция сохранения выбранного ответа
+  const storeSelectedResult = (selectedAnswer) => {
+    const result = {
+      answerCode: selectedAnswer.code,
+      answerId: selectedAnswer.id,
+      freeAnswer: false,
+      freeAnswerText: ''
+    }
+    // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - КРИТИЧНАЯ исключаемость) -> запретить ответы, которые указаны в конфиг файле
+    for (let code in logic.criticalExclude) {
+      // если в выбранных ответах присутствует код, который исключает другие ответы
+      if (results.pool.includes(code)) {
+        if (logic.criticalExclude[code].includes(selectedAnswer.code)) {
+          beep()
+          return
+        }
+      }
+    }
+    // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - НЕКРИТИЧНАЯ исключаемость) -> ОПОВЕСТИТЬ при ответе, которые указаны в конфиг файле
+    for (let code in logic.nonCriticalExclude) {
+      // если в выбранных ответах присутствует код, который исключает другие ответы
+      if (results.pool.includes(code)) {
+        if (logic.nonCriticalExclude[code].includes(selectedAnswer.code)) {
+          console.log('Ответ не совсем корректен');
+        }
+      }
+    }
+    let newResultState = Object.assign({}, results);
+    newResultState[question.id].data.push(result)
+    newResultState.pool.push(selectedAnswer.code)
+    setResults(newResultState)
+    setQuestion(prevState => ({
+      ...prevState,
+      selectedAnswer: selectedAnswer.id,
+      answers: prevState.answers.map(
+        answer => answer.id === selectedAnswer.id ? { ...answer, selected: true } : answer
+      ).map(
+        answer => logic.unique.includes(answer.code) & answer.id !== selectedAnswer.id ? { ...answer, disabled: true } : answer
+      ).map(
+        answer => selectedAnswer.exclude.includes(answer.code) ? {
+          ...answer,
+          disabled: true,
+          excludeM: `противоречит коду ${selectedAnswer.code}`
+        } : answer
+      )
+    }))
+    // проверить на уникальность (ВНЕШНЯЯ ЛОГИКА - уникальность) -> запретить другие ответы
+    if (logic.unique.includes(selectedAnswer.code)) {
+      setQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => answer.id === selectedAnswer.id ? answer : { ...answer, disabled: true }
+        )
+      }))
+    }
+    return newResultState
+  }
+
+  const canclePreviousResult = (selectedAnswer) => {
+    let newResults = {}
+    for (let key in results) {
+      if (key === question.id) {
+        newResults = {
+          ...newResults,
+          [question.id]: {
+            ...results[question.id],
+            data: results[question.id].data.filter(el => el.answerCode !== selectedAnswer.code)
+          }
+        }
+      } else {
+        if (key !== 'pool') {
+          newResults = {
+            ...newResults,
+            [key]: results[key]
+          }
+        } else {
+          newResults = {
+            ...newResults,
+            pool: results.pool.filter(el => el !== selectedAnswer.code)
+          }
+        }
+      }
+    }
+    setResults(newResults)
+    setQuestion(prevState => ({
+      ...prevState,
+      answers: prevState.answers.map(
+        answer => answer.code === selectedAnswer.code ? {
+          ...answer, selected: false, showFreeAnswer: false, text: '', focus: true
+        } : answer
+      ).map(
+        answer => newResults[question.id].data.length ? answer : ({ ...answer, disabled: false })
+      ).map(
+        answer => {
+          let excludePool = []
+          // формирование пула кодов которые запрещены в результатах 
+          for (let code in logic.criticalExclude) {
+            if (code === answer.code) {
+              excludePool = [
+                ...excludePool,
+                ...logic.criticalExclude[code]
+              ]
+            }
+            if (logic.criticalExclude[code].includes(answer.code)) {
+              excludePool = [
+                ...excludePool,
+                code
+              ]
+            }
+          }
+          for (let i = 0; i < excludePool.length; i++) {
+            if (newResults.pool.includes(excludePool[i])) {
+              return {
+                ...answer,
+                disabled: true,
+                excludeM: `противоречит коду ${excludePool[i]}`
+              }
+            }
+          }
+          return {
+            ...answer,
+            disabled: false,
+            excludeM: ''
+          }
+        }
+      ).map(answer => {
+        // проверка на уникальность
+        if (newResults[question.id].data.length) {
+          return answer.unique ? { ...answer, disabled: true } : answer
+        }
+        return answer
+      })
+    }))
+    return newResults
+  }
+
+  const blurHandle = (selectedAnswerId, value) => {
+    const selectedAnswer = question.answers.filter(answer => answer.id === selectedAnswerId)[0]
+    if (value !== '') {
+      const result = {
+        answerCode: selectedAnswer.code,
+        answerId: selectedAnswer.id,
+        freeAnswer: false,
+        freeAnswerText: value
+      }
+      let newResultState = {}
+      if (results.pool.includes(selectedAnswer.code)) {
+        newResultState = Object.assign({}, results);
+        newResultState[question.id] = {
+          ...newResultState[question.id],
+          data: results[question.id].data.map(
+            answer => answer.answerCode === selectedAnswer.code ? { ...answer, freeAnswerText: value } : answer
+          )
+        }
+      } else {
+        newResultState = Object.assign({}, results);
+        newResultState[question.id].data.push(result)
+        newResultState.pool.push(selectedAnswer.code)
+      }
+      setResults(newResultState)
+
+      // проверить на уникальность (ВНЕШНЯЯ ЛОГИКА - уникальность) -> запретить другие ответы
+      if (logic.unique.includes(selectedAnswer.code)) {
+        setQuestion(prevState => ({
+          ...prevState,
+          answers: prevState.answers.map(
+            answer => answer.id === selectedAnswer.id ? answer : { ...answer, disabled: true }
+          )
+        }))
+      }
+      setQuestion(prevState => ({
+        ...prevState,
+        answers: prevState.answers.map(
+          answer => {
+            return answer.code === selectedAnswer.code ? { ...answer, selected: true, text: value, focus: false } : answer
+          }
+        ).map(
+          answer => logic.unique.includes(answer.code) & answer.code !== selectedAnswer.code ? { ...answer, disabled: true } : answer
+        ).map(
+          answer => selectedAnswer.exclude.includes(answer.code) ? {
+            ...answer,
+            disabled: true,
+            excludeM: `противоречит коду ${selectedAnswer.code}`
+          } : answer
+        )
+      }))
+    } else {
+      canclePreviousResult(selectedAnswer)
+    }
+  }
+
+  const multipleHandler = (option, type) => {
+    switch (type) {
+      case 'add':
+        const newResults = storeSelectedResult(option.option)
+        // ПРОВЕРКА на окончание ввода
+        if (checkRespondentFinish(newResults)) {
+          return
+        } else {
+          // проверка на ЛИМИТ (для автоматического перехода к следующему вопросу)
+          if (results[question.id].data.length >= question.limit) {
+            // переходим дальше
+            setTimeout(() => {
+              goToNext()
+            }, STEP_DELAY)
+            return
+          }
+        }
+        return
+      case 'sub':
+        canclePreviousResult(option.option)
+        return
+      case 'clear':
+        resetAnswers()
+        return
+      default:
+        return
+    }
   }
 
   const finishRespondent = () => {
@@ -233,7 +598,15 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
           </Grid>
         </Hidden>
         {question &&
-          <QuestionCard settings={userSettings} index={count} key={question.id} question={question} updateState={updateState} />
+          <QuestionCard
+            visibleCount={visibleCount}
+            question={question}
+            settings={userSettings}
+            key={question.id}
+            updateState={updateState}
+            blurHandle={blurHandle}
+            multipleHandler={multipleHandler}
+          />
         }
       </Grid>
 

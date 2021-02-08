@@ -181,7 +181,6 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
               // чтобы он не перешел к след. ответу
               return true
             }
-            console.log('22222222');
           } else {
             // пула критичных ответов нет -> запрещенных вопросов нет -> какой-то вопрос пропущен
             // ОПРЕДЕЛИТЬ какой номер вопроса
@@ -490,7 +489,6 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
   // ОСНОВНОЙ обработчик свободного ответа
   const blurHandler = (e) => {
     const value = e.currentTarget.value
-    const selectedCode = e.currentTarget.dataset.code
     const selectedKeyCode = e.currentTarget.dataset.keycode
     const selectedAnswer = question.answers.filter(obj => obj.keyCode === +selectedKeyCode)[0]
     if (value === '') {
@@ -502,7 +500,7 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
             ...newResults,
             [question.id]: {
               ...results[question.id],
-              data: results[question.id].data.filter(el => el.answerCode !== selectedCode)
+              data: results[question.id].data.filter(el => el.answerCode !== selectedAnswer.code)
             }
           }
         } else {
@@ -514,7 +512,7 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
           } else {
             newResults = {
               ...newResults,
-              pool: results.pool.filter(el => el !== selectedCode)
+              pool: results.pool.filter(el => el !== selectedAnswer.code)
             }
           }
         }
@@ -523,7 +521,7 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
       setQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
-          answer => answer.code === selectedCode ? {
+          answer => answer.code === selectedAnswer.code ? {
             ...answer, selected: false, showFreeAnswer: false, freeAnswerText: ''
           } : answer
         ).map(
@@ -574,30 +572,30 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
     }
     // поле не пустое -> сохраняем результат
     const result = {
-      answerCode: selectedCode,
+      answerCode: selectedAnswer.code,
       answerId: selectedAnswer.id,
       freeAnswer: false,
       freeAnswerText: value
     }
     /// опять новый СТЕЙТ результата!!!!!!!!!!!
     let newResultState = {}
-    if (results.pool.includes(selectedCode)) {
+    if (results.pool.includes(selectedAnswer.code)) {
       newResultState = Object.assign({}, results);
       newResultState[question.id] = {
         ...newResultState[question.id],
         data: results[question.id].data.map(
-          answer => answer.answerCode === selectedCode ? { ...answer, freeAnswerText: value } : answer
+          answer => answer.answerCode === selectedAnswer.code ? { ...answer, freeAnswerText: value } : answer
         )
       }
     } else {
       newResultState = Object.assign({}, results);
       newResultState[question.id].data.push(result)
-      newResultState.pool.push(selectedCode)
+      newResultState.pool.push(selectedAnswer.code)
     }
     setResults(newResultState)
 
     // проверить на уникальность (ВНЕШНЯЯ ЛОГИКА - уникальность) -> запретить другие ответы
-    if (logic.unique.includes(selectedCode)) {
+    if (logic.unique.includes(selectedAnswer.code)) {
       setQuestion(prevState => ({
         ...prevState,
         answers: prevState.answers.map(
@@ -609,10 +607,10 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
       ...prevState,
       answers: prevState.answers.map(
         answer => {
-          return answer.code === selectedCode ? { ...answer, selected: true, freeAnswerText: value, focus: false } : answer
+          return answer.code === selectedAnswer.code ? { ...answer, selected: true, freeAnswerText: value, focus: false } : answer
         }
       ).map(
-        answer => logic.unique.includes(answer.code) & answer.code !== selectedCode ? { ...answer, disabled: true } : answer
+        answer => logic.unique.includes(answer.code) & answer.code !== selectedAnswer.code ? { ...answer, disabled: true } : answer
       ).map(
         answer => selectedAnswer.exclude.includes(answer.code) ? {
           ...answer,

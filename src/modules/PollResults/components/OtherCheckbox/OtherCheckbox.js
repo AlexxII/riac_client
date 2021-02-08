@@ -7,6 +7,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
   const inputEl = useRef(null)
   useEffect(() => {
+    console.log(answer.focus);
     inputEl.current.value = answer.text
     if (answer.focus) {
       inputEl.current.focus()
@@ -30,7 +31,6 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
         <Fragment>
           <span className="other-title-container">
             <span className="answer-code">{answer.code} - </span>
-
             <TextField
               id="standard-bare"
               inputRef={inputEl}
@@ -65,12 +65,15 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
       className="other-check-label"
       key={answer.id}
       control={
-        <Checkbox
-          onChange={onChange}
-          checked={answer.selected}
-          disabled={answer.disabled}
-          value={answer.id}
-        />
+        <Fragment>
+          <span style={{ fontSize: '20px', fontWeight: 700, paddingRight: '10px' }}>{answer.showIndex}</span>
+          <Checkbox
+            onChange={onChange}
+            checked={answer.selected}
+            disabled={answer.disabled}
+            value={answer.id}
+          />
+        </Fragment>
       }
       label={
         <AnswerTitle />

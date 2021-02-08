@@ -205,6 +205,83 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     }
   }
 
+  // ОСНОВНЫЙ обработчик сброса ответов
+  const resetAnswers = () => {
+    const savedCodes = results[question.id].data.reduce((acum, val) => [...acum, val.answerCode], [])
+    // Сделано так, чтобы не ждать обновления СТЕЙТА с результатами
+    let newResults = {}
+    for (let key in results) {
+      if (key === question.id) {
+        newResults[question.id] = {
+          ...results[question.id],
+          data: []
+        }
+      } else {
+        if (key !== 'pool') {
+          newResults = {
+            ...newResults,
+            [key]: results[key]
+          }
+        } else {
+          newResults = {
+            ...newResults,
+            pool: results.pool.filter(code => {
+              return savedCodes.includes(code) ? false : true
+            })
+          }
+        }
+      }
+    }
+    setResults(newResults)
+    setQuestion(prevState => ({
+      ...prevState,
+      selectedAnswer: '',
+      answers: prevState.answers.map(
+        answer => true ? {
+          ...answer,
+          selected: false,
+          showFreeAnswer: false,
+          freeAnswerText: '',                             // сбрасываем свободный ответ
+          focus: true,                                    // чтобы фокус вернулся на свободеый ответ, т.к. он сброшен 
+          disabled: false
+        } : answer
+      ).map(
+        answer => {
+          let excludePool = []
+          // формирование пула кодов которые запрещены в результатах
+          for (let code in logic.criticalExclude) {
+            if (code === answer.code) {
+              excludePool = [
+                ...excludePool,
+                ...logic.criticalExclude[code]
+              ]
+            }
+            if (logic.criticalExclude[code].includes(answer.code)) {
+              excludePool = [
+                ...excludePool,
+                code
+              ]
+            }
+          }
+          for (let i = 0; i < excludePool.length; i++) {
+            if (newResults.pool.includes(excludePool[i])) {
+              return {
+                ...answer,
+                disabled: true,
+                excludeM: `противоречит коду ${excludePool[i]}`
+              }
+            }
+          }
+          return {
+            ...answer,
+            disabled: false,
+            excludeM: ''
+          }
+        }
+      )
+    }))
+  }
+
   // выбран новый ответ на вопрос
   const setAnswer = (selectedAnswer) => {
     // если ответ не активен -> выбрать не можем
@@ -217,6 +294,8 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       }
     }
 
+    const newResults = storeSelectedResult(selectedAnswer)
+
     if (selectedAnswer.freeAnswer) {
       setQuestion(prevState => ({
         ...prevState,
@@ -228,8 +307,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     }
 
     // проверка на активность ответа и ограничение по количеству ответов
-    const newResults = storeSelectedResult(selectedAnswer)
-
     if (newResults[question.id].data.length >= question.limit) {
       setQuestion(prevState => ({
         ...prevState,
@@ -244,7 +321,9 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   const setRadioAnswer = (selectedAnswer) => {
     // проверить если выбран уже сохраненный ответ
     if (results.pool.includes(selectedAnswer.code)) return
-    canclePreviousResult(selectedAnswer)
+
+    resetAnswers()
+
     storeSelectedResult(selectedAnswer)
 
     if (selectedAnswer.freeAnswer) {
@@ -268,18 +347,14 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   // снят ответ на вопрос
   const unsetAnswer = (selectedAnswer) => {
     const newResults = canclePreviousResult(selectedAnswer)
-  }
 
+
+  }
 
   const checkRespondentFinish = () => {
 
   }
 
-  const resetAnswers = () => {
-
-  }
-
-  /// ПОКА НЕ ЗНАЮ!!!!!!!!!!!!1
   const updateState = (selectedAnswer, currentQuestion, mode) => {
     switch (mode) {
       case 'set': {
@@ -315,15 +390,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         if (logic.criticalExclude[code].includes(selectedAnswer.code)) {
           beep()
           return
-        }
-      }
-    }
-    // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - НЕКРИТИЧНАЯ исключаемость) -> ОПОВЕСТИТЬ при ответе, которые указаны в конфиг файле
-    for (let code in logic.nonCriticalExclude) {
-      // если в выбранных ответах присутствует код, который исключает другие ответы
-      if (results.pool.includes(code)) {
-        if (logic.nonCriticalExclude[code].includes(selectedAnswer.code)) {
-          console.log('Ответ не совсем корректен');
         }
       }
     }
@@ -445,6 +511,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         freeAnswer: false,
         freeAnswerText: value
       }
+      /// опять новый СТЕЙТ результата!!!!!!!!!!!
       let newResultState = {}
       if (results.pool.includes(selectedAnswer.code)) {
         newResultState = Object.assign({}, results);
@@ -487,7 +554,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         )
       }))
     } else {
-      canclePreviousResult(selectedAnswer)
+      resetAnswers()
     }
   }
 

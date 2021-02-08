@@ -16,8 +16,17 @@ const OtherRadio = ({ answer, settings, onBlur }) => {
   })
 
   const keyDownHandle = (e) => {
-    if (e.keyCode === 13) {
+    let keyCode = e.keyCode
+    if (keyCode === 13) {
       inputEl.current.blur()
+      return
+    } else if (keyCode === 27) {
+      if (inputEl.current.value !== '') {
+        inputEl.current.value = ''
+        return
+      }
+      inputEl.current.blur()
+      return
     }
   }
 

@@ -7,7 +7,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
   const inputEl = useRef(null)
   useEffect(() => {
-    console.log(answer.focus);
     inputEl.current.value = answer.text
     if (answer.focus) {
       inputEl.current.focus()
@@ -15,8 +14,17 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
   })
 
   const keyDownHandle = (e) => {
-    if (e.keyCode === 13) {
+    const keyCode = e.keyCode
+    if (keyCode === 13) {
       inputEl.current.blur()
+      return
+    } else if (keyCode === 27) {
+      if (inputEl.current.value !== '') {
+        inputEl.current.value = ''
+        return
+      }
+      inputEl.current.blur()
+      return
     }
   }
 

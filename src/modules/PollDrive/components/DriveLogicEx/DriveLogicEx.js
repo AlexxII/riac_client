@@ -12,6 +12,7 @@ import { Prompt } from 'react-router-dom'
 import FinishDialog from '../FinishDialog';
 import QuestionCard from '../../../PollResults/components/QuestionCard'
 
+
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
 import questionFormationEx from '../../lib/questionFormationEx'
 
@@ -19,7 +20,7 @@ import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
 const STEP_DELAY = 0
-const MOVE_DELAY = 200
+const MOVE_DELAY = 100
 
 const VALID_CODE = 1
 const RESET_RESULTS = 2
@@ -351,8 +352,60 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
 
   }
 
-  const checkRespondentFinish = () => {
-
+  const checkRespondentFinish = (newResults) => {
+    let count = 0
+    for (let key in newResults) {
+      if (key !== 'pool') {
+        count++
+      }
+    }
+    // проверка - если не дошли до конца анкета, нет смысла анализировать концовку
+    if (count < poll.questions.length) {
+      return false
+    }
+    for (let key in newResults) {
+      if (key !== 'pool') {
+        const result = newResults[key]
+        if (!result.data.length) {
+          // необходимо проверить - пропущен был вопрос или нет
+          if (logic.criticalExclude) {
+            const resPool = newResults.pool                // уже сохраненные ответы
+            const codesPool = result.codesPool
+            const criticalExclude = logic.criticalExclude
+            const r = codesPool.filter((code, index) => {
+              for (let eCode in criticalExclude) {
+                if (resPool.includes(eCode)) {
+                  if (criticalExclude[eCode].includes(code)) return false
+                }
+              }
+              return true
+            })
+            if (r.length) {
+              setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
+              if (question.limit < 2) {
+                setCount(result.count)
+              }
+              setFinish(false)
+              // чтобы он не перешел к след. ответу
+              return true
+            }
+          } else {
+            // пула критичных ответов нет -> запрещенных вопросов нет -> какой-то вопрос пропущен
+            // ОПРЕДЕЛИТЬ какой номер вопроса
+            setInlineMessage(`Пропущен ${result.count + 1}й вопрос`)
+            if (question.limit < 2) {
+              setCount(result.count)
+            }
+            setFinish(false)
+            // чтобы он не перешел к след. ответу
+            return true
+          }
+        }
+      }
+    }
+    setInlineMessage('')
+    setFinish(true)
+    return true
   }
 
   const updateState = (selectedAnswer, currentQuestion, mode) => {

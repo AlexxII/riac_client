@@ -315,6 +315,18 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       }))
       return
     }
+    if (checkRespondentFinish(newResults)) {
+      return
+    } else {
+      // проверка на ЛИМИТ (для автоматического перехода к следующему вопросу)
+      if (results[question.id].data.length >= question.limit && userSettings.autoStep) {
+        // переходим дальше
+        setTimeout(() => {
+          goToNext()
+        }, STEP_DELAY)
+        return
+      }
+    }
   }
 
   const setRadioAnswer = (selectedAnswer) => {
@@ -331,12 +343,17 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       }))
       return
     }
-
-    // автопереход -> зависит от настроек пользователя
-    if (userSettings.autoStep) {
-      setTimeout(() => {
-        goToNext()
-      }, MOVE_DELAY)
+    if (checkRespondentFinish(newResults)) {
+      return
+    } else {
+      // проверка на ЛИМИТ (для автоматического перехода к следующему вопросу)
+      if (userSettings.autoStep) {
+        // переходим дальше
+        setTimeout(() => {
+          goToNext()
+        }, STEP_DELAY)
+        return
+      }
     }
   }
 
@@ -357,6 +374,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       return false
     }
     for (let key in newResults) {
+      console.log(key);
       if (key !== 'pool') {
         const result = newResults[key]
         if (!result.data.length) {
@@ -396,7 +414,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         }
       }
     }
-    console.log('22222222222222222222222');
+    console.log('222222222222222222');
     setInlineMessage('')
     setFinish(true)
     return true

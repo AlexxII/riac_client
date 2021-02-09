@@ -33,6 +33,7 @@ import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
 
+import { useHistory } from "react-router-dom";
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
@@ -58,6 +59,7 @@ const StyledBadge = withStyles((theme) => ({
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
+  const history = useHistory();
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты
@@ -396,7 +398,6 @@ const OverallResults = ({ id }) => {
   }
 
   const handleResultsBatchUpdate = () => {
-
   }
 
   const deleteComplitely = () => {
@@ -415,6 +416,9 @@ const OverallResults = ({ id }) => {
   }
 
   const updateSingleResult = (respondent) => {
+
+    history.push("/update-result/" + '2222');
+
     setSingleUpdate(respondent)
   }
 

@@ -47,7 +47,7 @@ const OtherRadio = ({ answer, settings, onBlur }) => {
               placeholder={answer.title}
               margin="normal"
               onBlur={handleBlur}
-              onKeyDown={keyDownHandle}
+              onKeyUp={keyDownHandle}
               className="radio-control-label"
             />
           </span>

@@ -20,7 +20,7 @@ import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
 const STEP_DELAY = 0
-const MOVE_DELAY = 100
+const MOVE_DELAY = 0
 
 const VALID_CODE = 1
 const RESET_RESULTS = 2
@@ -34,8 +34,6 @@ const MOVE_BACK = 3
 const SET_ANSWER = 1
 const UNSET_ANSWER = 2
 const SET_RADIO_ANSWER = 3
-
-// автоПереход по настройке пользователя !!!!!!!!!!!!!!
 
 const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksheet }) => {
   const questionsLimit = poll.questions.length
@@ -67,7 +65,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   })
 
   // Кнопка с треброванием выдать ID и сохранить !!!!!!!!!!!!!!!!!!!!!!!!
-
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
     const nextQuestion = questionFormationEx(poll.questions[count], count, logic, results, setResults);
@@ -75,7 +72,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       if (direction) {
         if (count === questionsLimit - 1) {
           checkRespondentFinish(nextQuestion.results)
-          // setEarlyСompletion(true)
           return
         }
         setCount(count + 1)
@@ -115,7 +111,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
                   return
                 }
               }
-              return
             }
             case MOVE_FORWARD: {
               goToNext()
@@ -234,6 +229,8 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       }
     }
     setResults(newResults)
+    const u = checkRespondentFinish(newResults)
+    console.log(u);
     setQuestion(prevState => ({
       ...prevState,
       selectedAnswer: '',
@@ -281,6 +278,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         }
       )
     }))
+    return newResults
   }
 
   // выбран новый ответ на вопрос
@@ -322,11 +320,8 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   const setRadioAnswer = (selectedAnswer) => {
     // проверить если выбран уже сохраненный ответ
     if (results.pool.includes(selectedAnswer.code)) return
-
-    resetAnswers()
-
-    storeSelectedResult(selectedAnswer)
-
+    const newResults = resetAnswers()
+    storeSelectedResult(selectedAnswer, newResults)
     if (selectedAnswer.freeAnswer) {
       setQuestion(prevState => ({
         ...prevState,
@@ -347,9 +342,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
 
   // снят ответ на вопрос
   const unsetAnswer = (selectedAnswer) => {
-    const newResults = canclePreviousResult(selectedAnswer)
-
-
+    canclePreviousResult(selectedAnswer)
   }
 
   const checkRespondentFinish = (newResults) => {
@@ -403,6 +396,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         }
       }
     }
+    console.log('22222222222222222222222');
     setInlineMessage('')
     setFinish(true)
     return true
@@ -429,7 +423,10 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   }
 
   // функция сохранения выбранного ответа
-  const storeSelectedResult = (selectedAnswer) => {
+  const storeSelectedResult = (selectedAnswer, newResults) => {
+
+    const freshResults = newResults ? newResults : results
+
     const result = {
       answerCode: selectedAnswer.code,
       answerId: selectedAnswer.id,
@@ -439,14 +436,14 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     // проверка на исключаемость (ВНЕШНЯЯ ЛОГИКА - КРИТИЧНАЯ исключаемость) -> запретить ответы, которые указаны в конфиг файле
     for (let code in logic.criticalExclude) {
       // если в выбранных ответах присутствует код, который исключает другие ответы
-      if (results.pool.includes(code)) {
+      if (freshResults.pool.includes(code)) {
         if (logic.criticalExclude[code].includes(selectedAnswer.code)) {
           beep()
           return
         }
       }
     }
-    let newResultState = Object.assign({}, results);
+    let newResultState = Object.assign({}, freshResults);
     newResultState[question.id].data.push(result)
     newResultState.pool.push(selectedAnswer.code)
     setResults(newResultState)
@@ -607,7 +604,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         )
       }))
     } else {
-      resetAnswers()
+      canclePreviousResult(selectedAnswer)
     }
   }
 

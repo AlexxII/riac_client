@@ -8,9 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { NavLink, useHistory } from 'react-router-dom'
-
-
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   grow: {

@@ -10,5 +10,6 @@ export { default as WikiPage } from './WikiPage'
 export { default as PollAppSettingsPage } from './PollAppSettingsPage'
 export { default as UsersPage } from './UsersPage'
 export { default as NotFoundPage } from './NotFoundPage'
+export { default as UpdateResultsPage } from './UpdateResultsPage'
 
-export {default as SdpCheckPage} from './SdpCheckPage'
+export { default as SdpCheckPage } from './SdpCheckPage'

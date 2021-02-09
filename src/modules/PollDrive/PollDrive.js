@@ -212,24 +212,22 @@ const PollDrive = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
-      <div style={{ backgroundColor: currentQuestion.multiple ? 'rgb(208 226 252)' : '#fff' }}>
-        <Container maxWidth="md">
-          <DialogWithSelect
-            open={openCityDialog}
-            options={poolOfCities}
-            header="Город"
-            text="Выберите город в котором проводился опрос"
-            save={saveCity}
-            handleClose={closeDialog}
-          />
-          <DriveLogicEx
-            poll={poll}
-            logics={logic}
-            setCurrentQuestion={setCurrentQuestion}
-            saveAndGoBack={saveAndGoBack}
-            saveWorksheet={saveWorksheet} />
-        </Container>
-      </div>
+      <Container maxWidth="md">
+        <DialogWithSelect
+          open={openCityDialog}
+          options={poolOfCities}
+          header="Город"
+          text="Выберите город в котором проводился опрос"
+          save={saveCity}
+          handleClose={closeDialog}
+        />
+        <DriveLogicEx
+          poll={poll}
+          logics={logic}
+          setCurrentQuestion={setCurrentQuestion}
+          saveAndGoBack={saveAndGoBack}
+          saveWorksheet={saveWorksheet} />
+      </Container>
     </Fragment>
   )
 }

@@ -45,7 +45,7 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
               name={answer.id}
               placeholder={answer.title}
               margin="normal"
-              onKeyDown={keyDownHandle}
+              onKeyUp={keyDownHandle}
               onBlur={handleBlur}
               className="checkbox-control-label"
             />

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment } from 'react'
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -10,10 +10,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 
+import MultipleAnswers from '../../../PollDrive/components/MultipleAnswers'
 import OtherRadio from '../OtherRadio'
 import OtherCheckbox from '../OtherCheckbox'
 
-const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandle }) => {
+const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandle, multipleHandler }) => {
 
   if (question.skip) return null
 
@@ -56,7 +57,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
       <CardContent>
         <FormControl component="fieldset" className="question-form-control">
           <FormLabel className="question-title" component="legend">{`${visibleCount + 1}. ${question.title}`}</FormLabel>
-          {
+          {!question.mega ?
             question.limit > 1 ?
               (
                 <FormGroup>
@@ -128,6 +129,8 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                   }
                 </RadioGroup>
               )
+            :
+            <MultipleAnswers data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
           }
         </FormControl>
       </CardContent>

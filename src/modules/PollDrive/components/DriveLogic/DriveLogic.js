@@ -330,7 +330,6 @@ const DriveLogic = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorks
       }
 
       const newResults = storeSelectedResult(selectedAnswer)
-
       // ПРОВЕРКА на окончание ввода
       if (checkRespondentFinish(newResults)) {
         return

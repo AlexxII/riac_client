@@ -1,6 +1,6 @@
 .question-card {
   min-width: 100%;
-  margin: 0 0 10px 0;
+  margin: 5px 0 10px 0;
   text-align: left;
   .question-form-control {
     width: 100%;
@@ -8,7 +8,13 @@
   .question-title {
     font-weight: 700;
     line-height: 1.5;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
+  }
+  .header-service-zone {
+    margin-bottom: 5px;
+  }
+  .hide {
+    color: rgba(0, 0, 0, 0.38);
   }
 }
 .question-header {
@@ -29,6 +35,20 @@
 }
 .radio-control-label {
   width: 100%;
+  border-radius: 2px;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  position: relative;
+  &:hover {
+    background-color: #cde0ff;
+  }
+  .exclude-message {
+    font-size: 10px;
+    font-weight: 600;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+  }
 }
 .other-radio-label {
   .MuiFormControlLabel-label {
@@ -37,14 +57,20 @@
 }
 .checkbox-control-label {
   width: 100%;
-  padding: 0px;
-  :hover {
-    .radio-control-label {
-      background-color: lightgray;
-    }
+  padding: 0 0 0 10px;
+  border-radius: 2px;
+  &:hover {
+    background-color: #cde0ff;
   }
   .checkbox {
     padding-left: 10px;
+  }
+  .exclude-message {
+    font-size: 10px;
+    font-weight: 600;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
   }
 }
 .other-check-label {

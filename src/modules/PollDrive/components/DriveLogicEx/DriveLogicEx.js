@@ -12,15 +12,13 @@ import { Prompt } from 'react-router-dom'
 import FinishDialog from '../FinishDialog';
 import QuestionCard from '../../../PollResults/components/QuestionCard'
 
-
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
 import questionFormationEx from '../../lib/questionFormationEx'
 
 import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
-const STEP_DELAY = 0
-const MOVE_DELAY = 0
+const STEP_DELAY = 100
 
 const VALID_CODE = 1
 const RESET_RESULTS = 2
@@ -414,7 +412,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         }
       }
     }
-    console.log('222222222222222222');
     setInlineMessage('')
     setFinish(true)
     return true
@@ -567,6 +564,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
         return answer
       })
     }))
+    checkRespondentFinish(newResults)
     return newResults
   }
 
@@ -691,6 +689,10 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
     saveAndGoBack(results)
   }
 
+  const onReset = () => {
+    resetAnswers()
+  }
+
   const InlineInformer = () => {
     return (
       <Typography variant="overline" display="block" gutterBottom>
@@ -732,6 +734,13 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
             <InlineInformer />
           </Grid>
         </Hidden>
+        <Grid container direction="row" justify="center" alignItems="center" className="">
+          <Button onClick={goToPrevious} variant="contained" size="small" className="control-button">Назад</Button>
+          <Button onClick={goToNext} variant="contained" size="small" className="control-button">Вперед</Button>
+          {finish &&
+            <Button onClick={finishRespondent} variant="contained" size="small" className="control-button">Финиш</Button>
+          }
+        </Grid>
         {question &&
           <QuestionCard
             visibleCount={visibleCount}
@@ -741,15 +750,11 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
             updateState={updateState}
             blurHandle={blurHandle}
             multipleHandler={multipleHandler}
+            reset={onReset}
           />
         }
       </Grid>
 
-      <Button onClick={goToPrevious} variant="contained" className="control-button">Назад</Button>
-      <Button onClick={goToNext} variant="contained" className="control-button">Вперед</Button>
-      {finish &&
-        <Button onClick={finishRespondent} variant="contained" className="control-button">Финиш</Button>
-      }
     </Fragment>
   )
 }

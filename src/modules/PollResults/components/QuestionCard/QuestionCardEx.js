@@ -9,12 +9,14 @@ import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 
 import MultipleAnswers from '../../../PollDrive/components/MultipleAnswers'
 import OtherRadio from '../OtherRadio'
 import OtherCheckbox from '../OtherCheckbox'
 
-const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandle, multipleHandler }) => {
+const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandle, multipleHandler, reset }) => {
 
   if (question.skip) return null
 
@@ -37,12 +39,13 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
     updateState(selectedAnswer, question, 'radio')
   }
 
-  const AnswerTitle = ({ answer }) => {
+  const AnswerTitle = ({ answer, disabled }) => {
     if (settings.codesShow) {
       return (
         <Fragment>
-          <span className={"answer-code"}>{answer.code} - </span>
+          <span className={disabled ? "answer-code hide" : "answer-code"} >{answer.code} - </span>
           {answer.title}
+          <span className="exclude-message">{answer.excludeM}</span>
         </Fragment>
       )
     } else {
@@ -57,6 +60,11 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
       <CardContent>
         <FormControl component="fieldset" className="question-form-control">
           <FormLabel className="question-title" component="legend">{`${visibleCount + 1}. ${question.title}`}</FormLabel>
+          <Grid container direction="row" justify="flex-end" alignItems="center" className="header-service-zone">
+            <Button variant="outlined" size="small" color="secondary" onClick={reset}>
+              Сбросить
+          </Button>
+          </Grid>
           {!question.mega ?
             question.limit > 1 ?
               (
@@ -89,9 +97,10 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                               />
                             </Fragment>
                           }
+                          disabled={answer.disabled}
                           name={question.id}
                           label={
-                            <AnswerTitle answer={answer} />
+                            <AnswerTitle answer={answer} disabled={answer.disabled} />
                           }
                         />
                     ))
@@ -121,7 +130,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                           key={answer.id}
                           control={<Radio />}
                           label={
-                            <AnswerTitle answer={answer} />
+                            <AnswerTitle answer={answer} disabled={answer.disabled} />
                           }
                           disabled={answer.disabled}
                         />

@@ -33,7 +33,7 @@ const SET_ANSWER = 1
 const UNSET_ANSWER = 2
 const SET_RADIO_ANSWER = 3
 
-const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWorksheet }) => {
+const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
   const [userSettings, setUserSettings] = useState({
@@ -237,7 +237,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
           ...answer,
           selected: false,
           showFreeAnswer: false,
-          freeAnswerText: '',                             // сбрасываем свободный ответ
+          text: '',                                       // сбрасываем свободный ответ
           focus: true,                                    // чтобы фокус вернулся на свободеый ответ, т.к. он сброшен 
           disabled: false
         } : answer

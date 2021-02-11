@@ -70,10 +70,19 @@ const OtherRadio = ({ answer, settings, onBlur }) => {
 
   return (
     <FormControlLabel
+      className="radio-control-label other-radio-label"
       value={answer.id}
       key={answer.id}
-      control={<Radio />}
-      className="other-radio-label"
+      control={
+        <Fragment>
+          <span className="key-code">{answer.showIndex}</span>
+          <Radio
+            checked={answer.selected}
+            disabled={answer.disabled}
+            value={answer.id}
+          />
+        </Fragment>
+      }
       label={
         <AnswerTitle />
       }

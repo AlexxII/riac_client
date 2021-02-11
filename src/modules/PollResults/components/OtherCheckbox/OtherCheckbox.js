@@ -70,11 +70,11 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
 
   return (
     <FormControlLabel
-      className="other-check-label"
+      className="checkbox-control-label other-check-label"
       key={answer.id}
       control={
         <Fragment>
-          <span style={{ fontSize: '20px', fontWeight: 700, paddingRight: '10px' }}>{answer.showIndex}</span>
+          <span className="key-code">{answer.showIndex}</span>
           <Checkbox
             onChange={onChange}
             checked={answer.selected}

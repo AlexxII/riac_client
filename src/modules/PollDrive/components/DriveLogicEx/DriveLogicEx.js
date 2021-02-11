@@ -18,7 +18,7 @@ import questionFormationEx from '../../lib/questionFormationEx'
 import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
-const STEP_DELAY = 100
+const STEP_DELAY = 0
 
 const VALID_CODE = 1
 const RESET_RESULTS = 2

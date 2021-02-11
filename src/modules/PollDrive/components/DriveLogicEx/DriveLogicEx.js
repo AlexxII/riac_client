@@ -374,10 +374,11 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
     for (let key in newResults) {
       if (key !== 'pool') {
         const result = newResults[key]
+        console.log(result);
         if (!result.data.length) {
           // необходимо проверить - пропущен был вопрос или нет
           if (logic.criticalExclude) {
-            const resPool = newResults.pool                // уже сохраненные ответы
+            const resPool = newResults.pool                                   // уже сохраненные ответы
             const codesPool = result.codesPool
             const criticalExclude = logic.criticalExclude
             const r = codesPool.filter((code, index) => {

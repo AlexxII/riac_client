@@ -34,6 +34,7 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
       exclude: [],
       excludeM: ''
     }
+    codesPool.push(answer.code)
     const exclude = logic.criticalExclude ? logic.criticalExclude : false
     if (exclude) {
       // заполняем поле exclude, в котором указаны все коды, которые будут исключены при выборе данного ответа

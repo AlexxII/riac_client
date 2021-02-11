@@ -227,8 +227,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
       }
     }
     setResults(newResults)
-    const u = checkRespondentFinish(newResults)
-    console.log(u);
+    checkRespondentFinish(newResults)
     setQuestion(prevState => ({
       ...prevState,
       selectedAnswer: '',

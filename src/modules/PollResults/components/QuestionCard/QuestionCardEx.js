@@ -35,10 +35,6 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
 
   const handleRadioChange = (event, value) => {
     const selectedAnswerId = event.target.value
-    console.log(value);
-    console.log(event.target);
-
-    // const selectedAnswerId = value
     const selectedAnswer = question.answers.filter(answer => (answer.id === selectedAnswerId))[0]
     updateState(selectedAnswer, question, 'radio')
   }
@@ -46,15 +42,18 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
   const AnswerTitle = ({ answer, disabled }) => {
     if (settings.codesShow) {
       return (
-        <Fragment>
+        <div className={answer.selected ? "answer-selected" : ""}>
           <span className={disabled ? "answer-code hide" : "answer-code"} >{answer.code} - </span>
           {answer.title}
           <span className="exclude-message">{answer.excludeM}</span>
-        </Fragment>
+        </div>
       )
     } else {
       return (
-        answer.title
+        <div className={answer.selected ? "answer-selected" : ""}>
+          {answer.title}
+          <span className="exclude-message">{answer.excludeM}</span>
+        </div>
       )
     }
   }
@@ -135,7 +134,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                           control={
                             <Fragment>
                               <span className="key-code">{answer.showIndex}</span>
-                              <Radio 
+                              <Radio
                                 onChange={handleRadioChange}
                                 checked={answer.selected}
                                 value={answer.id}

@@ -16,6 +16,11 @@
   .hide {
     color: rgba(0, 0, 0, 0.38);
   }
+  .key-code {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 5px;
+  }
 }
 .question-header {
   position: relative;
@@ -59,6 +64,7 @@
   width: 100%;
   padding: 0 0 0 10px;
   border-radius: 2px;
+  position: relative;
   &:hover {
     background-color: #cde0ff;
   }

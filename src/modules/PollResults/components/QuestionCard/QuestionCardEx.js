@@ -33,8 +33,12 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
     }
   }
 
-  const handleRadioChange = (e, value) => {
-    const selectedAnswerId = value
+  const handleRadioChange = (event, value) => {
+    const selectedAnswerId = event.target.value
+    console.log(value);
+    console.log(event.target);
+
+    // const selectedAnswerId = value
     const selectedAnswer = question.answers.filter(answer => (answer.id === selectedAnswerId))[0]
     updateState(selectedAnswer, question, 'radio')
   }
@@ -84,7 +88,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                           key={answer.id}
                           control={
                             <Fragment>
-                              <span style={{ fontSize: '20px', fontWeight: 700, paddingRight: '10px' }}>{answer.showIndex}</span>
+                              <span className="key-code">{answer.showIndex}</span>
                               <Checkbox
                                 className="checkbox"
                                 inputProps={{
@@ -128,7 +132,16 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                           className="radio-control-label"
                           value={answer.id}
                           key={answer.id}
-                          control={<Radio />}
+                          control={
+                            <Fragment>
+                              <span className="key-code">{answer.showIndex}</span>
+                              <Radio 
+                                onChange={handleRadioChange}
+                                checked={answer.selected}
+                                value={answer.id}
+                              />
+                            </Fragment>
+                          }
                           label={
                             <AnswerTitle answer={answer} disabled={answer.disabled} />
                           }

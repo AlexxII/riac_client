@@ -56,9 +56,9 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
   const [inlineMessage, setInlineMessage] = useState('')
 
   useEffect(() => {
-    document.addEventListener(KEY_TYPE, keyUpHandler)
+    window.addEventListener(KEY_TYPE, keyUpHandler)
     return () => {
-      document.removeEventListener(KEY_TYPE, keyUpHandler)
+      window.removeEventListener(KEY_TYPE, keyUpHandler)
     };
   })
 
@@ -329,6 +329,7 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
 
   const setRadioAnswer = (selectedAnswer) => {
     // проверить если выбран уже сохраненный ответ
+    if (selectedAnswer.disabled) return
     if (results.pool.includes(selectedAnswer.code)) return
     const newResults = resetAnswers()
     storeSelectedResult(selectedAnswer, newResults)
@@ -372,7 +373,6 @@ const DriveLogicEx = ({ poll, logics, setCurrentQuestion, saveAndGoBack, saveWor
       return false
     }
     for (let key in newResults) {
-      console.log(key);
       if (key !== 'pool') {
         const result = newResults[key]
         if (!result.data.length) {

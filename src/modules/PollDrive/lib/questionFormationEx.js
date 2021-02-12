@@ -13,6 +13,7 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
   let uniqueSelected = false
   let keyCodesPool = []
   const codesPool = []
+  let selectedCount = 0
   // проверка на видимость ответа в перечне (ВНЕШНЯЯ ЛОГИКА - видимость)
   const visibleAnswers = logic.invisible ? question.answers.filter(answer => !logic.invisible.includes(answer.code))
     : question.answers
@@ -89,6 +90,7 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
         ...questionSuffix,
         selectedAnswer: answer.id
       }
+      selectedCount++
     }
 
     // проверка на блокировку ответа (ВНЕШНЯЯ ЛОГИКА - уникальность)
@@ -133,11 +135,21 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
     }
   })
 
-  const countSkipAnswers = answersEx.reduce((acum, answer) => {
+  // ограничение введенных ответов
+  let answersExEx = []
+  if (question.limit > 1 && (question.limit <= selectedCount)) {
+    answersExEx = answersEx.map(answer => (
+      answer.selected ? answer : { ...answer, disabled: true }
+    ))
+  } else {
+    answersExEx = answersEx
+  }
+
+  const countSkipAnswers = answersExEx.reduce((acum, answer) => {
     return acum + answer.disabled
   }, 0)
 
-  if (countSkipAnswers === answersEx.length) {
+  if (countSkipAnswers === answersExEx.length) {
     let newResultState = Object.assign({}, results);
     newResultState[question.id] = {
       data: [],
@@ -177,7 +189,7 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
   }
 
   // проверка на уникальность и исключаемость
-  const newAnswers = answersEx.map(answer => {
+  const newAnswers = answersExEx.map(answer => {
     if (selectedIn) {
       if (uniqueIn) {
         if (uniqueSelected) {
@@ -186,6 +198,19 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
           return answer.unique ? { ...answer, disabled: true } : answer
         }
       }
+    }
+    return answer
+  }).map(answer => {
+    if (logic.criticalExclude) {
+      for (let code in logic.criticalExclude) {
+        if (results.pool.includes(code)) {
+          if (logic.criticalExclude[code].includes(answer.code)) {
+            return { ...answer, disabled: true }
+          }
+          return answer
+        }
+      }
+
     }
     return answer
   })

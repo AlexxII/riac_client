@@ -18,7 +18,6 @@ import questionFormationEx from '../../lib/questionFormationEx'
 import beep from '../../lib/beep'
 
 const KEY_TYPE = 'keyup'
-const STEP_DELAY = 0
 
 const VALID_CODE = 1
 const RESET_RESULTS = 2
@@ -33,14 +32,10 @@ const SET_ANSWER = 1
 const UNSET_ANSWER = 2
 const SET_RADIO_ANSWER = 3
 
-const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
+const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings }) => {
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
-  const [userSettings, setUserSettings] = useState({
-    codesShow: true,
-    autoStep: true,                    // автоматический переход к другому вопросу
-    cityAgain: false                   // повтор вопроса с выбором города!!!!
-  })
+  const [codesShow, setCodesShow] = useState(true)
   const [direction, setDirection] = useState(1)
   const [logic] = useState(logics)
   const [count, setCount] = useState(0)
@@ -320,7 +315,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
         // переходим дальше
         setTimeout(() => {
           goToNext()
-        }, STEP_DELAY)
+        }, userSettings.stepDelay)
         return
       }
     }
@@ -349,7 +344,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
         // переходим дальше
         setTimeout(() => {
           goToNext()
-        }, STEP_DELAY)
+        }, userSettings.stepDelay)
         return
       }
     }
@@ -637,7 +632,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
             // переходим дальше
             setTimeout(() => {
               goToNext()
-            }, STEP_DELAY)
+            }, userSettings.stepDelay)
             return
           }
         }
@@ -657,11 +652,8 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
     setFinishDialog(true)
   }
 
-  const codesShow = (e) => {
-    setUserSettings(prevState => ({
-      ...prevState,
-      codesShow: !prevState.codesShow
-    }))
+  const handleCodesShow = () => {
+    setCodesShow(!codesShow)
   }
 
   const cancelFinish = () => {
@@ -716,7 +708,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
         <Grid item container xs={6} md={3} justify="flex-start">
           <FormControlLabel
             value="end"
-            control={<Checkbox color="primary" onChange={codesShow} defaultChecked={userSettings.codesShow} />}
+            control={<Checkbox color="primary" onChange={handleCodesShow} defaultChecked={codesShow} />}
             label="Коды ответов"
             labelPlacement="end"
           />
@@ -745,7 +737,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet }) => {
           <QuestionCard
             visibleCount={visibleCount}
             question={question}
-            settings={userSettings}
+            codesShow={codesShow}
             key={question.id}
             updateState={updateState}
             blurHandle={blurHandle}

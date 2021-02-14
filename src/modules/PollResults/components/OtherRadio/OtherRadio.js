@@ -5,7 +5,7 @@ import Radio from '@material-ui/core/Radio';
 import TextField from '@material-ui/core/TextField';
 import { Fragment } from "react";
 
-const OtherRadio = ({ answer, settings, onBlur }) => {
+const OtherRadio = ({ answer, codesShow, onBlur }) => {
   const inputEl = useRef(null)
   useEffect(() => {
     inputEl.current.value = answer.text
@@ -35,7 +35,7 @@ const OtherRadio = ({ answer, settings, onBlur }) => {
   }
 
   const AnswerTitle = () => {
-    if (settings.codesShow) {
+    if (codesShow) {
       return (
         <Fragment>
           <span className="other-title-container">

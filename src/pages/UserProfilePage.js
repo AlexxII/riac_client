@@ -3,20 +3,21 @@ import { useParams } from 'react-router-dom'
 
 import Container from '@material-ui/core/Container';
 import SettingBar from '../components/SettingBar'
+import UserProfile from '../modules/UserProfile'
 
-const UpdateResultsPage = () => {
+const UserProfilePage = () => {
   const { id } = useParams();
 
   return (
     <Fragment>
-      <SettingBar title={'Обновление'} />
+      <SettingBar title={`Профиль`} />
       <div>
-        <Container maxWidth="xl" style={{ padding: 0 }}>
-          Обновление
+        <Container maxWidth="xl" style={{ padding: '10px 0 0 0' }}>
+          <UserProfile id={id} />
         </Container>
       </div>
-    </Fragment>
+    </Fragment >
   )
 }
 
-export default UpdateResultsPage
+export default UserProfilePage

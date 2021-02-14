@@ -50,17 +50,19 @@ const PollDrive = ({ id }) => {
     }
     `,
   })
-  const classes = useStyles();
   const history = useHistory();
+
+  const [userSettings, setUserSettings] = useState({
+    stepDelay: 100,
+    autoStep: true,                    // автоматический переход к другому вопросу
+    cityAgain: false                   // повтор вопроса с выбором города!!!!
+  })
+
   const [poll, setPoll] = useState(null)
-  const [backOpen, setBackOpen] = useState(false)
   const [poolOfCities, setPoolOfCities] = useState(null)
   const [openCityDialog, setOpenCityDialog] = useState(true);
   const [logic, setPollLogic] = useState(null)
   const [currentCity, setCurrentCity] = useState(null)
-  const [currentQuestion, setCurrentQuestion] = useState({
-    'multiple': false
-  })
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: (_, __) => {
@@ -201,6 +203,9 @@ const PollDrive = ({ id }) => {
         data: result
       }
     })
+    if (userSettings.cityAgain) {
+      setOpenCityDialog(true)
+    }
   }
 
   return (
@@ -224,9 +229,10 @@ const PollDrive = ({ id }) => {
         <DriveLogicEx
           poll={poll}
           logics={logic}
-          setCurrentQuestion={setCurrentQuestion}
           saveAndGoBack={saveAndGoBack}
-          saveWorksheet={saveWorksheet} />
+          saveWorksheet={saveWorksheet}
+          userSettings={userSettings}
+        />
       </Container>
     </Fragment>
   )

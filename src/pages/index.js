@@ -9,6 +9,7 @@ export { default as AttachmentPage } from './AttachmentPage'
 export { default as WikiPage } from './WikiPage'
 export { default as PollAppSettingsPage } from './PollAppSettingsPage'
 export { default as UsersPage } from './UsersPage'
+export { default as UserProfilePage } from './UserProfilePage'
 export { default as NotFoundPage } from './NotFoundPage'
 export { default as UpdateResultsPage } from './UpdateResultsPage'
 

@@ -13,7 +13,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 
-import UserProfile from '../../containers/UserProfile'
+import UserProfileMenu from '../../containers/UserProfileMenu'
 import ServiceMenu from '../ServiceMenu'
 
 const useStyles = makeStyles((theme) => ({
@@ -55,7 +55,6 @@ const HomeBar = ({ title }) => {
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false)
-
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const isAppMenuOpen = Boolean(appAnchorEl);
 
@@ -132,7 +131,7 @@ const HomeBar = ({ title }) => {
         <p>Приложения</p>
       </MenuItem>
       <MenuItem>
-        <UserProfile />
+        <UserProfileMenu />
         <p>Profile</p>
       </MenuItem>
     </Menu>
@@ -171,7 +170,7 @@ const HomeBar = ({ title }) => {
                 <AppsIcon />
               </Badge>
             </IconButton>
-            <UserProfile />
+            <UserProfileMenu />
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

@@ -9,11 +9,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import { gql, useApolloClient } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
+import { useHistory } from "react-router-dom";
 
 import { LOGOUT_MUTATION } from './mutations'
-import { CURRENT_USER_QUERY } from '../../containers/App/queries'
+import { CURRENT_USER_QUERY } from '../App/queries'
 
-const UserProfile = ({ close }) => {
+const UserProfileMenu = ({ close }) => {
+  const history = useHistory();
   const client = useApolloClient();
   const { currentUser } = client.readQuery({
     query: gql`
@@ -47,6 +49,11 @@ const UserProfile = ({ close }) => {
   const handleProfileMenuOpen = (e) => {
     setAnchorEl(e.currentTarget)
   }
+  const handleUserProfile = () => {
+    history.push("/settings/user-profile/" + currentUser.id);
+    handleMenuClose()
+  }
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -57,7 +64,7 @@ const UserProfile = ({ close }) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {/* <MenuItem onClick={handleMenuClose}>Профиль</MenuItem> */}
+      <MenuItem onClick={handleUserProfile}>Профиль</MenuItem>
       <MenuItem onClick={handleProfileExit}>Выход</MenuItem>
     </Menu>
   );
@@ -84,4 +91,4 @@ const UserProfile = ({ close }) => {
   )
 }
 
-export default UserProfile
+export default UserProfileMenu

@@ -16,7 +16,7 @@ import MultipleAnswers from '../../../PollDrive/components/MultipleAnswers'
 import OtherRadio from '../OtherRadio'
 import OtherCheckbox from '../OtherCheckbox'
 
-const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandle, multipleHandler, reset }) => {
+const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHandle, multipleHandler, reset }) => {
 
   if (question.skip) return null
 
@@ -40,7 +40,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
   }
 
   const AnswerTitle = ({ answer, disabled }) => {
-    if (settings.codesShow) {
+    if (codesShow) {
       return (
         <div className={answer.selected ? "answer-selected" : ""}>
           <span className={disabled ? "answer-code hide" : "answer-code"} >{answer.code} - </span>
@@ -79,7 +79,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                           answer={answer}
                           onChange={handleCheckboxChange}
                           onBlur={blurHandle}
-                          settings={settings}
+                          codesShow={codesShow}
                         />
                         :
                         <FormControlLabel
@@ -123,7 +123,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                       answer.freeAnswer && answer.selected ?
                         <OtherRadio
                           answer={answer}
-                          settings={settings}
+                          codesShow={codesShow}
                           onBlur={blurHandle}
                         />
                         :
@@ -151,7 +151,7 @@ const QuestionCard = ({ visibleCount, question, settings, updateState, blurHandl
                 </RadioGroup>
               )
             :
-            <MultipleAnswers data={question.answers} limit={question.limit} settings={settings} multipleHandler={multipleHandler} />
+            <MultipleAnswers data={question.answers} limit={question.limit} codesShow={codesShow} multipleHandler={multipleHandler} />
           }
         </FormControl>
       </CardContent>

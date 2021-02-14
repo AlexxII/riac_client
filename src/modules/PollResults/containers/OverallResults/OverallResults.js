@@ -416,9 +416,7 @@ const OverallResults = ({ id }) => {
   }
 
   const updateSingleResult = (respondent) => {
-
-    history.push("/update-result/" + '2222');
-
+    history.push("/update-result/" + respondent.id);
     setSingleUpdate(respondent)
   }
 

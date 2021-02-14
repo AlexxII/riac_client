@@ -4,7 +4,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 
-const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
+const OtherCheckbox = ({ answer, onChange, codesShow, onBlur }) => {
   const inputEl = useRef(null)
   useEffect(() => {
     inputEl.current.value = answer.text
@@ -34,7 +34,7 @@ const OtherCheckbox = ({ answer, onChange, settings, onBlur }) => {
   }
 
   const AnswerTitle = () => {
-    if (settings.codesShow) {
+    if (codesShow) {
       return (
         <Fragment>
           <span className="other-title-container">

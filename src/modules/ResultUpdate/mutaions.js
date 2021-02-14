@@ -16,7 +16,7 @@ export const UPDATE_RESULT = gql`
 mutation ($id: String!, $data: [ResultData]) {
   updateResult(
     id: $id,
-    data: $data 
+    data: $data
   )
 }
 `

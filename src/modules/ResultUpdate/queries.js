@@ -25,3 +25,24 @@ export const GET_POLL_DATA = gql`
     }
   }
 `
+
+export const GET_RESPONDENT_RESULT = gql`
+  query ($id: String!) {
+    respondent(id: $id) {
+      id
+      result {
+        id
+        code
+        text
+        question {
+          id
+          order
+          codesPool
+        }
+        answer {
+          id
+        }
+      }
+    }
+  }
+`

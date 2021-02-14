@@ -13,7 +13,6 @@ import SystemNoti from '../../components/SystemNoti'
 import FinishDialog from './components/FinishDialog';
 
 import { Prompt } from 'react-router-dom'
-
 import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
@@ -221,7 +220,6 @@ const PollDrive = ({ pollId }) => {
       setOpenCityDialog(true)
     }
   }
-
 
   const confirmFinish = () => {
     // закончить данную анкету и начать новую, сбросив все данные

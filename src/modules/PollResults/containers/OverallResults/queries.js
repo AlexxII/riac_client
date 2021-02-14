@@ -61,7 +61,9 @@ query ($id: ID!) {
       processed
       result {
         id
-        answer
+        answer {
+          id
+        }
         code
         text
       }

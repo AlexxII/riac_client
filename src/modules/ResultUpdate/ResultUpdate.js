@@ -12,8 +12,7 @@ import SystemNoti from '../../components/SystemNoti'
 import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
-import { GET_POLL_DATA } from "./queries"
-import { GET_POLL_RESULTS } from '../PollResults/containers/OverallResults/queries'
+import { GET_POLL_DATA, GET_RESPONDENT_RESULT } from "./queries"
 
 import { SAVE_NEW_RESULT } from './mutaions'
 import { parseIni, normalizeLogic } from '../../modules/PollDrive/lib/utils'
@@ -38,6 +37,10 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     duration: 6000
   })
   const history = useHistory();
+  const [count, setCount] = useState(0)
+  const [userBack, setUserBack] = useState(false)
+  const [finish, setFinish] = useState(false)
+  const [finishDialog, setFinishDialog] = useState(false)
 
   const [userSettings] = useState({
     stepDelay: 100,
@@ -65,11 +68,12 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     data: pollResults,
     loading: pollResultsLoading,
     error: pollResultsError
-  } = useQuery(GET_POLL_RESULTS, {
+  } = useQuery(GET_RESPONDENT_RESULT, {
     variables: {
-      id: pollId
+      id: respondentId
     },
     onCompleted: () => {
+      prepareSavedData(pollResults.respondent)
       // setActiveWorksheets(pollResults.poll.results)
       // handleConfigFileAndUpdateCache(pollResults.poll)
     }
@@ -85,23 +89,63 @@ const ResultUpdate = ({ pollId, respondentId }) => {
         setPollLogic(normLogic)
       })
   }
-  const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
-    onError: (e) => {
-      setNoti({
-        type: 'error',
-        text: 'Сохранить не удалось. Смотрите консоль.'
-      })
-    },
-    refetchQueries: [{
-      query: GET_POLL_RESULTS,
-      variables: {
-        id: pollId
+
+  // подготовить ранее сохраненные результаты
+  const prepareSavedData = (data) => {
+    const pool = data.result.map(result =>
+      result.code
+    )
+    const dd = data.result.reduce((acum, item) => {
+      acum[item.question.id] = {
+        count: item.question.order,
+        codesPool: item.question.codesPool,
+        data: acum[item.question.id] ?
+          [
+            ...acum[item.question.id].data,
+            {
+              answerCode: item.code,
+              answerId: item.answer.id,
+              freeAnswer: item.text !== '',
+              freeAnswerText: item.text
+            }
+
+          ]
+          :
+          [{
+            answerCode: item.code,
+            answerId: item.answer.id,
+            freeAnswer: item.text !== '',
+            freeAnswerText: item.text
+
+          }]
       }
-    }]
-  })
-  if (respondentId) {
-    console.log(respondentId);
+      return acum
+    }, {})
+    setResults({
+      pool,
+      ...dd
+    })
+    console.log(data);
+    console.log(dd);
   }
+
+  // const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
+  //   onError: (e) => {
+  //     setNoti({
+  //       type: 'error',
+  //       text: 'Сохранить не удалось. Смотрите консоль.'
+  //     })
+  //   },
+  //   refetchQueries: [{
+  //     query: GET_POLL_RESULTS,
+  //     variables: {
+  //       id: pollId
+  //     }
+  //   }]
+  // })
+  // if (respondentId) {
+  //   console.log(respondentId);
+  // }
 
   useEffect(() => {
     if (logic) {
@@ -138,11 +182,11 @@ const ResultUpdate = ({ pollId, respondentId }) => {
   }, [logic])
 
   const Loading = () => {
-    if (saveLoading) return <LoadingStatus />
+    // if (saveLoading) return <LoadingStatus />
     return null
   }
 
-  if (!poll || !poolOfCities || !logic) return (
+  if (!poll || !poolOfCities || !logic || pollResultsLoading) return (
     <LoadingState />
   )
 
@@ -196,12 +240,15 @@ const ResultUpdate = ({ pollId, respondentId }) => {
       <Container maxWidth="md">
         <DriveLogicEx
           poll={poll}
-          logics={logic}
-          saveAndGoBack={saveAndGoBack}
-          saveWorksheet={saveWorksheet}
+          logic={logic}
           userSettings={userSettings}
           results={results}
           setResults={setResults}
+          finish={finish}
+          setFinish={setFinish}
+          setFinishDialog={setFinishDialog}
+          count={count}
+          setCount={setCount}
         />
       </Container>
     </Fragment>

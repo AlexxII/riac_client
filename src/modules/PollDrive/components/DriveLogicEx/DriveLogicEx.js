@@ -31,7 +31,7 @@ const SET_RADIO_ANSWER = 3
 
 const DriveLogicEx = (props) => {
   const {
-    poll, logic, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count
+    poll, logic, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode
   } = props
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
@@ -681,7 +681,7 @@ const DriveLogicEx = (props) => {
           <Button onClick={goToPrevious} variant="contained" size="small" className="control-button">Назад</Button>
           <Button onClick={goToNext} variant="contained" size="small" className="control-button">Вперед</Button>
           {finish &&
-            <Button onClick={() => setFinishDialog(true)} variant="contained" size="small" className="control-button">Финиш</Button>
+            finishNode
           }
         </Grid>
         {question &&

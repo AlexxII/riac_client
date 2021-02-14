@@ -3,6 +3,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import Container from '@material-ui/core/Container'
 import DriveLogicEx from "./components/DriveLogicEx";
 import DialogWithSelect from '../../components/DialogWithSelect';
+import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
 import LoadingStatus from '../../components/LoadingStatus'
@@ -55,7 +56,7 @@ const PollDrive = ({ pollId }) => {
   const history = useHistory();
 
   const [userSettings] = useState({
-    stepDelay: 100,
+    stepDelay: 0,
     autoStep: true,                    // автоматический переход к другому вопросу
     cityAgain: false                   // повтор вопроса с выбором города!!!!
   })
@@ -244,6 +245,10 @@ const PollDrive = ({ pollId }) => {
     setFinishDialog(false)
   }
 
+  const FinishNode = () => {
+    return <Button onClick={() => setFinishDialog(true)} variant="contained" size="small" className="control-button">Финиш</Button>
+  }
+
   return (
     <Fragment>
       <Prompt
@@ -283,6 +288,7 @@ const PollDrive = ({ pollId }) => {
           setFinishDialog={setFinishDialog}
           count={count}
           setCount={setCount}
+          finishNode={<FinishNode />}
         />
       </Container>
     </Fragment>

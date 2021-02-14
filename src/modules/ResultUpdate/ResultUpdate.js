@@ -2,6 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
 import DriveLogicEx from '../../modules/PollDrive/components/DriveLogicEx'
+import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 
 import LoadingStatus from '../../components/LoadingStatus'
@@ -247,6 +248,10 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     })
   }
 
+  const FinishNode = () => {
+    return <Button onClick={() => setFinishDialog(true)} variant="contained" size="small" className="control-button">Сохранить</Button>
+  }
+
   return (
     <Fragment>
       <SystemNoti
@@ -268,6 +273,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
           setFinishDialog={setFinishDialog}
           count={count}
           setCount={setCount}
+          finishNode={<FinishNode />}
         />
       </Container>
     </Fragment>

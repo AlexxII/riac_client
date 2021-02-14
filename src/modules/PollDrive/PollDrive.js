@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PollDrive = ({ id }) => {
+const PollDrive = ({ pollId, respondentId }) => {
   const [noti, setNoti] = useState(false)
   const client = useApolloClient();
   const [message, setMessage] = useState({
@@ -64,7 +64,7 @@ const PollDrive = ({ id }) => {
   const [logic, setPollLogic] = useState(null)
   const [currentCity, setCurrentCity] = useState(null)
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
-    variables: { id },
+    variables: { id: pollId },
     onCompleted: (_, __) => {
       handleConfigFile(data.poll.logic.path)
       setPoolOfCities(data.poll.cities)
@@ -90,7 +90,7 @@ const PollDrive = ({ id }) => {
     refetchQueries: [{
       query: GET_POLL_RESULTS,
       variables: {
-        id
+        id: pollId
       }
     }]
   })

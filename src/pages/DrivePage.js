@@ -10,7 +10,7 @@ const DrivePage = () => {
   return (
     <Fragment>
       <SettingBar title={`Опрос ` + code + ` - вбивание`} />
-      <PollDrive id={id}/>
+      <PollDrive pollId={id} />
     </Fragment>
   )
 }

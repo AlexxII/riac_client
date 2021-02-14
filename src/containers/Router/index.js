@@ -37,7 +37,7 @@ const Router = () => {
         <Route path={"/poll-app-settings"} component={PollAppSettingsPage} />
         <Route path={"/sdp-check"} component={SdpCheckPage} />
         <Route path={"/tester"} component={TesterPage} />
-        <Route path={"/update-result/:id"} component={UpdateResultsPage} />
+        <Route path={"/update-result/:poll/:respondent"} component={UpdateResultsPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </BrowserRouter>

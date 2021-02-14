@@ -7,7 +7,6 @@ import Hidden from '@material-ui/core/Hidden';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import FinishDialog from '../FinishDialog';
 import QuestionCard from '../QuestionCard'
 
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
@@ -30,17 +29,15 @@ const SET_ANSWER = 1
 const UNSET_ANSWER = 2
 const SET_RADIO_ANSWER = 3
 
-const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings, results, setResults }) => {
+const DriveLogicEx = (props) => {
+  const {
+    poll, logic, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count
+  } = props
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
   const [codesShow, setCodesShow] = useState(true)
   const [direction, setDirection] = useState(1)
-  const [logic] = useState(logics)
-  const [count, setCount] = useState(0)
   const [visibleCount, setVisibleCount] = useState(0)
-  const [finish, setFinish] = useState(false)
-  const [userBack, setUserBack] = useState(false)
-  const [finishDialog, setFinishDialog] = useState(false)
   const [inlineMessage, setInlineMessage] = useState('')
 
   useEffect(() => {
@@ -133,7 +130,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
 
   const confirmResults = () => {
     if (finish) {
-      finishRespondent()
+      setFinishDialog(true)
     } else {
       if (results[question.id] && results[question.id].data.length) {
         goToNext()
@@ -640,35 +637,8 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
     }
   }
 
-  const finishRespondent = () => {
-    setFinishDialog(true)
-  }
-
   const handleCodesShow = () => {
     setCodesShow(!codesShow)
-  }
-
-  const cancelFinish = () => {
-    // просто возврат к анкете, чтобы что-то поправить
-    setFinishDialog(false)
-  }
-
-  const confirmFinish = () => {
-    // закончить данную анкету и начать новую, сбросив все данные
-    saveWorksheet(results)
-    setResults({
-      pool: []
-    })
-    setCount(0)
-    setFinish(false)
-    setFinishDialog(false)
-  }
-
-  const finishThisPoll = () => {
-    // закончить данный опрос и перейти на главную страницу
-    setFinish(false)
-    setFinishDialog(false)
-    saveAndGoBack(results)
   }
 
   const onReset = () => {
@@ -685,7 +655,6 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
 
   return (
     <Fragment>
-      <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Grid container direction="row" justify="space-between" alignItems="center">
         <Grid item container xs={6} md={3} justify="flex-start">
           <FormControlLabel
@@ -712,7 +681,7 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
           <Button onClick={goToPrevious} variant="contained" size="small" className="control-button">Назад</Button>
           <Button onClick={goToNext} variant="contained" size="small" className="control-button">Вперед</Button>
           {finish &&
-            <Button onClick={finishRespondent} variant="contained" size="small" className="control-button">Финиш</Button>
+            <Button onClick={() => setFinishDialog(true)} variant="contained" size="small" className="control-button">Финиш</Button>
           }
         </Grid>
         {question &&

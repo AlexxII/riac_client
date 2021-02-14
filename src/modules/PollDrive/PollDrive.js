@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
-import DriveLogic from "./components/DriveLogic";
 import DriveLogicEx from "./components/DriveLogicEx";
 import DialogWithSelect from '../../components/DialogWithSelect';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,6 +9,8 @@ import LoadingStatus from '../../components/LoadingStatus'
 import ErrorState from '../../components/ErrorState'
 import LoadingState from '../../components/LoadingState'
 import SystemNoti from '../../components/SystemNoti'
+
+import FinishDialog from './components/FinishDialog';
 
 import { Prompt } from 'react-router-dom'
 
@@ -59,7 +60,10 @@ const PollDrive = ({ pollId }) => {
     autoStep: true,                    // автоматический переход к другому вопросу
     cityAgain: false                   // повтор вопроса с выбором города!!!!
   })
+  const [count, setCount] = useState(0)
   const [userBack, setUserBack] = useState(false)
+  const [finish, setFinish] = useState(false)
+  const [finishDialog, setFinishDialog] = useState(false)
   const [poll, setPoll] = useState(null)
   const [poolOfCities, setPoolOfCities] = useState(null)
   const [openCityDialog, setOpenCityDialog] = useState(true);
@@ -218,6 +222,30 @@ const PollDrive = ({ pollId }) => {
     }
   }
 
+
+  const confirmFinish = () => {
+    // закончить данную анкету и начать новую, сбросив все данные
+    saveWorksheet(results)
+    setResults({
+      pool: []
+    })
+    setCount(0)
+    setFinish(false)
+    setFinishDialog(false)
+  }
+
+  const finishThisPoll = () => {
+    // закончить данный опрос и перейти на главную страницу
+    setFinish(false)
+    setFinishDialog(false)
+    saveAndGoBack(results)
+  }
+
+  const cancelFinish = () => {
+    // просто возврат к анкете, чтобы что-то поправить
+    setFinishDialog(false)
+  }
+
   return (
     <Fragment>
       <Prompt
@@ -228,6 +256,8 @@ const PollDrive = ({ pollId }) => {
             : "Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!"
         }}
       />
+      <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
+
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}
@@ -246,12 +276,15 @@ const PollDrive = ({ pollId }) => {
         />
         <DriveLogicEx
           poll={poll}
-          logics={logic}
-          saveAndGoBack={saveAndGoBack}
-          saveWorksheet={saveWorksheet}
+          logic={logic}
           userSettings={userSettings}
           results={results}
           setResults={setResults}
+          finish={finish}
+          setFinish={setFinish}
+          setFinishDialog={setFinishDialog}
+          count={count}
+          setCount={setCount}
         />
       </Container>
     </Fragment>

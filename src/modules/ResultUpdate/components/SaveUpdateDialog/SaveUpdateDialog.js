@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-const FinishDialog = ({ open, handleClose, finishAll, confirm }) => {
+const SaveUpdateDialog = ({ open, handleClose, confirm }) => {
   return (
     <div>
       <Dialog
@@ -15,21 +15,18 @@ const FinishDialog = ({ open, handleClose, finishAll, confirm }) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Данная анкета завершена."}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Сохранить изменения"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-          Кажется данная анкета завершена. Кнопка "Следующая" - сохранить результаты и перейти к следующей анкете. Кнопка "Закончить" - сохранить и выйти из режима набивания.
+            Внимание! При нажатии кнопки "Сохранить" - все изменения будут сохранены в базе данных. Вернуть предудущий результат возможности не будет.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Отмена
           </Button>
-          <Button onClick={finishAll} color="primary">
-            Закончить
-          </Button>
           <Button onClick={confirm} color="primary" autoFocus>
-            Следующая
+            Сохранить
           </Button>
         </DialogActions>
       </Dialog>
@@ -37,4 +34,4 @@ const FinishDialog = ({ open, handleClose, finishAll, confirm }) => {
   );
 }
 
-export default FinishDialog
+export default SaveUpdateDialog

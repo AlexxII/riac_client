@@ -10,6 +10,8 @@ import ErrorState from '../../components/ErrorState'
 import LoadingState from '../../components/LoadingState'
 import SystemNoti from '../../components/SystemNoti'
 
+import SaveUpdateDialog from './components/SaveUpdateDialog'
+
 import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
@@ -234,10 +236,6 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     return result
   }
 
-
-  const saveAndGoBack = () => {
-  }
-
   const saveWorksheet = () => {
     const data = prepareResultData(results)
     updateResult({
@@ -254,6 +252,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
 
   return (
     <Fragment>
+      <SaveUpdateDialog open={finishDialog} handleClose={() => setFinishDialog(false)} confirm={saveWorksheet} />
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}

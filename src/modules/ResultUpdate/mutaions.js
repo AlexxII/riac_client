@@ -11,3 +11,12 @@ mutation ($poll: String!, $city: String!, $user: String!, $pool: [String], $data
   )
 }
 `
+
+export const UPDATE_RESULT = gql`
+mutation ($id: String!, $data: [ResultData]) {
+  updateResult(
+    id: $id,
+    data: $data 
+  )
+}
+`

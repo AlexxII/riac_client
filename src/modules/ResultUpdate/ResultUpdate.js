@@ -14,7 +14,7 @@ import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_DATA, GET_RESPONDENT_RESULT } from "./queries"
 
-import { SAVE_NEW_RESULT } from './mutaions'
+import { UPDATE_RESULT } from './mutaions'
 import { parseIni, normalizeLogic } from '../../modules/PollDrive/lib/utils'
 
 const productionUrl = process.env.REACT_APP_GQL_SERVER
@@ -64,6 +64,24 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     }
   })
 
+  const [updateResult, { loading: saveLoading }] = useMutation(UPDATE_RESULT, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Сохранить не удалось. Смотрите консоль.'
+      })
+    },
+    // refetchQueries: [{
+    //   query: GET_POLL_RESULTS,
+    //   variables: {
+    //     id: pollId
+    //   }
+    // }],
+    onCompleted: () => {
+      setUserBack(true)
+    }
+  })
+
   const {
     data: pollResults,
     loading: pollResultsLoading,
@@ -74,8 +92,6 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     },
     onCompleted: () => {
       prepareSavedData(pollResults.respondent)
-      // setActiveWorksheets(pollResults.poll.results)
-      // handleConfigFileAndUpdateCache(pollResults.poll)
     }
   });
 
@@ -97,7 +113,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     )
     const dd = data.result.reduce((acum, item) => {
       acum[item.question.id] = {
-        count: item.question.order,
+        count: item.question.order - 1,
         codesPool: item.question.codesPool,
         data: acum[item.question.id] ?
           [
@@ -125,8 +141,6 @@ const ResultUpdate = ({ pollId, respondentId }) => {
       pool,
       ...dd
     })
-    console.log(data);
-    console.log(dd);
   }
 
   // const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
@@ -221,11 +235,16 @@ const ResultUpdate = ({ pollId, respondentId }) => {
 
 
   const saveAndGoBack = () => {
-
   }
 
   const saveWorksheet = () => {
-
+    const data = prepareResultData(results)
+    updateResult({
+      variables: {
+        id: respondentId,
+        data
+      }
+    })
   }
 
   return (

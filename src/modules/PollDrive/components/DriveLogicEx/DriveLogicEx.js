@@ -7,10 +7,8 @@ import Hidden from '@material-ui/core/Hidden';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
-import { Prompt } from 'react-router-dom'
-
 import FinishDialog from '../FinishDialog';
-import QuestionCard from '../../../PollResults/components/QuestionCard'
+import QuestionCard from '../QuestionCard'
 
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
 import questionFormationEx from '../../lib/questionFormationEx'
@@ -32,7 +30,7 @@ const SET_ANSWER = 1
 const UNSET_ANSWER = 2
 const SET_RADIO_ANSWER = 3
 
-const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings }) => {
+const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings, results, setResults }) => {
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
   const [codesShow, setCodesShow] = useState(true)
@@ -40,11 +38,6 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
   const [logic] = useState(logics)
   const [count, setCount] = useState(0)
   const [visibleCount, setVisibleCount] = useState(0)
-  const [results, setResults] = useState(
-    {
-      pool: []
-    }
-  )
   const [finish, setFinish] = useState(false)
   const [userBack, setUserBack] = useState(false)
   const [finishDialog, setFinishDialog] = useState(false)
@@ -369,7 +362,6 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
     for (let key in newResults) {
       if (key !== 'pool') {
         const result = newResults[key]
-        console.log(result);
         if (!result.data.length) {
           // необходимо проверить - пропущен был вопрос или нет
           if (logic.criticalExclude) {
@@ -667,7 +659,6 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
     setResults({
       pool: []
     })
-    setUserBack(true)
     setCount(0)
     setFinish(false)
     setFinishDialog(false)
@@ -676,7 +667,6 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
   const finishThisPoll = () => {
     // закончить данный опрос и перейти на главную страницу
     setFinish(false)
-    setUserBack(true)
     setFinishDialog(false)
     saveAndGoBack(results)
   }
@@ -695,14 +685,6 @@ const DriveLogicEx = ({ poll, logics, saveAndGoBack, saveWorksheet, userSettings
 
   return (
     <Fragment>
-      <Prompt
-        when={results.pool.length}
-        message={() => {
-          return userBack
-            ? true
-            : "Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!"
-        }}
-      />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Grid container direction="row" justify="space-between" alignItems="center">
         <Grid item container xs={6} md={3} justify="flex-start">

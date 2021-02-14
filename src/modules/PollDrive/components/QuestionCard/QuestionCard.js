@@ -12,7 +12,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
-import MultipleAnswers from '../../../PollDrive/components/MultipleAnswers'
+import MultipleAnswers from '../MultipleAnswers'
 import OtherRadio from '../OtherRadio'
 import OtherCheckbox from '../OtherCheckbox'
 

@@ -13,7 +13,7 @@ import Box from '@material-ui/core/Box';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 
-import QuestionCard from '../QuestionCard'
+import QuestionCard from '../../../PollDrive/components/QuestionCard'
 
 const SingleUpdate = ({ data, respondent, logic, open, close, edit }) => {
   const theme = useTheme();

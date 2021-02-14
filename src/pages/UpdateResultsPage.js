@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import Container from '@material-ui/core/Container';
 import SettingBar from '../components/SettingBar'
 
-import PollDrive from '../modules/PollDrive'
+import ResultUpdate from '../modules/ResultUpdate'
 
 const UpdateResultsPage = () => {
   const { poll, respondent } = useParams();
@@ -14,7 +14,7 @@ const UpdateResultsPage = () => {
       <SettingBar title={'Обновление'} />
       <div>
         <Container maxWidth="xl" style={{ padding: 0 }}>
-          <PollDrive pollId={poll} respondentId={respondent}/>
+          <ResultUpdate pollId={poll} respondentId={respondent} />
         </Container>
       </div>
     </Fragment>

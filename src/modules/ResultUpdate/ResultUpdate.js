@@ -1,17 +1,13 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
-import DriveLogic from "./components/DriveLogic";
-import DriveLogicEx from "./components/DriveLogicEx";
-import DialogWithSelect from '../../components/DialogWithSelect';
+import DriveLogicEx from '../../modules/PollDrive/components/DriveLogicEx'
 import { makeStyles } from '@material-ui/core/styles';
 
 import LoadingStatus from '../../components/LoadingStatus'
 import ErrorState from '../../components/ErrorState'
 import LoadingState from '../../components/LoadingState'
 import SystemNoti from '../../components/SystemNoti'
-
-import { Prompt } from 'react-router-dom'
 
 import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
@@ -20,7 +16,7 @@ import { GET_POLL_DATA } from "./queries"
 import { GET_POLL_RESULTS } from '../PollResults/containers/OverallResults/queries'
 
 import { SAVE_NEW_RESULT } from './mutaions'
-import { parseIni, normalizeLogic } from './lib/utils'
+import { parseIni, normalizeLogic } from '../../modules/PollDrive/lib/utils'
 
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
@@ -33,24 +29,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PollDrive = ({ pollId }) => {
+const ResultUpdate = ({ pollId, respondentId }) => {
   const [noti, setNoti] = useState(false)
-  const client = useApolloClient();
   const [message, setMessage] = useState({
     show: false,
     type: 'error',
     message: '',
     duration: 6000
-  })
-  const { currentUser } = client.readQuery({
-    query: gql`
-    query {
-      currentUser {
-        id
-        username
-      }
-    }
-    `,
   })
   const history = useHistory();
 
@@ -59,17 +44,15 @@ const PollDrive = ({ pollId }) => {
     autoStep: true,                    // автоматический переход к другому вопросу
     cityAgain: false                   // повтор вопроса с выбором города!!!!
   })
-  const [userBack, setUserBack] = useState(false)
+
   const [poll, setPoll] = useState(null)
   const [poolOfCities, setPoolOfCities] = useState(null)
-  const [openCityDialog, setOpenCityDialog] = useState(true);
   const [logic, setPollLogic] = useState(null)
   const [results, setResults] = useState(
     {
       pool: []
     }
   )
-  const [currentCity, setCurrentCity] = useState(null)
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id: pollId },
     onCompleted: (_, __) => {
@@ -77,6 +60,21 @@ const PollDrive = ({ pollId }) => {
       setPoolOfCities(data.poll.cities)
     }
   })
+
+  const {
+    data: pollResults,
+    loading: pollResultsLoading,
+    error: pollResultsError
+  } = useQuery(GET_POLL_RESULTS, {
+    variables: {
+      id: pollId
+    },
+    onCompleted: () => {
+      // setActiveWorksheets(pollResults.poll.results)
+      // handleConfigFileAndUpdateCache(pollResults.poll)
+    }
+  });
+
   const handleConfigFile = (filePath) => {
     fetch(url + filePath)
       .then((r) => r.text())
@@ -99,11 +97,11 @@ const PollDrive = ({ pollId }) => {
       variables: {
         id: pollId
       }
-    }],
-    onCompleted: () => {
-      setUserBack(true)
-    }
+    }]
   })
+  if (respondentId) {
+    console.log(respondentId);
+  }
 
   useEffect(() => {
     if (logic) {
@@ -144,7 +142,7 @@ const PollDrive = ({ pollId }) => {
     return null
   }
 
-  if (!poll || !poolOfCities || !logic || !currentUser) return (
+  if (!poll || !poolOfCities || !logic) return (
     <LoadingState />
   )
 
@@ -156,16 +154,6 @@ const PollDrive = ({ pollId }) => {
         description="Не удалось загрузить критические данные. Смотрите консоль"
       />
     )
-  }
-
-  const saveCity = (city) => {
-    setCurrentCity(city)
-    setOpenCityDialog(false)
-  }
-
-  const closeDialog = () => {
-    setOpenCityDialog(false)
-    history.push("/")
   }
 
   const prepareResultData = (data) => {
@@ -187,47 +175,17 @@ const PollDrive = ({ pollId }) => {
     return result
   }
 
-  const saveAndGoBack = (data) => {
-    const result = prepareResultData(data)
-    saveResult({
-      variables: {
-        poll: poll.id,
-        city: currentCity.id,
-        user: currentUser.id,
-        pool: data.pool,
-        data: result
-      }
-    }).then(res => {
-      history.push("/")
-    })
+
+  const saveAndGoBack = () => {
+
   }
 
-  const saveWorksheet = (data) => {
-    const result = prepareResultData(data)
-    saveResult({
-      variables: {
-        poll: poll.id,
-        city: currentCity.id,
-        user: currentUser.id,
-        pool: data.pool,
-        data: result
-      }
-    })
-    if (userSettings.cityAgain) {
-      setOpenCityDialog(true)
-    }
+  const saveWorksheet = () => {
+
   }
 
   return (
     <Fragment>
-      <Prompt
-        when={results.pool.length}
-        message={() => {
-          return userBack
-            ? true
-            : "Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!"
-        }}
-      />
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}
@@ -236,14 +194,6 @@ const PollDrive = ({ pollId }) => {
       />
       <Loading />
       <Container maxWidth="md">
-        <DialogWithSelect
-          open={openCityDialog}
-          options={poolOfCities}
-          header="Город"
-          text="Выберите город в котором проводился опрос"
-          save={saveCity}
-          handleClose={closeDialog}
-        />
         <DriveLogicEx
           poll={poll}
           logics={logic}
@@ -258,4 +208,4 @@ const PollDrive = ({ pollId }) => {
   )
 }
 
-export default PollDrive
+export default ResultUpdate

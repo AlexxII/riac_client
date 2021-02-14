@@ -10,7 +10,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import { useTheme } from '@material-ui/core/styles';
 
-import QuestionCard from '../../components/QuestionCard'
+import QuestionCard from '../../../PollDrive/components/QuestionCard'
 
 const BatchUpdate = ({ data, selectPool, open, close }) => {
   const theme = useTheme();

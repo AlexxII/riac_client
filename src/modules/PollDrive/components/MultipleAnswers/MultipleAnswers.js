@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
+const MultipleAnswers = ({ data, limit, codesShow, multipleHandler }) => {
   const classes = useStyles();
   const [answers, setAnswers] = useState([])
   const [error, setError] = useState({
@@ -77,7 +77,7 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
         getOptionLabel={(option) => option.title}
         getOptionDisabled={(option) => option.disabled}
         renderOption={(option) => {
-          if (settings.codesShow) {
+          if (codesShow) {
             return <span><span style={{ fontSize: '10px' }}>{option.code}</span> - {option.title}</span>
           }
           return option.title
@@ -88,7 +88,7 @@ const MultipleAnswers = ({ data, limit, settings, multipleHandler }) => {
               {...getTagProps({ index })}
               variant="outlined"
               key={index}
-              label={settings.codesShow ?
+              label={codesShow ?
                 <span><span style={{ fontSize: '10px' }}>{option.code}</span> - {option.title}</span> :
                 <span>{option.title}</span>
               }

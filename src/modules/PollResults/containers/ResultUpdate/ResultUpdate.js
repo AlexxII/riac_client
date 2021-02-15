@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
-import DriveLogicEx from '../../../PollDrive/components/DriveLogicEx'
+import DriveLogicEx from '../../../PollDrive/components/DriveLogic'
 import Button from '@material-ui/core/Button';
 
 import LoadingStatus from '../../../../components/LoadingStatus'

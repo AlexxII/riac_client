@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import Container from '@material-ui/core/Container';
 import SettingBar from '../components/SettingBar'
 
-import ResultUpdate from '../modules/ResultUpdate'
+import ResultUpdate from '../modules/PollResults/containers/ResultUpdate'
 
 const UpdateResultsPage = () => {
   const { poll, respondent } = useParams();

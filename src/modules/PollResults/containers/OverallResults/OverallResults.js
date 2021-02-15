@@ -3,8 +3,6 @@ import React, { Fragment, useEffect, useState } from 'react'
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Box from '@material-ui/core/Box';
-import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
-import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
@@ -27,8 +25,7 @@ import { rusToLatin, prepareResultsDataToExport } from '../../lib/utils'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
-import BatchUpdate from '../../components/BatchUpdate'
-import SingleUpdate from '../../components/SingleUpdate'
+import ResultView from '../../containers/ResultView'
 import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
@@ -70,7 +67,6 @@ const OverallResults = ({ id }) => {
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                        // количество н.п. для выгрузки -> файлов
   const [batchOpen, setBatchOpen] = useState(false)
-  const [singleUpdate, setSingleUpdate] = useState(false)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
   const [logic, setLogic] = useState(false)
@@ -397,9 +393,6 @@ const OverallResults = ({ id }) => {
     element.click();
   }
 
-  const handleResultsBatchUpdate = () => {
-  }
-
   const deleteComplitely = () => {
     deleteResult({
       variables: {
@@ -416,8 +409,8 @@ const OverallResults = ({ id }) => {
   }
 
   const updateSingleResult = (respondent) => {
+    console.log(respondent);
     history.push(`/update-result/${id}/${respondent.id}`);
-    setSingleUpdate(respondent)
   }
 
   return (
@@ -432,17 +425,12 @@ const OverallResults = ({ id }) => {
         selectPool={selectPool}
         open={briefOpen}
         close={() => setBrifOpen(false)} />
-      <SingleUpdate
-        data={pollResults}
-        logic={logic}
-        respondent={singleUpdate}
-        open={singleUpdate}
-        close={() => setSingleUpdate(false)}
-        edit={true} />
-      <BatchUpdate
+      <ResultView
         data={pollResults}
         selectPool={selectPool}
         open={batchOpen}
+        logic={logic}
+        update={updateSingleResult}
         close={() => setBatchOpen(false)} />
       <SystemNoti
         open={noti}

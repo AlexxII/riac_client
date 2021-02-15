@@ -1,35 +1,28 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
-import DriveLogicEx from '../../modules/PollDrive/components/DriveLogicEx'
+import DriveLogicEx from '../../../PollDrive/components/DriveLogicEx'
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
 
-import LoadingStatus from '../../components/LoadingStatus'
-import ErrorState from '../../components/ErrorState'
-import LoadingState from '../../components/LoadingState'
-import SystemNoti from '../../components/SystemNoti'
+import LoadingStatus from '../../../../components/LoadingStatus'
+import ErrorState from '../../../../components/ErrorState'
+import LoadingState from '../../../../components/LoadingState'
+import SystemNoti from '../../../../components/SystemNoti'
 
-import SaveUpdateDialog from './components/SaveUpdateDialog'
+import SaveUpdateDialog from '../../components/SaveUpdateDialog'
 
 import { useHistory } from "react-router-dom";
-import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 
+import { GET_POLL_RESULTS } from "../OverallResults/queries"
 import { GET_POLL_DATA, GET_RESPONDENT_RESULT } from "./queries"
 
 import { UPDATE_RESULT } from './mutaions'
-import { parseIni, normalizeLogic } from '../../modules/PollDrive/lib/utils'
+import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
-
-const useStyles = makeStyles((theme) => ({
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
-  },
-}));
 
 const ResultUpdate = ({ pollId, respondentId }) => {
   const [noti, setNoti] = useState(false)
@@ -52,7 +45,6 @@ const ResultUpdate = ({ pollId, respondentId }) => {
   })
 
   const [poll, setPoll] = useState(null)
-  const [poolOfCities, setPoolOfCities] = useState(null)
   const [logic, setPollLogic] = useState(null)
   const [results, setResults] = useState(
     {
@@ -63,7 +55,6 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     variables: { id: pollId },
     onCompleted: (_, __) => {
       handleConfigFile(data.poll.logic.path)
-      setPoolOfCities(data.poll.cities)
     }
   })
 
@@ -74,14 +65,15 @@ const ResultUpdate = ({ pollId, respondentId }) => {
         text: 'Сохранить не удалось. Смотрите консоль.'
       })
     },
-    // refetchQueries: [{
-    //   query: GET_POLL_RESULTS,
-    //   variables: {
-    //     id: pollId
-    //   }
-    // }],
+    refetchQueries: [{
+      query: GET_POLL_RESULTS,
+      variables: {
+        id: pollId
+      }
+    }],
     onCompleted: () => {
       setUserBack(true)
+      history.goBack()
     }
   })
 
@@ -111,6 +103,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
 
   // подготовить ранее сохраненные результаты
   const prepareSavedData = (data) => {
+    console.log(data);
     const pool = data.result.map(result =>
       result.code
     )
@@ -145,24 +138,6 @@ const ResultUpdate = ({ pollId, respondentId }) => {
       ...dd
     })
   }
-
-  // const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
-  //   onError: (e) => {
-  //     setNoti({
-  //       type: 'error',
-  //       text: 'Сохранить не удалось. Смотрите консоль.'
-  //     })
-  //   },
-  //   refetchQueries: [{
-  //     query: GET_POLL_RESULTS,
-  //     variables: {
-  //       id: pollId
-  //     }
-  //   }]
-  // })
-  // if (respondentId) {
-  //   console.log(respondentId);
-  // }
 
   useEffect(() => {
     if (logic) {
@@ -203,7 +178,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     return null
   }
 
-  if (!poll || !poolOfCities || !logic || pollResultsLoading) return (
+  if (!poll || !logic || pollResultsLoading) return (
     <LoadingState />
   )
 

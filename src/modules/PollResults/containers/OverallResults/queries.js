@@ -66,6 +66,11 @@ query ($id: ID!) {
         }
         code
         text
+        question {
+          id
+          order
+          codesPool
+        }
       }
     }
     questions {

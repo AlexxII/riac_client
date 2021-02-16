@@ -16,7 +16,10 @@
 
 @import "./modules/Users/users.scss";
 
-html, body, #root, .App {
+html,
+body,
+#root,
+.App {
   height: unquote("-webkit-calc(100% - 64px)");
   // height: 100%;
 }

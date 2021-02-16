@@ -60,7 +60,8 @@ const OverallResults = ({ id }) => {
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты
-  const [doubleResults, setDoubleResults] = useState(null)
+  const [duplicateResults, setDuplicateResults] = useState(null)
+  const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
   const [activeFilters, setActiveFilters] = useState(null)
   const [calculating, setCalculating] = useState(true)
   const [selectPool, setSelectPool] = useState([])
@@ -113,7 +114,6 @@ const OverallResults = ({ id }) => {
       console.log(e);
     },
     update: (cache, { data }) => {
-
       const deletedPool = data.deleteResults.map(del => del.id)
       setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
       cache.modify({
@@ -142,7 +142,6 @@ const OverallResults = ({ id }) => {
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {
-
           const results = activeWorksheets.map(worksheet => (
             {
               id: worksheet.id,
@@ -191,9 +190,9 @@ const OverallResults = ({ id }) => {
                 item.second
               ]
             }, [])
-            setDoubleResults(ttt)
+            setDuplicateResults(ttt)
           } else {
-            setDoubleResults(null)
+            setDuplicateResults(null)
           }
           setCalculating(false)
 
@@ -376,6 +375,17 @@ const OverallResults = ({ id }) => {
     return data
   }
 
+  const showOnlyDuplicates = () => {
+    const needData = activeWorksheets.filter(respondent => duplicateResults.includes(respondent.id))
+    setActiveWorksheets(needData)
+    setDuplicateAnalyze(true)
+  }
+
+  const closeDuplicateAnalyzeMode = () => {
+    setDuplicateAnalyze(false)
+    setActiveWorksheets(pollResults.poll.results)
+  }
+
   const exportAllRawData = () => {
     const resultsPool = activeWorksheets
       .filter(result => selectPool.includes(result.id))
@@ -531,19 +541,26 @@ const OverallResults = ({ id }) => {
           </Box>
           <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
             <Box m={1}>
-              {!calculating ?
-                <Badge badgeContent={doubleResults ? `${doubleResults.length}` : null} color="secondary" anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                  max={999}>
-                  <Button
-                    style={{ marginBottom: '0px', padding: '4px 8px 0px 8px' }}
-                    color="secondary" disabled={!doubleResults}>{doubleResults ? "есть дубли" : ''}</Button>
-                </Badge>
+              {duplicateAnalyzeMode ?
+                <Button
+                  style={{ marginBottom: '0px', padding: '4px 8px 0px 8px' }}
+                  onClick={closeDuplicateAnalyzeMode}
+                  color="secondary" disabled={!duplicateResults}>{duplicateResults ? "закрыть" : ''}</Button>
                 :
-                <Typography variant="button" display="block" gutterBottom id="blink-text">
-                  Анализ дублей
+                !calculating ?
+                  <Badge badgeContent={duplicateResults ? `${duplicateResults.length}` : null} color="secondary" anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                    max={999}>
+                    <Button
+                      style={{ marginBottom: '0px', padding: '4px 8px 0px 8px' }}
+                      onClick={showOnlyDuplicates}
+                      color="secondary" disabled={!duplicateResults}>{duplicateResults ? "есть дубли" : ''}</Button>
+                  </Badge>
+                  :
+                  <Typography variant="button" display="block" gutterBottom id="blink-text">
+                    Анализ дублей
                 </Typography>
               }
             </Box>
@@ -558,7 +575,7 @@ const OverallResults = ({ id }) => {
           updateSingle={updateSingleResult}
         />
       </div>
-    </Fragment>
+    </Fragment >
   )
 }
 

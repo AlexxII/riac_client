@@ -17,6 +17,7 @@ export const GET_ALL_ACTIVE_POLLS = gql`
       questionsCount
       answersCount
       active
+      resultsCount
       cities {
         id
         title

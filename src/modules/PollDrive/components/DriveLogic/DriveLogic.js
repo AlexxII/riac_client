@@ -273,9 +273,7 @@ const DriveLogicEx = (props) => {
         return
       }
     }
-
     const newResults = storeSelectedResult(selectedAnswer)
-
     if (selectedAnswer.freeAnswer) {
       setQuestion(prevState => ({
         ...prevState,
@@ -285,7 +283,6 @@ const DriveLogicEx = (props) => {
       }))
       return
     }
-
     // проверка на активность ответа и ограничение по количеству ответов
     if (newResults[question.id].data.length >= question.limit) {
       setQuestion(prevState => ({
@@ -422,9 +419,7 @@ const DriveLogicEx = (props) => {
 
   // функция сохранения выбранного ответа
   const storeSelectedResult = (selectedAnswer, newResults) => {
-
     const freshResults = newResults ? newResults : results
-
     const result = {
       answerCode: selectedAnswer.code,
       answerId: selectedAnswer.id,

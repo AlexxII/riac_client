@@ -43,13 +43,6 @@ const QuestionCard = ({ question, handleLimitInput }) => {
               </Tooltip>
             </Grid>
           </Grid>
-          <Grid item xs container direction="column" spacing={3} alignItems="flex-end" >
-            <Grid item xs alignItems="center" style={{ cursor: 'pointer' }}>
-              <Tooltip title="Меню. В разработке" aria-label="add">
-                <MoreVertIcon />
-              </Tooltip>
-            </Grid>
-          </Grid>
           <Grid item>
             <Tooltip title="Лимит ответов" aria-label="add">
               <input

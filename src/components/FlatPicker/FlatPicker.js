@@ -14,7 +14,12 @@ const FlatPicker = ({ options, handleDataChange }) => {
   const [calendar, setCalendar] = useState(false)
 
   const onChange = (_, value) => {
-    handleDataChange(value)
+    if (value !== '') {
+      const dateArray = value.split(',').map(date => date.trim())
+      handleDataChange(dateArray)
+    } else {
+      handleDataChange(value)
+    }
   }
 
   useEffect(() => {
@@ -28,7 +33,7 @@ const FlatPicker = ({ options, handleDataChange }) => {
 
   const clearDates = () => {
     calendar.clear()
-    handleDataChange(null)
+    handleDataChange([])
   }
 
   return (

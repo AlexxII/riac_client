@@ -224,7 +224,7 @@ const OverallResults = ({ id }) => {
       }).filter(result => {
         return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
       }).filter(result => {
-        return activeFilters.date ? result.lastModified ? activeFilters.date === result.lastModified : true : true
+        return activeFilters.date.length ? result.lastModified ? activeFilters.date.includes(result.lastModified) : true : true
       })
       const newSelectPool = selectPool.filter(
         selectId => {
@@ -278,6 +278,21 @@ const OverallResults = ({ id }) => {
     }
   }
 
+  const cityCategoryName = (city) => {
+    const cityObj = {
+      'город': 'г',
+      'населенный пункт': 'нп',
+      'поселок': 'нп',
+      'ж.д. станция': 'ж/д ст',
+      'село': 'c'
+    }
+    const needCityCategory = city.replace(/город|населенный пункт|поселок|ж.д. станция|село/gi, function (matched) {
+      return cityObj[matched]
+    })
+    console.log(needCityCategory);
+    return needCityCategory
+  }
+
   const exportDataCityGrouped = (singleFile) => {
     const needData = pollResults.poll.results.filter(respondent => selectPool.includes(respondent.id))
       .slice()
@@ -290,16 +305,16 @@ const OverallResults = ({ id }) => {
       [item.city ? item.city.title : null]: [...(groups[item.city ? item.city.title : null] || []), item]
     }), {});
     const exportData = {}
-    const dateRegExp = /(\d{2}).(\d{2}).(\d{2})(\d{2})/gmi                        // регулярка для даты
+    const dateRegExp = /(\d{2}).(\d{2}).(\d{2})(\d{2})/gmi                                          // регулярка для даты
     for (let city in groupedObj) {
       const cityData = groupedObj[city]
       const results = cityData.map(obj => obj.result)
-      const intervs = cityData.map(obj => obj.user.username)                      // все интервьюеры
-      const dietIntervs = [...new Set(intervs)]                                   // остаются только уникальные
+      const intervs = cityData.map(obj => obj.user.username)                                        // все интервьюеры
+      const dietIntervs = [...new Set(intervs)]                                                     // остаются только уникальные
       exportData[city] = {
         data: prepareResultsDataToExport(results),
-        date: cityData[0].created.replace(dateRegExp, `$1$2$4`),                  // дата в шапку
-        city: cityData[0].city ? cityData[0].city.type + " " + city : '-',        // город
+        date: cityData[0].created.replace(dateRegExp, `$1$2$4`),                                    // дата в шапку
+        city: cityData[0].city ? cityCategoryName(cityData[0].city.type + " " + city) : '-',        // город
         interviewer: `${dietIntervs}`
       }
     }

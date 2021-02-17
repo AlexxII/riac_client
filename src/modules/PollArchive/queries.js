@@ -16,6 +16,7 @@ export const GET_ARCHIVE_POLLS = gql`
       complete
       questionsCount
       answersCount
+      resultsCount
       active
       cities {
         id

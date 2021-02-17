@@ -13,6 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
+import Badge from '@material-ui/core/Badge';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { NavLink } from 'react-router-dom'
@@ -122,7 +123,13 @@ const PollCard = ({ data }) => {
         </CardContent>
         <CardActions disableSpacing className="poll-card-bottom-space">
           <Grid container item xs={12}>
-            <Results />
+            <Badge badgeContent={data.resultsCount ? data.resultsCount : null} color="primary" anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+              max={999}>
+              <Results />
+            </Badge>
           </Grid>
           <Grid container item xs={12} justify="flex-end">
             {data.active ?

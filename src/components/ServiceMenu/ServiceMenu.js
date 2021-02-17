@@ -12,7 +12,6 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import Typography from '@material-ui/core/Typography';
 import GroupIcon from '@material-ui/icons/Group';
 import PieChartIcon from '@material-ui/icons/PieChart';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 import { NavLink } from 'react-router-dom'
 
@@ -38,12 +37,6 @@ export default function ServiceMenu({ open, close }) {
         <Typography variant="overline" style={{ fontSize: '10px' }}>
           подсистема опросов
         </Typography>
-        <NavLink to='sdp-check'>
-          <ListItem button key={1}>
-            <ListItemIcon><FindInPageIcon /></ListItemIcon>
-            <ListItemText primary="Проверка СДП" />
-          </ListItem>
-        </NavLink>
         <NavLink to='analyze'>
           <ListItem button key={1}>
             <ListItemIcon><PieChartIcon /></ListItemIcon>

@@ -3,13 +3,12 @@ import React, { Fragment, useState } from 'react'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import InputAdornment from "@material-ui/core/InputAdornment";
-import ClearIcon from '@material-ui/icons/Clear';
-import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
+
+import FlatPicker from '../../../../components/FlatPicker'
 
 const Filters = ({ filters, cities, setActiveFilters }) => {
   const [avaiableFilters] = useState({
@@ -39,22 +38,10 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
   const [updated, setUpdated] = useState(false)
 
   // ФИЛЬТРЫ
-  const handleDataChange = (e) => {
-    const RegExp = /(\d{4})-(\d{2})-(\d{2})/
-    const date = e.target.value
+  const handleDataChange = (dates) => {
     setNewFilters(prevState => ({
       ...prevState,
-      date: e.target.value.replace(RegExp, '$3.$2.$1'),
-      shownDate: date
-    }))
-    setUpdated(true)
-  }
-
-  const cleareDate = () => {
-    setNewFilters(prevState => ({
-      ...prevState,
-      date: null,
-      shownDate: null
+      date: dates
     }))
     setUpdated(true)
   }
@@ -116,29 +103,11 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
     <Fragment>
       <Grid container justify="flex-start" alignItems="center" spacing={2}>
         <Grid item xs={12} sm={6} md={3} lg={3}>
-          <TextField
-            style={{ width: '100%' }}
-            id="date"
-            type="date"
-            variant="outlined"
-            value={newFilter ? newFilter.shownDate ? newFilter.shownDate : '' : ''}
-            onChange={handleDataChange}
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  {true ?
-                    <Tooltip title="Очистить">
-                      <ClearIcon style={{ cursor: "pointer" }}
-                        onClick={cleareDate}
-                      />
-                    </Tooltip>
-                    :
-                    ""
-                  }
-                </InputAdornment>
-              )
-            }}
+          <FlatPicker options={{
+            mode: "multiple",
+            dateFormat: "d.m.Y",
+          }}
+            handleDataChange={handleDataChange}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -250,6 +219,7 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             )}
           />
         </Grid> */}
+
         <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
           <Button
             variant="contained"

@@ -89,6 +89,7 @@ const PollDrive = ({ pollId }) => {
         // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
         const normLogic = normalizeLogic(logic)
         setPollLogic(normLogic)
+        console.log(logic.difficult);
       })
   }
   const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {

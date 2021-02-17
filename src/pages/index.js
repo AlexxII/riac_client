@@ -12,5 +12,3 @@ export { default as UsersPage } from './UsersPage'
 export { default as UserProfilePage } from './UserProfilePage'
 export { default as NotFoundPage } from './NotFoundPage'
 export { default as UpdateResultsPage } from './UpdateResultsPage'
-
-export { default as SdpCheckPage } from './SdpCheckPage'

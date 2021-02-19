@@ -22,7 +22,7 @@ import {
   SAVE_NEW_CATEGORY, DELETE_CATEGORY, UPDATE_CATEGORY
 } from './mutations'
 
-const CityCategory = () => {
+const AgeCategory = () => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
   const [delId, setDelId] = useState(false)
@@ -45,7 +45,7 @@ const CityCategory = () => {
     update: (cache, { data: { changeAgeCategoryStatus } }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: ageCategories.ageCategories.map(category => category.id === changeAgeCategoryStatus.id ? changeAgeCategoryStatus : category)
+        ageCategories: ageCategories.ageCategoriesAll.map(category => category.id === changeAgeCategoryStatus.id ? changeAgeCategoryStatus : category)
       }
     })
   })
@@ -62,7 +62,7 @@ const CityCategory = () => {
       query: GET_AGE_CATEGORIES,
       data: {
         ageCategories: [
-          ...ageCategories.ageCategories,
+          ...ageCategories.ageCategoriesAll,
           saveNewAgeCategory
         ]
       }
@@ -80,7 +80,7 @@ const CityCategory = () => {
     update: (cache, { data: { updateAgeCategory } }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: ageCategories.ageCategories.map(category => category.id === updateAgeCategory.id ? updateAgeCategory : category)
+        ageCategories: ageCategories.ageCategoriesAll.map(category => category.id === updateAgeCategory.id ? updateAgeCategory : category)
       }
     })
   })
@@ -96,7 +96,7 @@ const CityCategory = () => {
     update: (cache, { data: { deleteAgeCategory } }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: ageCategories.ageCategories.filter(city => city.id === deleteAgeCategory.id ? false : true)
+        ageCategories: ageCategories.ageCategoriesAll.filter(city => city.id === deleteAgeCategory.id ? false : true)
       }
     })
   })
@@ -228,7 +228,7 @@ const CityCategory = () => {
       />
       <Grid container spacing={3} xs={12}>
         <SortableEditList
-          data={ageCategories.ageCategories}
+          data={ageCategories.ageCategoriesAll}
           handleChangeActive={changeActive}
           handleCategoryDelete={deleteCategory}
           handleNewSave={handleCategorySave}
@@ -240,4 +240,4 @@ const CityCategory = () => {
   )
 }
 
-export default CityCategory
+export default AgeCategory

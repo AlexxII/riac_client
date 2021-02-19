@@ -224,7 +224,13 @@ const OverallResults = ({ id }) => {
       }).filter(result => {
         return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
       }).filter(result => {
-        return activeFilters.date.length ? result.lastModified ? activeFilters.date.includes(result.lastModified) : true : true
+        return activeFilters.date ?
+          activeFilters.date.length
+            ? result.lastModified
+              ? activeFilters.date.includes(result.lastModified)
+              : true
+            : true
+          : true
       })
       const newSelectPool = selectPool.filter(
         selectId => {

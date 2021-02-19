@@ -8,6 +8,7 @@ import ConfigEditor from './containers/ConfigEditor'
 import DeletePoll from './containers/DeletePoll';
 import CititesEditor from './containers/CitiesEditor';
 import ReoderEditor from './containers/ReoderEditor';
+import DataFilters from './containers/DataFilters'
 
 const PollSettings = ({ id, code }) => {
   const data = [
@@ -26,6 +27,10 @@ const PollSettings = ({ id, code }) => {
     {
       label: 'Конфиг',
       component: <ConfigEditor id={id} />
+    },
+    {
+      label: 'Фильтры',
+      component: <DataFilters id={id} />
     },
     {
       label: 'Города',

@@ -10,7 +10,6 @@ import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
-
 import SortableEditList from '../../components/SortableEditList'
 
 import { useQuery } from '@apollo/client'
@@ -45,7 +44,7 @@ const CityCategory = () => {
     update: (cache, { data: { changeCityCategoryStatus } }) => cache.writeQuery({
       query: GET_CITIES_CATEGORIES,
       data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === changeCityCategoryStatus.id ? changeCityCategoryStatus : category)
+        cityCategoriesAll: citiesCategories.cityCategoriesAll.map(category => category.id === changeCityCategoryStatus.id ? changeCityCategoryStatus : category),
       }
     })
   })
@@ -61,8 +60,8 @@ const CityCategory = () => {
     update: (cache, { data: { saveNewCityCategory } }) => cache.writeQuery({
       query: GET_CITIES_CATEGORIES,
       data: {
-        cityCategories: [
-          ...citiesCategories.cityCategories,
+        cityCategoriesAll: [
+          ...citiesCategories.cityCategoriesAll,
           saveNewCityCategory
         ]
       }
@@ -80,7 +79,7 @@ const CityCategory = () => {
     update: (cache, { data: { updateCityCategory } }) => cache.writeQuery({
       query: GET_CITIES_CATEGORIES,
       data: {
-        cityCategories: citiesCategories.cityCategories.map(category => category.id === updateCityCategory.id ? updateCityCategory : category)
+        cityCategoriesAll: citiesCategories.cityCategoriesAll.map(category => category.id === updateCityCategory.id ? updateCityCategory : category),
       }
     })
   })
@@ -96,7 +95,7 @@ const CityCategory = () => {
     update: (cache, { data: { deleteCityCategory } }) => cache.writeQuery({
       query: GET_CITIES_CATEGORIES,
       data: {
-        cityCategories: citiesCategories.cityCategories.filter(city => city.id === deleteCityCategory.id ? false : true)
+        cityCategoriesAll: citiesCategories.cityCategoriesAll.filter(city => city.id === deleteCityCategory.id ? false : true),
       }
     })
   })
@@ -112,7 +111,7 @@ const CityCategory = () => {
     update: (cache, { data: { saveCityCategoryOrder } }) => cache.writeQuery({
       query: GET_CITIES_CATEGORIES,
       data: {
-        cityCategories: newOrder
+        cityCategoriesAll: newOrder
       }
     })
   })
@@ -207,7 +206,7 @@ const CityCategory = () => {
       <Divider />
       <div className="info-zone">
         <Typography variant="body2" gutterBottom>
-          Внимание! Необдуманная манипуляция этими данными приведет к потере части статистики. Изменяйте их в случае крайней необходимости. 
+          Внимание! Необдуманная манипуляция этими данными приведет к потере части статистики. Изменяйте их в случае крайней необходимости.
           Если необходимо изменить категории, лучше отредактируйте существующие. При необходимости, добавьте недостающие.
         </Typography>
       </div>
@@ -228,7 +227,7 @@ const CityCategory = () => {
       />
       <Grid container spacing={3} xs={12}>
         <SortableEditList
-          data={citiesCategories.cityCategories}
+          data={citiesCategories.cityCategoriesAll}
           handleChangeActive={changeActive}
           handleCategoryDelete={deleteCategory}
           handleNewSave={handleCategorySave}

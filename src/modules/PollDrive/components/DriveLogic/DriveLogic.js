@@ -342,14 +342,14 @@ const DriveLogicEx = (props) => {
   }
 
   const checkRespondentFinish = (newResults) => {
-    let count = 0
+    let resCount = 0
     for (let key in newResults) {
       if (key !== 'pool') {
-        count++
+        resCount++
       }
     }
     // проверка - если не дошли до конца анкета, нет смысла анализировать концовку
-    if (count < poll.questions.length) {
+    if (resCount < poll.questions.length) {
       return false
     }
     for (let key in newResults) {
@@ -571,7 +571,7 @@ const DriveLogicEx = (props) => {
         newResultState.pool.push(selectedAnswer.code)
       }
       setResults(newResultState)
-
+      checkRespondentFinish(newResultState)
       // проверить на уникальность (ВНЕШНЯЯ ЛОГИКА - уникальность) -> запретить другие ответы
       if (logic.unique.includes(selectedAnswer.code)) {
         setQuestion(prevState => ({

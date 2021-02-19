@@ -261,7 +261,6 @@ const PollDrive = ({ pollId }) => {
         }}
       />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
-
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}

@@ -6,28 +6,27 @@ import Divider from '@material-ui/core/Divider';
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import arrayMove from "array-move";
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
-import QuestionCard from '../../components/QuestionCard'
-import { pollQuery } from "./queries"
+import ComplianceSheet from '../../../../components/ComplianceSheet'
+
+import { GET_POLL_AND_ALL_FILTERS } from "./queries"
 import { saveNewLimit, saveNewOrder } from "./mutations"
 
 const ReoderEditor = ({ id }) => {
   const [noti, setNoti] = useState(false)
-  const [questions, setQuestions] = useState(null)
-  const [prevOrder, setPrevOrder] = useState(null)
-  const { loading: pollLoading, error: pollError, data } = useQuery(pollQuery, {
+  const [filters, setFilters] = useState(false)
+
+  const { loading: pollFiltersLoading, error: pollFiltersError, data: pollFilters } = useQuery(GET_POLL_AND_ALL_FILTERS, {
     variables: { id },
     onCompleted: () => {
-      const questions = data.poll.questions
-      setQuestions(questions.slice().sort((a, b) => (a.order > b.order) ? 1 : -1))
+      console.log(pollFilters);
     }
   })
+
   const [saveLimit, { loading: limitSaveLoading }] = useMutation(saveNewLimit, {
     onError: (e) => {
       console.log(e);
@@ -37,6 +36,7 @@ const ReoderEditor = ({ id }) => {
       })
     }
   })
+
   const [saveOrder, { loading: saveOrderLoading }] = useMutation(saveNewOrder, {
     onError: (e) => {
       console.log(e);
@@ -57,12 +57,12 @@ const ReoderEditor = ({ id }) => {
     }
   })
 
-  if (pollLoading || !questions) return (
+  if (pollFiltersLoading || !filters) return (
     <LoadingState type="card" />
   )
 
-  if (pollError) {
-    console.log(JSON.stringify(pollError));
+  if (pollFiltersError) {
+    console.log(JSON.stringify(pollFiltersError));
     return (
       <ErrorState
         title="Что-то пошло не так"
@@ -75,58 +75,6 @@ const ReoderEditor = ({ id }) => {
     if (limitSaveLoading || saveOrderLoading) return <LoadingStatus />
     return null
   }
-
-  const handleLimitInput = (inputData) => {
-    const id = inputData.id
-    const limit = +inputData.limit
-    setQuestions(questions.map(question => question.id === id ? { ...question, limit: limit } : question))
-    saveLimit({
-      variables: {
-        id,
-        limit
-      }
-    })
-  }
-
-  const onSortEnd = ({ oldIndex, newIndex }) => {
-    setPrevOrder({ ...questions })
-    if (oldIndex !== newIndex) {
-      const newArray = arrayMove(questions, oldIndex, newIndex)
-      let deltaArray = []
-      const newOrder = newArray.reduce((acum, val, index) => {
-        if (val.order === index + 1) {
-          acum.push(val)
-        } else {
-          deltaArray.push({
-            id: val.id,
-            order: index + 1
-          })
-          acum.push({ ...val, order: index + 1 })
-        }
-        return acum
-      }, [])
-      setQuestions(newOrder)
-      saveOrder({
-        variables: {
-          questions: deltaArray
-        }
-      })
-    }
-  };
-
-  const SortableItem = SortableElement(({ question }) =>
-    <QuestionCard question={question} handleLimitInput={handleLimitInput} />
-  );
-
-  const SortableList = SortableContainer(({ questions }) => {
-    return (
-      <Grid container item xs={12} spacing={2}>
-        {questions.map((question, index) => (
-          <SortableItem key={`item-${question.id}`} index={index} question={question} />
-        ))}
-      </Grid>
-    );
-  });
 
   return (
     <Fragment>
@@ -148,9 +96,21 @@ const ReoderEditor = ({ id }) => {
       </div>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Возраст</Typography>
+        <Grid container xs={12}>
+          <ComplianceSheet />
+        </Grid>
       </Grid>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Пол</Typography>
+        <Grid container xs={12}>
+          <ComplianceSheet />
+        </Grid>
+      </Grid>
+      <Grid container xs={12}>
+        <Typography variant="h6" gutterBottom className="header">Пользовательские</Typography>
+        <Grid container xs={12}>
+          <ComplianceSheet />
+        </Grid>
       </Grid>
     </Fragment>
   )

@@ -7,7 +7,7 @@ export const GET_FILTER_SELECTS = gql`
       username
     }
     sex {
-      value
+      id
       title
     }
     ageCategories {

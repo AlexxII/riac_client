@@ -21,3 +21,35 @@ export const pollQuery = gql`
     }
   }
 `
+export const GET_POLL_AND_ALL_FILTERS = gql`
+  query getFilterQuery($id: ID!) {
+    poll(id: $id) {
+      filters {
+        sex {
+          id
+        }
+        age {
+          id
+        }
+        custom {
+          id
+        }
+      }
+    }
+    ageCategories {
+      id
+      title
+      order
+    }
+    sex {
+      id
+      title
+      order
+    }
+    customFilters {
+      id
+      title
+      order
+    }
+  }
+`

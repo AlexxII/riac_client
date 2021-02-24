@@ -4,6 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import arrayMove from "array-move";
 
 import LoadingStatus from '../../../../components/LoadingStatus'
@@ -134,6 +136,15 @@ const ReoderEditor = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
+      <div className="category-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Порядок отображения</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Порядок отображения вопросов в анкете. Может задаваться оператором путем перетаскивания элементов.
+        </Typography>
+      </div>
       <SortableList
         questions={questions}
         onSortEnd={onSortEnd}

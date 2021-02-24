@@ -24,3 +24,8 @@ textarea {
 .save-config {
   cursor: pointer;
 }
+#config-text {
+  width: 100%;
+  height: inherit;
+  margin-top: 10px;
+}

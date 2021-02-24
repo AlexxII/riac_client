@@ -1,10 +1,11 @@
 import React, { Fragment, useState } from 'react'
 
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import ErrorState from '../../../../components/ErrorState'
@@ -87,6 +88,15 @@ const CommonEx = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
+      <div className="category-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Общая информация</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Обшая информация об опросе.
+        </Typography>
+      </div>
       <Grid container className="common-settings">
         <Typography variant="h6" gutterBottom>
           <strong>Тема: </strong>{pollData.poll.title}
@@ -106,7 +116,7 @@ const CommonEx = ({ id }) => {
           </Box>
         </Grid>
         <FormControlLabel
-          style={{marginLeft: '0px'}}
+          style={{ marginLeft: '0px' }}
           label="Активный"
           size="small"
           labelPlacement="start"

@@ -33,23 +33,23 @@ export default function CheckboxList({ data }) {
 
   return (
     <List className={classes.root}>
-      {[0, 1, 2, 3].map((value) => {
+      {data.map((value) => {
         const labelId = `checkbox-list-label-${value}`;
 
         return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+          <ListItem key={value.id} role={undefined} dense button onClick={handleToggle(value.id)}>
             <ListItemIcon>
               <Checkbox
                 edge="start"
-                checked={checked.indexOf(value) !== -1}
+                checked={checked.indexOf(value.id) !== -1}
                 tabIndex={-1}
                 disableRipple
                 inputProps={{ 'aria-labelledby': labelId }}
               />
             </ListItemIcon>
-            <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+            <ListItemText id={labelId} primary={`${value.title}`} />
             <ListItemSecondaryAction>
-              <TextField label="Код опроса" />
+              <TextField label="Код опроса" defaultValue={value.code ? value.code : null} />
             </ListItemSecondaryAction>
           </ListItem>
         );

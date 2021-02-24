@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+  import React, { Fragment, useState } from 'react'
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -24,6 +24,11 @@ const ReoderEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       console.log(pollFilters);
+      // const savedFilters = pollFilters.poll.filters
+      setFilters({
+        age: pollFilters.ageCategories,
+        sex: pollFilters.sex,
+        custom: pollFilters.customFilters})
     }
   })
 
@@ -91,25 +96,25 @@ const ReoderEditor = ({ id }) => {
       <Divider />
       <div className="info-zone">
         <Typography variant="body2" gutterBottom>
-          Для фильтрации резуьтатов опросов соотнесите установленные фильтры с кодами опроса.
+          Для фильтрации результатов опросов соотнесите установленные фильтры с кодами опроса.
         </Typography>
       </div>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Возраст</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet />
+          <ComplianceSheet data={filters.age}/>
         </Grid>
       </Grid>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Пол</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet />
+          <ComplianceSheet data={filters.sex}/>
         </Grid>
       </Grid>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Пользовательские</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet />
+          <ComplianceSheet data={filters.custom} />
         </Grid>
       </Grid>
     </Fragment>

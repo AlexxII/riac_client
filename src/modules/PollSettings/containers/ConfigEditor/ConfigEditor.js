@@ -4,6 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import SaveIcon from '@material-ui/icons/Save';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
 import { Box, Typography } from '@material-ui/core';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
@@ -110,27 +112,33 @@ const ConfigEditor = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
-
+      <div className="category-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Конфигурация</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Отображение и настройка конфигурационного файла опроса. Настройки задаются автоматически при импорте, могут быть исправлены и дополнены.
+        </Typography>
+      </div>
       <Grid item container>
-        <Grid item container justify="space-between">
-          <Box p={1}>
-            <Typography variant="subtitle1" gutterBottom>
-              Отображение и настройка конфигурационного файла
-            </Typography>
-          </Box>
-          <Box>
-            <Tooltip title="Сохранить">
-              <IconButton onClick={handleSave} disabled={!updated}>
-                <SaveIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          disabled={!updated}
+        >
+          Сохранить
+          </Button>
+        <div id="config-text">
           <textarea
             ref={textRef}
             defaultValue={config}
             onChange={handleConfigChange}
           />
-        </Grid>
+        </div>
       </Grid>
     </Fragment>
   )

@@ -8,6 +8,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Divider from '@material-ui/core/Divider';
 
 import { useHistory } from "react-router-dom";
 import { useMutation } from '@apollo/react-hooks'
@@ -64,7 +65,7 @@ const DeletePoll = ({ id, code }) => {
           <DialogContentText>
             <Typography variant="subtitle1" gutterBottom>
               Это действие не может быть отменено.
-              Оно приведет к безвозвратному удалению ВСЕХ данных опроса.
+              Оно приведет к безвозвратному удалению ВСЕХ данных по этому опросу.
             </Typography>
             <Typography variant="button" display="block" gutterBottom>
               Пожалуйста, введите КОД опроса.
@@ -88,15 +89,20 @@ const DeletePoll = ({ id, code }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Typography variant="button" display="block" gutterBottom>
-        удаление опроса
+      <div style={{textAlign: 'left'}}>
+        <div className="category-service-zone">
+          <Typography variant="h5" gutterBottom className="header">Удаление опроса</Typography>
+        </div>
+        <Divider />
+        <div className="info-zone">
+          <Typography variant="body2" gutterBottom>
+            Удаление всех данных. После удаления ОПРОСА пути назад уже не будет. Пожалуйста, будьте внимательны.
         </Typography>
-      <Typography variant="caption" display="block" gutterBottom>
-        После удаления ОПРОСА пути назад уже не будет. Пожалуйста, будьте внимательны.
-          </Typography>
-      <Button variant="contained" color="secondary" onClick={deleteQuery}>
-        Удалить опрос
-          </Button>
+        </div>
+        <Button variant="contained" color="secondary" onClick={deleteQuery}>
+          Удалить опрос
+      </Button>
+      </div>
     </Fragment>
   )
 }

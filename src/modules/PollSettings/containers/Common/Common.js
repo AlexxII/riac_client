@@ -11,6 +11,7 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import EditIcon from '@material-ui/icons/Edit';
 import FlashOnIcon from '@material-ui/icons/FlashOn';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
@@ -253,6 +254,15 @@ const CommonSetting = ({ id }) => {
 
   return (
     <Fragment>
+      <div className="category-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Перечень вопросов</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Общий перечень вопросов и ответов в анкете опроса. Имеется информация о типах вопросов и ответах.
+        </Typography>
+      </div>
       <Grid container className="common-settings">
         <Typography variant="h6" gutterBottom>
           <strong>Тема: </strong>{pollData.poll.title}

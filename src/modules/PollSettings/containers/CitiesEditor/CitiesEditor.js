@@ -11,6 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import Divider from '@material-ui/core/Divider';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import ErrorState from '../../../../components/ErrorState'
@@ -212,8 +213,17 @@ const CitiesEditor = ({ id }) => {
           }
         }
       />
+      <div className="category-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Населенные пункты</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Населенные пункты в которых проводится опрос.
+        </Typography>
+      </div>
+
       <div className="cities-service-zone">
-        <Typography className="header">Города в которых проводится опрос</Typography>
         <Grid container justify="flex-start" alignItems="center" spacing={2}>
           <Grid item xs={12} sm={8} md={6} lg={5}>
             <Autocomplete

@@ -2,11 +2,9 @@ import React, { Fragment, useState, useRef } from 'react'
 
 import Grid from '@material-ui/core/Grid';
 import SaveIcon from '@material-ui/icons/Save';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import { Box, Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import ErrorState from '../../../../components/ErrorState'

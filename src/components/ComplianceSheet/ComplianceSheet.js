@@ -22,6 +22,7 @@ export default function CheckboxList({ data }) {
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
+    console.log(currentIndex);
     const newChecked = [...checked];
     if (currentIndex === -1) {
       newChecked.push(value);

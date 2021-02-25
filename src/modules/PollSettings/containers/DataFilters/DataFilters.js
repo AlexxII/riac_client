@@ -1,4 +1,4 @@
-  import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState } from 'react'
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -24,13 +24,20 @@ const ReoderEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       console.log(pollFilters);
-      // const savedFilters = pollFilters.poll.filters
+      const preparedFilters = prepareFilters(pollFilters)
       setFilters({
-        age: pollFilters.ageCategories,
-        sex: pollFilters.sex,
-        custom: pollFilters.customFilters})
+        age: preparedFilters.ageCategories,
+        sex: preparedFilters.sex,
+        custom: preparedFilters.customFilters
+      })
     }
   })
+
+  // проверяем какие фильтры уже сохранены с опросом
+  const prepareFilters = (result) => {
+    const pollFilters = result.poll
+    return result
+  }
 
   const [saveLimit, { loading: limitSaveLoading }] = useMutation(saveNewLimit, {
     onError: (e) => {
@@ -102,13 +109,13 @@ const ReoderEditor = ({ id }) => {
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Возраст</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet data={filters.age}/>
+          <ComplianceSheet data={filters.age} />
         </Grid>
       </Grid>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Пол</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet data={filters.sex}/>
+          <ComplianceSheet data={filters.sex} />
         </Grid>
       </Grid>
       <Grid container xs={12}>

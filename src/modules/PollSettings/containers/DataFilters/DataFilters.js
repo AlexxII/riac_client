@@ -23,7 +23,6 @@ const ReoderEditor = ({ id }) => {
   const { loading: pollFiltersLoading, error: pollFiltersError, data: pollFilters } = useQuery(GET_POLL_AND_ALL_FILTERS, {
     variables: { id },
     onCompleted: () => {
-      console.log(pollFilters);
       const preparedFilters = prepareFilters(pollFilters)
       setFilters({
         age: preparedFilters.ageCategories,
@@ -35,7 +34,19 @@ const ReoderEditor = ({ id }) => {
 
   // проверяем какие фильтры уже сохранены с опросом
   const prepareFilters = (result) => {
-    const pollFilters = result.poll
+    const pollFilters = result.poll.filters
+
+    // вытащить массив id фильтров, которые вкючены в настройка приложения
+    const sexDef = result.sex.map(obj => obj.id)
+    const ageDef = result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
+    const customDef = result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
+
+    // вытащить все фильтры, которые определены в настройках опроса
+    const age = pollFilters.age ? pollFilters.age.filter(obj => ageDef.includes(obj.id)) : []
+    const sex = pollFilters.sex ? pollFilters.sex.filter(obj => sexDef.includes(obj.id)) : []
+    const custom = pollFilters.custom ? pollFilters.custom.filter(obj => customDef.includes(obj.id)) : []
+
+    console.log(result);
     return result
   }
 

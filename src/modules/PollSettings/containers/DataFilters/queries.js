@@ -26,13 +26,16 @@ export const GET_POLL_AND_ALL_FILTERS = gql`
     poll(id: $id) {
       filters {
         sex {
-          id
+          id,
+          code
         }
         age {
-          id
+          id,
+          code
         }
         custom {
-          id
+          id,
+          code
         }
       }
     }

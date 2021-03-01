@@ -7,6 +7,8 @@ import Grid from '@material-ui/core/Grid';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
+import Typography from "@material-ui/core/Typography";
+import Chip from '@material-ui/core/Chip';
 
 import FlatPicker from '../../../../components/FlatPicker'
 
@@ -121,6 +123,19 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
+            renderTags={selected => {
+              if (selected.length > 1) {
+                return (
+                  <Fragment>
+                    <Chip size="small" label={selected[0].title} />{' +' + (selected.length - 1)}
+                  </Fragment>
+                )
+              } else {
+                return (
+                  <Chip size="small" label={selected[0].title} />
+                );
+              }
+            }}
             renderOption={(option, { selected }) => (
               <Fragment>
                 <Checkbox
@@ -161,6 +176,19 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
+            renderTags={selected => {
+              if (selected.length > 1) {
+                return (
+                  <Fragment>
+                    <Chip size="small" label={selected[0].title} />{' +' + (selected.length - 1)}
+                  </Fragment>
+                )
+              } else {
+                return (
+                  <Chip size="small" label={selected[0].title} />
+                );
+              }
+            }}
             renderOption={(option, { selected }) => (
               <Fragment>
                 <Checkbox
@@ -191,6 +219,19 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
+            renderTags={selected => {
+              if (selected.length > 1) {
+                return (
+                  <Fragment>
+                    <Chip size="small" label={selected[0].title} />{' +' + (selected.length - 1)}
+                  </Fragment>
+                )
+              } else {
+                return (
+                  <Chip size="small" label={selected[0].title} />
+                );
+              }
+            }}
             renderOption={(option, { selected }) => (
               <Fragment>
                 <Checkbox

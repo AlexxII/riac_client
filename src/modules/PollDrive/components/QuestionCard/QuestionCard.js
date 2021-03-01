@@ -16,7 +16,7 @@ import MultipleAnswers from '../MultipleAnswers'
 import OtherRadio from '../OtherRadio'
 import OtherCheckbox from '../OtherCheckbox'
 
-const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHandle, multipleHandler, reset }) => {
+const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHandle, multipleHandler, reset, viewOnly }) => {
 
   if (question.skip) return null
 
@@ -64,7 +64,7 @@ const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHand
         <FormControl component="fieldset" className="question-form-control">
           <FormLabel className="question-title" component="legend">{`${visibleCount + 1}. ${question.title}`}</FormLabel>
           <Grid container direction="row" justify="flex-end" alignItems="center" className="header-service-zone">
-            <Button variant="outlined" size="small" color="secondary" onClick={reset}>
+            <Button variant="outlined" size="small" color="secondary" onClick={reset} disabled={viewOnly}>
               Сбросить
           </Button>
           </Grid>
@@ -80,6 +80,7 @@ const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHand
                           onChange={handleCheckboxChange}
                           onBlur={blurHandle}
                           codesShow={codesShow}
+                          viewOnly={viewOnly}
                         />
                         :
                         <FormControlLabel
@@ -125,6 +126,7 @@ const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHand
                           answer={answer}
                           codesShow={codesShow}
                           onBlur={blurHandle}
+                          viewOnly={viewOnly}
                         />
                         :
                         <FormControlLabel
@@ -151,7 +153,7 @@ const QuestionCard = ({ visibleCount, question, codesShow, updateState, blurHand
                 </RadioGroup>
               )
             :
-            <MultipleAnswers data={question.answers} limit={question.limit} codesShow={codesShow} multipleHandler={multipleHandler} />
+            <MultipleAnswers data={question.answers} limit={question.limit} codesShow={codesShow} multipleHandler={multipleHandler} viewOnly={viewOnly}/>
           }
         </FormControl>
       </CardContent>

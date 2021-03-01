@@ -99,6 +99,7 @@ const BatchUpdate = ({ data, selectPool, logic, open, close, update }) => {
                 updateState={() => { return false }}
                 blurHandle={() => { return false }}
                 multipleHandler={() => { return false }}
+                viewOnly={true}
               />
             ))}
         </DialogContentText>

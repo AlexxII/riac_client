@@ -4,7 +4,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
 
-const OtherCheckbox = ({ answer, onChange, codesShow, onBlur }) => {
+const OtherCheckbox = ({ answer, onChange, codesShow, onBlur, viewOnly }) => {
   const inputEl = useRef(null)
   useEffect(() => {
     inputEl.current.value = answer.text
@@ -34,37 +34,32 @@ const OtherCheckbox = ({ answer, onChange, codesShow, onBlur }) => {
   }
 
   const AnswerTitle = () => {
+
+    const textInput = (
+      <TextField
+        id="standard-bare"
+        inputRef={inputEl}
+        name={answer.id}
+        placeholder={answer.title}
+        margin="normal"
+        onKeyUp={keyDownHandle}
+        onBlur={handleBlur}
+        className="checkbox-control-label"
+        disabled={viewOnly}
+      />
+    )
+
     if (codesShow) {
       return (
         <Fragment>
           <span className="other-title-container">
             <span className="answer-code">{answer.code} - </span>
-            <TextField
-              id="standard-bare"
-              inputRef={inputEl}
-              name={answer.id}
-              placeholder={answer.title}
-              margin="normal"
-              onKeyUp={keyDownHandle}
-              onBlur={handleBlur}
-              className="checkbox-control-label"
-            />
+            {textInput}
           </span>
         </Fragment>
       )
     } else {
-      return (
-        <TextField
-          id="standard-bare"
-          inputRef={inputEl}
-          name={answer.id}
-          placeholder={answer.title}
-          margin="normal"
-          onKeyDown={keyDownHandle}
-          onBlur={handleBlur}
-          className="checkbox-control-label"
-        />
-      )
+      return textInput
     }
   }
 

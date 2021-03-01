@@ -29,9 +29,9 @@ const SET_ANSWER = 1
 const UNSET_ANSWER = 2
 const SET_RADIO_ANSWER = 3
 
-const DriveLogicEx = (props) => {
+const DriveLogic = React.memo(props => {
   const {
-    poll, logic, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode
+    poll, logic, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode, update
   } = props
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
@@ -39,6 +39,7 @@ const DriveLogicEx = (props) => {
   const [direction, setDirection] = useState(1)
   const [visibleCount, setVisibleCount] = useState(0)
   const [inlineMessage, setInlineMessage] = useState('')
+  const [oldResults] = useState(results)
 
   useEffect(() => {
     window.addEventListener(KEY_TYPE, keyUpHandler)
@@ -46,7 +47,6 @@ const DriveLogicEx = (props) => {
       window.removeEventListener(KEY_TYPE, keyUpHandler)
     };
   })
-  // Кнопка с треброванием выдать ID и сохранить !!!!!!!!!!!!!!!!!!!!!!!!
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
     const nextQuestion = questionFormationEx(poll.questions[count], count, logic, results, setResults);
@@ -349,7 +349,7 @@ const DriveLogicEx = (props) => {
       }
     }
     // проверка - если не дошли до конца анкета, нет смысла анализировать концовку
-    if (resCount < poll.questions.length) {
+    if (resCount < poll.questions.length && !update) {
       return false
     }
     for (let key in newResults) {
@@ -695,5 +695,6 @@ const DriveLogicEx = (props) => {
     </Fragment>
   )
 }
+)
 
-export default DriveLogicEx
+export default DriveLogic

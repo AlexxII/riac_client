@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react'
 
 import Container from '@material-ui/core/Container'
-import DriveLogicEx from '../../../PollDrive/components/DriveLogic'
+import DriveLogic from '../../../PollDrive/components/DriveLogic'
 import Button from '@material-ui/core/Button';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
@@ -236,7 +236,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
       />
       <Loading />
       <Container maxWidth="md">
-        <DriveLogicEx
+        <DriveLogic
           poll={poll}
           logic={logic}
           userSettings={userSettings}
@@ -248,6 +248,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
           count={count}
           setCount={setCount}
           finishNode={<FinishNode />}
+          update={true}
         />
       </Container>
     </Fragment>

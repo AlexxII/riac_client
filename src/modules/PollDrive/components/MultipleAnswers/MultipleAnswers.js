@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const MultipleAnswers = ({ data, limit, codesShow, multipleHandler }) => {
+const MultipleAnswers = ({ data, limit, codesShow, multipleHandler, viewOnly }) => {
   const classes = useStyles();
   const [answers, setAnswers] = useState([])
   const [error, setError] = useState({
@@ -73,6 +73,7 @@ const MultipleAnswers = ({ data, limit, codesShow, multipleHandler }) => {
         onChange={handleAnswerSelect}
         value={answers}
         freeSolo
+        disabled={viewOnly}
         disableCloseOnSelect={limit > 1}
         getOptionLabel={(option) => option.title}
         getOptionDisabled={(option) => option.disabled}

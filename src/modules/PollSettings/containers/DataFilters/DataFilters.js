@@ -37,13 +37,28 @@ const ReoderEditor = ({ id }) => {
     const pollFilters = result.poll.filters
 
     // вытащить массив id фильтров, которые вкючены в настройка приложения
-    const sexDef = result.sex.map(obj => obj.id)
-    const ageDef = result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
-    const customDef = result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
+    const sexDef = {
+      poll: result.sex.map(obj => obj.id),
+      map: '2'
+    }
+    const ageDef = {
+      pool: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : [],
+      map: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
+    }
+    const customDef = {
+      pool: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : [],
+      map: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
+    }
+
+    console.log(result.sex);
 
     // вытащить все фильтры, которые определены в настройках опроса
-    const age = pollFilters.age ? pollFilters.age.filter(obj => ageDef.includes(obj.id)) : []
-    const sex = pollFilters.sex ? pollFilters.sex.filter(obj => sexDef.includes(obj.id)) : []
+    const age = pollFilters.age ?
+      pollFilters.age.filter(obj => ageDef.pool.includes(obj.id)).map()
+      : []
+    const sex = pollFilters.sex ?
+      pollFilters.sex.filter(obj => sexDef.pool.includes(obj.id)).map()
+      : []
     const custom = pollFilters.custom ? pollFilters.custom.filter(obj => customDef.includes(obj.id)) : []
 
     console.log(result);

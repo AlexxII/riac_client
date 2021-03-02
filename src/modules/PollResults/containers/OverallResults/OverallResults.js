@@ -139,6 +139,7 @@ const OverallResults = ({ id }) => {
         ...loadingMsg,
         description: 'Анализ дублей'
       })
+      return
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {

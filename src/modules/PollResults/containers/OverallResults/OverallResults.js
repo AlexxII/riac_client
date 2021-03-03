@@ -71,6 +71,7 @@ const OverallResults = ({ id }) => {
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
   const [logic, setLogic] = useState(false)
+  const [quota, setQuota] = useState(false)
 
   const {
     data: pollResults,
@@ -83,6 +84,7 @@ const OverallResults = ({ id }) => {
     onCompleted: () => {
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
+      setQuota(handleQuotaData(pollResults.poll.results))
     }
   });
 
@@ -94,6 +96,18 @@ const OverallResults = ({ id }) => {
         const normalizedLogic = normalizeLogic(parseIni(text))
         setLogic(normalizedLogic)
       })
+  }
+
+  // распределение ответов по людям
+  const handleQuotaData = (data) => {
+    return data.reduce((acum, item) => {
+      if (!acum[item.user.id]) {
+        acum[item.user.id] = 1
+      } else {
+        acum[item.user.id] = acum[item.user.id] + 1
+      }
+      return acum
+    }, {})
   }
 
   const {
@@ -132,6 +146,7 @@ const OverallResults = ({ id }) => {
 
   useEffect(() => {
     if (activeWorksheets.length) {
+      setQuota(handleQuotaData(activeWorksheets))
       // console.log(pollResults);
       // анализ дублей
       // если кол-во вопросов в опросе больше 5, то проходит анализ, в противном случае нет
@@ -246,7 +261,7 @@ const OverallResults = ({ id }) => {
     }
   }, [activeFilters])
 
-  if (!activeWorksheets || filtersResultsLoading || pollResultsLoading) return (
+  if (!activeWorksheets || filtersResultsLoading || pollResultsLoading || !quota) return (
     <LoadingState
       {...(loadingMsg && loadingMsg.title && {
         title: loadingMsg.title
@@ -517,16 +532,6 @@ const OverallResults = ({ id }) => {
                 <EqualizerIcon />
               </IconButton>
             </Tooltip>
-            {/* <Tooltip title="Просмотр">
-              <IconButton
-                color="primary"
-                component="span"
-                onClick={() => setBatchOpen(true)}
-                disabled={!selectPool.length}
-              >
-                <DynamicFeedIcon />
-              </IconButton>
-            </Tooltip> */}
             {/* <Tooltip title="Изменить статус">
               <IconButton
                 color="primary"
@@ -588,7 +593,7 @@ const OverallResults = ({ id }) => {
             </Box>
           </Grid>
         </Grid>
-        <Filters filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters} />
+        <Filters filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters} quota={quota} />
         <DataGrid
           data={activeWorksheets}
           selectPool={selectPool}
@@ -597,7 +602,7 @@ const OverallResults = ({ id }) => {
           updateSingle={updateSingleResult}
         />
       </div>
-    </Fragment >
+    </Fragment>
   )
 }
 

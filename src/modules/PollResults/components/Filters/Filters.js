@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -7,13 +7,12 @@ import Grid from '@material-ui/core/Grid';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import Button from '@material-ui/core/Button';
-import Typography from "@material-ui/core/Typography";
 import Chip from '@material-ui/core/Chip';
 
 import FlatPicker from '../../../../components/FlatPicker'
 
-const Filters = ({ filters, cities, setActiveFilters }) => {
-  const [avaiableFilters] = useState({
+const Filters = ({ filters, cities, setActiveFilters, quota }) => {
+  const [avaiableFilters, setAviableFilters] = useState({
     age: filters.ageCategories.map(
       age => ({
         value: age.id,
@@ -32,12 +31,31 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
     intervs: filters.intervievers.map(interv => ({
       value: interv.id,
       title: interv.username,
+    })).map(interv => ({
+      ...interv,
+      count: quota[interv.value] !== undefined ? quota[interv.value] : 0
     })),
     sex: filters.sex,
     status: filters.status
   })
   const [newFilter, setNewFilters] = useState(null)
   const [updated, setUpdated] = useState(false)
+
+
+  useEffect(() => {
+    if (avaiableFilters) {
+      setAviableFilters({
+        ...avaiableFilters,
+        intervs: filters.intervievers.map(interv => ({
+          value: interv.id,
+          title: interv.username,
+        })).map(interv => ({
+          ...interv,
+          count: quota[interv.value] !== undefined ? quota[interv.value] : 0
+        }))
+      })
+    }
+  }, [quota])
 
   // ФИЛЬТРЫ
   const handleDataChange = (dates) => {
@@ -234,13 +252,20 @@ const Filters = ({ filters, cities, setActiveFilters }) => {
             }}
             renderOption={(option, { selected }) => (
               <Fragment>
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.title}
+                <Grid container direction="row" justify="space-between" alignItems="center">
+                  <Grid>
+                    <Checkbox
+                      icon={icon}
+                      checkedIcon={checkedIcon}
+                      style={{ marginRight: 8 }}
+                      checked={selected}
+                    />
+                    {option.title}
+                  </Grid>
+                  <Grid>
+                    <Chip size="small" label={option.count} />
+                  </Grid>
+                </Grid>
               </Fragment>
             )}
             renderInput={(params) => (

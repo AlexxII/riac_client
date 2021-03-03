@@ -6,12 +6,17 @@ import Generation from './containers/Generation'
 import OverallResults from './containers/OverallResults'
 import LinearDistibution from './containers/LinearDistribution'
 import BatchInput from './containers/BatchInput'
+import Quota from './containers/Quota'
 
 const PollResults = ({ id }) => {
   const data = [
     {
       label: 'Общие',
       component: <OverallResults id={id} />
+    },
+    {
+      label: 'Квота',
+      component: <Quota id={id} />
     },
     {
       label: 'Линейка',

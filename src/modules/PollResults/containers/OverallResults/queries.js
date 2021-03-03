@@ -26,7 +26,6 @@ query ($id: ID!) {
     cities {
       id
       title
-      population
       category {
         id
         order
@@ -58,6 +57,12 @@ query ($id: ID!) {
     }
     questions {
       id
+      answers {
+        id
+        results {
+          id
+        }
+      }
     }
   }
 }

@@ -27,13 +27,16 @@ const Filters = ({ filters, cities, setActiveFilters, quota }) => {
         value: city.id,
         title: city.title,
         category: city.category.title
+      })).map(city => ({
+        ...city,
+        count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
       })),
     intervs: filters.intervievers.map(interv => ({
       value: interv.id,
       title: interv.username,
     })).map(interv => ({
       ...interv,
-      count: quota[interv.value] !== undefined ? quota[interv.value] : 0
+      count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
     })),
     sex: filters.sex,
     status: filters.status
@@ -41,18 +44,18 @@ const Filters = ({ filters, cities, setActiveFilters, quota }) => {
   const [newFilter, setNewFilters] = useState(null)
   const [updated, setUpdated] = useState(false)
 
-
   useEffect(() => {
     if (avaiableFilters) {
       setAviableFilters({
         ...avaiableFilters,
-        intervs: filters.intervievers.map(interv => ({
-          value: interv.id,
-          title: interv.username,
-        })).map(interv => ({
-          ...interv,
-          count: quota[interv.value] !== undefined ? quota[interv.value] : 0
-        }))
+        intervs: filters.intervievers
+          .map(interv => ({
+            value: interv.id,
+            title: interv.username
+          })).map(interv => ({
+            ...interv,
+            count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
+          }))
       })
     }
   }, [quota])
@@ -118,6 +121,8 @@ const Filters = ({ filters, cities, setActiveFilters, quota }) => {
   const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
   if (!avaiableFilters) return <p></p>
+
+  console.log(quota);
 
   return (
     <Fragment>
@@ -209,13 +214,20 @@ const Filters = ({ filters, cities, setActiveFilters, quota }) => {
             }}
             renderOption={(option, { selected }) => (
               <Fragment>
-                <Checkbox
-                  icon={icon}
-                  checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.title}
+                <Grid container direction="row" justify="space-between" alignItems="center">
+                  <Grid>
+                    <Checkbox
+                      icon={icon}
+                      checkedIcon={checkedIcon}
+                      style={{ marginRight: 8 }}
+                      checked={selected}
+                    />
+                    {option.title}
+                  </Grid>
+                  <Grid>
+                    <Chip size="small" label={option.count} />
+                  </Grid>
+                </Grid>
               </Fragment>
             )}
             renderInput={(params) => (

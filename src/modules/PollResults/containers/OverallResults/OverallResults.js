@@ -84,7 +84,10 @@ const OverallResults = ({ id }) => {
     onCompleted: () => {
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
-      setQuota(handleQuotaData(pollResults.poll.results))
+      setQuota({
+        users: handleUserQuotaData(pollResults.poll.results),
+        cities: handleCityQuotaData(pollResults.poll.results)
+      })
     }
   });
 
@@ -99,12 +102,23 @@ const OverallResults = ({ id }) => {
   }
 
   // распределение ответов по людям
-  const handleQuotaData = (data) => {
+  const handleUserQuotaData = (data) => {
     return data.reduce((acum, item) => {
       if (!acum[item.user.id]) {
         acum[item.user.id] = 1
       } else {
         acum[item.user.id] = acum[item.user.id] + 1
+      }
+      return acum
+    }, {})
+  }
+
+  const handleCityQuotaData = (data) => {
+    return data.reduce((acum, item) => {
+      if (!acum[item.city.id]) {
+        acum[item.city.id] = 1
+      } else {
+        acum[item.city.id] = acum[item.city.id] + 1
       }
       return acum
     }, {})
@@ -146,7 +160,10 @@ const OverallResults = ({ id }) => {
 
   useEffect(() => {
     if (activeWorksheets.length) {
-      setQuota(handleQuotaData(activeWorksheets))
+      setQuota({
+        users: handleUserQuotaData(activeWorksheets),
+        cities: handleCityQuotaData(activeWorksheets)
+      })
       // console.log(pollResults);
       // анализ дублей
       // если кол-во вопросов в опросе больше 5, то проходит анализ, в противном случае нет

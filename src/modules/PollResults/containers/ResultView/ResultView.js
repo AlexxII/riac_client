@@ -13,7 +13,7 @@ import questionFormationEx from '../../../PollDrive/lib/questionFormationEx'
 
 import QuestionCard from '../../../PollDrive/components/QuestionCard'
 
-const BatchUpdate = ({ data, selectPool, logic, open, close, update }) => {
+const ResultView = ({ data, selectPool, logic, open, close, update }) => {
   const [questions, setQuestions] = useState(false)
   const [results, setResults] = useState(false)
   const [respondentId, setRespondentId] = useState(false)
@@ -116,4 +116,4 @@ const BatchUpdate = ({ data, selectPool, logic, open, close, update }) => {
   );
 }
 
-export default BatchUpdate
+export default ResultView

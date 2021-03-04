@@ -26,6 +26,7 @@ query ($id: ID!) {
     cities {
       id
       title
+      population
       category {
         id
         order
@@ -54,13 +55,38 @@ query ($id: ID!) {
       created
       lastModified
       processed
+      result {
+        id
+        answer {
+          id
+        }
+        code
+        text
+        question {
+          id
+          order
+          codesPool
+        }
+      }
     }
     questions {
       id
+      title
+      order
+      limit
+      type
       answers {
         id
+        title
+        order
+        code
         results {
           id
+          code
+          text
+          respondent {
+            id
+          }
         }
       }
     }

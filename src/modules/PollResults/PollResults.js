@@ -14,10 +14,10 @@ const PollResults = ({ id }) => {
       label: 'Общие',
       component: <OverallResults id={id} />
     },
-    {
-      label: 'Квота',
-      component: <Quota id={id} />
-    },
+    // {
+    //   label: 'Квота',
+    //   component: <Quota id={id} />
+    // },
     {
       label: 'Линейка',
       component: <LinearDistibution id={id} />

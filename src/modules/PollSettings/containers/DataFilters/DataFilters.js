@@ -44,6 +44,7 @@ const ReoderEditor = ({ id }) => {
     const ageDef = {
       pool: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : [],
       map: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
+      
     }
     const customDef = {
       pool: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : [],

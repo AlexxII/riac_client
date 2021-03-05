@@ -84,6 +84,7 @@ const OverallResults = ({ id }) => {
     onCompleted: () => {
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
+      console.log(pollResults);
       setQuota({
         users: handleUserQuotaData(pollResults.poll.results),
         cities: handleCityQuotaData(pollResults.poll.results)
@@ -104,10 +105,12 @@ const OverallResults = ({ id }) => {
   // распределение ответов по людям
   const handleUserQuotaData = (data) => {
     return data.reduce((acum, item) => {
-      if (!acum[item.user.id]) {
-        acum[item.user.id] = 1
-      } else {
-        acum[item.user.id] = acum[item.user.id] + 1
+      if (item.user) {
+        if (!acum[item.user.id]) {
+          acum[item.user.id] = 1
+        } else {
+          acum[item.user.id] = acum[item.user.id] + 1
+        }
       }
       return acum
     }, {})
@@ -115,10 +118,12 @@ const OverallResults = ({ id }) => {
 
   const handleCityQuotaData = (data) => {
     return data.reduce((acum, item) => {
-      if (!acum[item.city.id]) {
-        acum[item.city.id] = 1
-      } else {
-        acum[item.city.id] = acum[item.city.id] + 1
+      if (item.city) {
+        if (!acum[item.city.id]) {
+          acum[item.city.id] = 1
+        } else {
+          acum[item.city.id] = acum[item.city.id] + 1
+        }
       }
       return acum
     }, {})
@@ -171,7 +176,6 @@ const OverallResults = ({ id }) => {
         ...loadingMsg,
         description: 'Анализ дублей'
       })
-      return
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {

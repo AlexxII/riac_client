@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const SAVE_NEW_FILTER = gql`
 mutation ($title: String!) {
-  saveNewFilter(title: $title) {
+  saveNewCustomFilter(title: $title) {
     id
     title
     order

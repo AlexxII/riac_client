@@ -14,7 +14,7 @@ import ErrorState from '../../../../components/ErrorState'
 import ComplianceSheet from '../../../../components/ComplianceSheet'
 
 import { GET_POLL_AND_ALL_FILTERS } from "./queries"
-import { saveNewLimit, saveNewOrder } from "./mutations"
+import { SAVE_FILTER_DATA } from "./mutations"
 
 const ReoderEditor = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -24,11 +24,7 @@ const ReoderEditor = ({ id }) => {
     variables: { id },
     onCompleted: () => {
       const preparedFilters = prepareFilters(pollFilters)
-      setFilters({
-        age: preparedFilters.ageCategories,
-        sex: preparedFilters.sex,
-        custom: preparedFilters.customFilters
-      })
+      setFilters(preparedFilters)
     }
   })
 
@@ -36,47 +32,91 @@ const ReoderEditor = ({ id }) => {
   const prepareFilters = (result) => {
     const pollFilters = result.poll.filters
 
-    // вытащить массив id фильтров, которые вкючены в настройка приложения
-    const sexDef = {
-      poll: result.sex.map(obj => obj.id),
-      map: '2'
-    }
-    const ageDef = {
-      pool: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : [],
-      map: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
-      
-    }
-    const customDef = {
-      pool: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : [],
-      map: result.ageCategories.length ? result.ageCategories.map(obj => obj.id) : []
-    }
+    let ageDeff = {}
+    let sexDeff = {}
+    let customDeff = {}
 
-    console.log(result.sex);
+    if (pollFilters) {
+      ageDeff = pollFilters.age ? pollFilters.age.reduce((acum, item) => {
+        acum[item.id] = {
+          code: item.code,
+          active: item.active
+        }
+        return acum
+      }, {}) : {}
+      sexDeff = pollFilters.sex ? pollFilters.sex.reduce((acum, item) => {
+        acum[item.id] = {
+          code: item.code,
+          active: item.active
+        }
+        return acum
+      }, {}) : {}
+      customDeff = pollFilters.custom ? pollFilters.custom.reduce((acum, item) => {
+        acum[item.id] = {
+          code: item.code,
+          active: item.active
+        }
+        return acum
+      }, {}) : {}
+    }
 
     // вытащить все фильтры, которые определены в настройках опроса
-    const age = pollFilters.age ?
-      pollFilters.age.filter(obj => ageDef.pool.includes(obj.id)).map()
+    const age = result.ageCategories.length ?
+      result.ageCategories.map(obj => {
+        if (ageDeff[obj.id] !== undefined) {
+          return {
+            ...obj,
+            ...ageDeff[obj.id]
+          }
+        } else {
+          return {
+            ...obj,
+            code: '',
+            active: false
+          }
+        }
+      })
       : []
-    const sex = pollFilters.sex ?
-      pollFilters.sex.filter(obj => sexDef.pool.includes(obj.id)).map()
+    const sex = result.sex.length ?
+      result.sex.map(obj => {
+        if (sexDeff[obj.id] !== undefined) {
+          return {
+            ...obj,
+            ...sexDeff[obj.id]
+          }
+        } else {
+          return {
+            ...obj,
+            code: '',
+            active: false
+          }
+        }
+      })
       : []
-    const custom = pollFilters.custom ? pollFilters.custom.filter(obj => customDef.includes(obj.id)) : []
-
-    console.log(result);
-    return result
+    const custom = result.customFilters.length ?
+      result.customFilters.map(obj => {
+        if (customDeff[obj.id] !== undefined) {
+          return {
+            ...obj,
+            ...customDeff[obj.id]
+          }
+        } else {
+          return {
+            ...obj,
+            code: '',
+            active: false
+          }
+        }
+      })
+      : []
+    return {
+      age,
+      sex,
+      custom
+    }
   }
 
-  const [saveLimit, { loading: limitSaveLoading }] = useMutation(saveNewLimit, {
-    onError: (e) => {
-      console.log(e);
-      setNoti({
-        type: 'error',
-        text: 'Сохранить лимит не удалось. Смотрите консоль.'
-      })
-    }
-  })
-
-  const [saveOrder, { loading: saveOrderLoading }] = useMutation(saveNewOrder, {
+  const [saveFilterData, { loading: saveDataLoading }] = useMutation(SAVE_FILTER_DATA, {
     onError: (e) => {
       console.log(e);
       setNoti({
@@ -111,8 +151,23 @@ const ReoderEditor = ({ id }) => {
   }
 
   const Loading = () => {
-    if (limitSaveLoading || saveOrderLoading) return <LoadingStatus />
+    if (saveDataLoading) return <LoadingStatus />
     return null
+  }
+
+  const saveData = (datas, type) => {
+    const data = datas.map(obj => ({
+      id: obj.id,
+      code: obj.code,
+      active: obj.active
+    }))
+    saveFilterData({
+      variables: {
+        poll: id,
+        type: type,
+        data
+      }
+    })
   }
 
   return (
@@ -136,19 +191,19 @@ const ReoderEditor = ({ id }) => {
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Возраст</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet data={filters.age} />
+          <ComplianceSheet data={filters.age} saveData={(data) => saveData(data, 'age')} />
         </Grid>
       </Grid>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Пол</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet data={filters.sex} />
+          <ComplianceSheet data={filters.sex} saveData={(data) => saveData(data, 'sex')} />
         </Grid>
       </Grid>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Пользовательские</Typography>
         <Grid container xs={12}>
-          <ComplianceSheet data={filters.custom} />
+          <ComplianceSheet data={filters.custom} saveData={(data) => saveData(data, 'custom')} />
         </Grid>
       </Grid>
     </Fragment>

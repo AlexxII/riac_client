@@ -220,19 +220,19 @@ const OverallResults = ({ id }) => {
             }
           }
           if (arrayOfDublWorksheets.length) {
-            const ttt = arrayOfDublWorksheets.reduce((group, item) => {
+            const dublArray = arrayOfDublWorksheets.reduce((group, item) => {
               return [
                 ...group,
                 item.first,
                 item.second
               ]
             }, [])
-            setDuplicateResults(ttt)
+            const uniqueDublArray = [...new Set(dublArray)]
+            setDuplicateResults(uniqueDublArray)
           } else {
             setDuplicateResults(null)
           }
           setCalculating(false)
-
         }, 1000)
       }
     } else {

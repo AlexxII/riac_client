@@ -2,8 +2,8 @@ import { gql } from '@apollo/client'
 
 
 export const SAVE_FILTER_DATA = gql`
-mutation ($poll: String, $type: String, $data: [FilterTypeInput]) {
-  savePollFilters(poll: $poll, type: $type, data: $data) {
+mutation ($poll: String, $data: FilterTypeInputEx) {
+  savePollFilters(poll: $poll, data: $data) {
     sex {
       id,
       code,

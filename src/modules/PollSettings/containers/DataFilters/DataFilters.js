@@ -3,6 +3,8 @@ import React, { Fragment, useState } from 'react'
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import SaveIcon from '@material-ui/icons/Save';
+import Button from '@material-ui/core/Button';
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -121,19 +123,19 @@ const ReoderEditor = ({ id }) => {
       console.log(e);
       setNoti({
         type: 'error',
-        text: 'Сохранить порядок не удалось. Смотрите консоль.'
+        text: 'Сохранить фильтры не удалось. Смотрите консоль.'
       })
     },
-    update: (cache, { data }) => {
-      const questions = data.newOrder
-      for (let i = 0; i < questions.length; i++) {
-        const id = questions[i].id
-        const dd = cache.data.data
-        for (let key in dd) {
-          if (dd[key].id === id) console.log(dd[key]);
-        }
-      }
-    }
+    // update: (cache, { data }) => {
+    //   const questions = data.newOrder
+    //   for (let i = 0; i < questions.length; i++) {
+    //     const id = questions[i].id
+    //     const dd = cache.data.data
+    //     for (let key in dd) {
+    //       if (dd[key].id === id) console.log(dd[key]);
+    //     }
+    //   }
+    // }
   })
 
   if (pollFiltersLoading || !filters) return (
@@ -156,16 +158,36 @@ const ReoderEditor = ({ id }) => {
   }
 
   const saveData = (datas, type) => {
-    const data = datas.map(obj => ({
-      id: obj.id,
-      code: obj.code,
-      active: obj.active
+    setFilters(prevState => ({
+      ...prevState,
+      [type]: datas
     }))
+  }
+
+
+
+  const handleSave = () => {
+    const modFilters = {
+      age: filters.age.map(obj => ({
+        id: obj.id,
+        code: obj.code,
+        active: obj.active
+      })),
+      sex: filters.sex.map(obj => ({
+        id: obj.id,
+        code: obj.code,
+        active: obj.active
+      })),
+      custom: filters.custom.map(obj => ({
+        id: obj.id,
+        code: obj.code,
+        active: obj.active
+      })),
+    }
     saveFilterData({
       variables: {
         poll: id,
-        type: type,
-        data
+        data: modFilters
       }
     })
   }
@@ -183,10 +205,19 @@ const ReoderEditor = ({ id }) => {
         <Typography variant="h5" gutterBottom className="header">Фильтры данных</Typography>
       </div>
       <Divider />
-      <div className="info-zone">
+      <div className="info-zone" style={{ 'paddingBottom': '10px' }}>
         <Typography variant="body2" gutterBottom>
           Для фильтрации результатов опросов соотнесите установленные фильтры с кодами опроса.
         </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+        >
+          Сохранить
+      </Button>
       </div>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Возраст</Typography>

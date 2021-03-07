@@ -46,7 +46,7 @@ const CityCategory = () => {
     update: (cache, { data: { changeCustomFilterStatus } }) => cache.writeQuery({
       query: GET_CUSTOM_FILTERS,
       data: {
-        customFilters: customFilters.customFilters.map(category => category.id === changeCustomFilterStatus.id ? changeCustomFilterStatus : category)
+        customFiltersAll: customFilters.customFiltersAll.map(category => category.id === changeCustomFilterStatus.id ? changeCustomFilterStatus : category)
       }
     })
   })
@@ -59,12 +59,12 @@ const CityCategory = () => {
       })
       console.log(e);
     },
-    update: (cache, { data: { saveNewFilter } }) => cache.writeQuery({
+    update: (cache, { data: { saveNewCustomFilter } }) => cache.writeQuery({
       query: GET_CUSTOM_FILTERS,
       data: {
-        customFilters: [
-          ...customFilters.customFilters,
-          saveNewFilter
+        customFiltersAll: [
+          ...customFilters.customFiltersAll,
+          saveNewCustomFilter
         ]
       }
     })
@@ -81,7 +81,7 @@ const CityCategory = () => {
     update: (cache, { data: { updateCustomFilter } }) => cache.writeQuery({
       query: GET_CUSTOM_FILTERS,
       data: {
-        customFilters: customFilters.customFilters.map(category => category.id === updateCustomFilter.id ? updateCustomFilter : category)
+        customFiltersAll: customFilters.customFiltersAll.map(category => category.id === updateCustomFilter.id ? updateCustomFilter : category)
       }
     })
   })
@@ -97,7 +97,7 @@ const CityCategory = () => {
     update: (cache, { data: { deleteCustomFilter } }) => cache.writeQuery({
       query: GET_CUSTOM_FILTERS,
       data: {
-        customFilters: customFilters.customFilters.filter(city => city.id === deleteCustomFilter.id ? false : true)
+        customFiltersAll: customFilters.customFiltersAll.filter(city => city.id === deleteCustomFilter.id ? false : true)
       }
     })
   })
@@ -113,7 +113,7 @@ const CityCategory = () => {
     update: (cache, { data }) => cache.writeQuery({
       query: GET_CUSTOM_FILTERS,
       data: {
-        customFilters: newOrder
+        customFiltersAll: newOrder
       }
     })
   })
@@ -227,7 +227,7 @@ const CityCategory = () => {
       />
       <Grid container spacing={3} xs={12}>
         <SortableEditList
-          data={customFilters.customFilters}
+          data={customFilters.customFiltersAll}
           handleChangeActive={changeActive}
           handleCategoryDelete={deleteCategory}
           handleNewSave={handleCategorySave}

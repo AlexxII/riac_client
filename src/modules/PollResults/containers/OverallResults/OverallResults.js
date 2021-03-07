@@ -59,6 +59,7 @@ const OverallResults = ({ id }) => {
   const history = useHistory();
 
   const [delOpen, setDelOpen] = useState(false)
+  const [reset, setReset] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
@@ -116,6 +117,7 @@ const OverallResults = ({ id }) => {
     }, {})
   }
 
+  // распределение ответов по городам
   const handleCityQuotaData = (data) => {
     return data.reduce((acum, item) => {
       if (item.city) {
@@ -255,20 +257,56 @@ const OverallResults = ({ id }) => {
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
     if (activeFilters) {
-      const results = pollResults.poll.results
-      const newResult = results.filter(result => {
-        return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
-      }).filter(result => {
-        return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
-      }).filter(result => {
-        return activeFilters.date ?
-          activeFilters.date.length
-            ? result.lastModified
-              ? activeFilters.date.includes(result.lastModified)
+      const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      const newResult = results
+        .filter(result => {
+          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
+        })
+        .filter(result => {
+          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
+        })
+        .filter(result => {
+          return activeFilters.date ?
+            activeFilters.date.length
+              ? result.lastModified
+                ? activeFilters.date.includes(result.lastModified)
+                : true
               : true
             : true
-          : true
-      })
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.sex) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (result.result[i].code === activeFilters.sex) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+          // console.log(activeFilters);
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.ages) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (activeFilters.ages.includes(result.result[i].code)) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
       const newSelectPool = selectPool.filter(
         selectId => {
           const len = newResult.length
@@ -441,6 +479,8 @@ const OverallResults = ({ id }) => {
 
   const closeDuplicateAnalyzeMode = () => {
     setDuplicateAnalyze(false)
+    setActiveFilters(null)
+    setReset(true)
     setActiveWorksheets(pollResults.poll.results)
   }
 
@@ -614,7 +654,11 @@ const OverallResults = ({ id }) => {
             </Box>
           </Grid>
         </Grid>
-        <Filters filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters} quota={quota} />
+        <Filters
+          filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
+          reset={reset}
+          pollFilters={pollResults.poll.filters}
+          quota={quota} />
         <DataGrid
           data={activeWorksheets}
           selectPool={selectPool}

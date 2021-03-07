@@ -61,7 +61,7 @@ const AgeCategory = () => {
     update: (cache, { data: { saveNewAgeCategory } }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: [
+        ageCategoriesAll: [
           ...ageCategories.ageCategoriesAll,
           saveNewAgeCategory
         ]
@@ -80,7 +80,7 @@ const AgeCategory = () => {
     update: (cache, { data: { updateAgeCategory } }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: ageCategories.ageCategoriesAll.map(category => category.id === updateAgeCategory.id ? updateAgeCategory : category)
+        ageCategoriesAll: ageCategories.ageCategoriesAll.map(category => category.id === updateAgeCategory.id ? updateAgeCategory : category)
       }
     })
   })
@@ -96,7 +96,7 @@ const AgeCategory = () => {
     update: (cache, { data: { deleteAgeCategory } }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: ageCategories.ageCategoriesAll.filter(city => city.id === deleteAgeCategory.id ? false : true)
+        ageCategoriesAll: ageCategories.ageCategoriesAll.filter(city => city.id === deleteAgeCategory.id ? false : true)
       }
     })
   })
@@ -112,7 +112,7 @@ const AgeCategory = () => {
     update: (cache, { data }) => cache.writeQuery({
       query: GET_AGE_CATEGORIES,
       data: {
-        ageCategories: newOrder
+        ageCategoriesAll: newOrder
       }
     })
   })

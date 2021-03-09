@@ -16,33 +16,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CheckboxList({ data }) {
+export default function CheckboxList({ data, saveData }) {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([0]);
 
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    console.log(currentIndex);
-    const newChecked = [...checked];
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setChecked(newChecked);
+  const handleToggle = (id) => () => {
+    const newData = data.map(obj => obj.id === id ? {
+      ...obj, active: !obj.active
+    } : obj)
+    saveData(newData)
   };
+
+  const handleBlur = (e, id) => {
+    const code = e.currentTarget.value
+    const newData = data.map(obj => obj.id === id ? {
+      ...obj, code: code
+    } : obj)
+    saveData(newData)
+  }
 
   return (
     <List className={classes.root}>
       {data.map((value) => {
         const labelId = `checkbox-list-label-${value}`;
-
         return (
           <ListItem key={value.id} role={undefined} dense button onClick={handleToggle(value.id)}>
             <ListItemIcon>
               <Checkbox
                 edge="start"
-                checked={checked.indexOf(value.id) !== -1}
+                checked={value.active}
                 tabIndex={-1}
                 disableRipple
                 inputProps={{ 'aria-labelledby': labelId }}
@@ -50,7 +51,7 @@ export default function CheckboxList({ data }) {
             </ListItemIcon>
             <ListItemText id={labelId} primary={`${value.title}`} />
             <ListItemSecondaryAction>
-              <TextField label="Код опроса" defaultValue={value.code ? value.code : null} />
+              <TextField label="Код опроса" defaultValue={value.code ? value.code : null} onBlur={(e) => handleBlur(e, value.id)} />
             </ListItemSecondaryAction>
           </ListItem>
         );

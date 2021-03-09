@@ -14,6 +14,10 @@ export const GET_FILTER_SELECTS = gql`
       id
       title
     }
+    customFilters {
+      id
+      title
+    }
   }
 `
 
@@ -35,6 +39,23 @@ query ($id: ID!) {
     }
     logic {
       path
+    }
+    filters {
+      sex {
+        id,
+        code,
+        active
+      }
+      age {
+        id,
+        code,
+        active
+      }
+      custom {
+        id,
+        code,
+        active
+      }
     }
     results {
       id
@@ -80,14 +101,6 @@ query ($id: ID!) {
         title
         order
         code
-        results {
-          id
-          code
-          text
-          respondent {
-            id
-          }
-        }
       }
     }
   }

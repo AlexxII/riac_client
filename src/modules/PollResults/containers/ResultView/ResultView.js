@@ -44,6 +44,7 @@ const ResultView = ({ data, selectPool, logic, open, close, update }) => {
   }
 
   const prepareSavedData = (data) => {
+    console.log(data);
     const pool = data.result.map(result =>
       result.code
     )

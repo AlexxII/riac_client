@@ -1,18 +1,24 @@
 import { gql } from '@apollo/client'
 
-export const saveNewLimit = gql`
-mutation ($id: ID!, $limit: Int!) {
-  newLimit(id: $id, limit: $limit) {
-    id
-    limit
-  }
-}
-`
-export const saveNewOrder = gql`
-mutation ($questions: [ReorderedArray]) {
-  newOrder(neworder: $questions) {
-    id
-    order
+
+export const SAVE_FILTER_DATA = gql`
+mutation ($poll: String, $data: FilterTypeInputEx) {
+  savePollFilters(poll: $poll, data: $data) {
+    sex {
+      id,
+      code,
+      active
+    }
+    age {
+      id,
+      code,
+      active
+    }
+    custom {
+      id,
+      code,
+      active
+    }
   }
 }
 `

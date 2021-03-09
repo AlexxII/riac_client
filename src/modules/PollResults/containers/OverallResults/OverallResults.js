@@ -29,13 +29,14 @@ import ResultView from '../../containers/ResultView'
 import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
+import StatusMenu from '../../components/StatusMenu'
 
 import { useHistory } from "react-router-dom";
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
-import { DELETE_RESULTS } from './mutations'
+import { DELETE_RESULTS, SAVE_RESULTS_STATUS } from './mutations'
 
 const iconvlite = require('iconv-lite')
 
@@ -59,6 +60,7 @@ const OverallResults = ({ id }) => {
   const history = useHistory();
 
   const [delOpen, setDelOpen] = useState(false)
+  const [reset, setReset] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
@@ -84,6 +86,7 @@ const OverallResults = ({ id }) => {
     onCompleted: () => {
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
+      console.log(pollResults);
       setQuota({
         users: handleUserQuotaData(pollResults.poll.results),
         cities: handleCityQuotaData(pollResults.poll.results)
@@ -104,21 +107,26 @@ const OverallResults = ({ id }) => {
   // распределение ответов по людям
   const handleUserQuotaData = (data) => {
     return data.reduce((acum, item) => {
-      if (!acum[item.user.id]) {
-        acum[item.user.id] = 1
-      } else {
-        acum[item.user.id] = acum[item.user.id] + 1
+      if (item.user) {
+        if (!acum[item.user.id]) {
+          acum[item.user.id] = 1
+        } else {
+          acum[item.user.id] = acum[item.user.id] + 1
+        }
       }
       return acum
     }, {})
   }
 
+  // распределение ответов по городам
   const handleCityQuotaData = (data) => {
     return data.reduce((acum, item) => {
-      if (!acum[item.city.id]) {
-        acum[item.city.id] = 1
-      } else {
-        acum[item.city.id] = acum[item.city.id] + 1
+      if (item.city) {
+        if (!acum[item.city.id]) {
+          acum[item.city.id] = 1
+        } else {
+          acum[item.city.id] = acum[item.city.id] + 1
+        }
       }
       return acum
     }, {})
@@ -158,6 +166,41 @@ const OverallResults = ({ id }) => {
     }
   })
 
+  const [
+    saveResultStatus,
+    { loading: loadOnStatusSave }
+  ] = useMutation(SAVE_RESULTS_STATUS, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Изменить статус не удалось. Смотрите консоль.'
+      })
+      console.log(e);
+    },
+    update: (cache, { data }) => {
+      const updatePool = data.saveResultStatus.map(obj => obj.id)
+      const bool = data.saveResultStatus[0].processed
+      setActiveWorksheets(activeWorksheets.map(
+        result => updatePool.includes(result.id) ? { ...result, processed: bool } : result
+      ))
+    },
+    // update: (cache, { data }) => {
+    //   const deletedPool = data.deleteResults.map(del => del.id)
+    //   setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
+    //   cache.modify({
+    //     fields: {
+    //       pollResults(existingRefs, { readField }) {
+    //         return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
+    //       }
+    //     }
+    //   })
+    // },
+    onCompleted: () => {
+      setSelectPool([])
+      setSelectAll(false)
+    }
+  })
+
   useEffect(() => {
     if (activeWorksheets.length) {
       setQuota({
@@ -171,7 +214,6 @@ const OverallResults = ({ id }) => {
         ...loadingMsg,
         description: 'Анализ дублей'
       })
-      return
       if (pollResults.poll.questions.length > 4) {
         setCalculating(true)
         setTimeout(function () {
@@ -216,19 +258,19 @@ const OverallResults = ({ id }) => {
             }
           }
           if (arrayOfDublWorksheets.length) {
-            const ttt = arrayOfDublWorksheets.reduce((group, item) => {
+            const dublArray = arrayOfDublWorksheets.reduce((group, item) => {
               return [
                 ...group,
                 item.first,
                 item.second
               ]
             }, [])
-            setDuplicateResults(ttt)
+            const uniqueDublArray = [...new Set(dublArray)]
+            setDuplicateResults(uniqueDublArray)
           } else {
             setDuplicateResults(null)
           }
           setCalculating(false)
-
         }, 1000)
       }
     } else {
@@ -251,20 +293,78 @@ const OverallResults = ({ id }) => {
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
     if (activeFilters) {
-      const results = pollResults.poll.results
-      const newResult = results.filter(result => {
-        return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
-      }).filter(result => {
-        return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
-      }).filter(result => {
-        return activeFilters.date ?
-          activeFilters.date.length
-            ? result.lastModified
-              ? activeFilters.date.includes(result.lastModified)
+      const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      const newResult = results
+        .filter(result => {
+          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
+        })
+        .filter(result => {
+          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
+        })
+        .filter(result => {
+          return activeFilters.date ?
+            activeFilters.date.length
+              ? result.lastModified
+                ? activeFilters.date.includes(result.lastModified)
+                : true
               : true
             : true
-          : true
-      })
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.sex) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (result.result[i].code === activeFilters.sex) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+          // console.log(activeFilters);
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.ages) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (activeFilters.ages.includes(result.result[i].code)) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.custom) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (activeFilters.custom.includes(result.result[i].code)) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
+        .filter(result => {
+          if (activeFilters.status === null) {
+            return true
+          }
+          return result.processed === activeFilters.status
+        })
       const newSelectPool = selectPool.filter(
         selectId => {
           const len = newResult.length
@@ -300,7 +400,7 @@ const OverallResults = ({ id }) => {
   }
 
   const Loading = () => {
-    if (loadOnDelete) return <LoadingStatus />
+    if (loadOnDelete || loadOnStatusSave) return <LoadingStatus />
     return null
   }
 
@@ -381,7 +481,7 @@ const OverallResults = ({ id }) => {
         outData += '\n' + exportData[city].interviewer + '\n\n'
         count++
       }
-      const outDataCp866 = utfTocp866(outData)
+      const outDataCp866 = utfToCP866(outData)
       downloadIt(outDataCp866, 'allData.opr')
     } else {
       for (let city in exportData) {
@@ -404,29 +504,18 @@ const OverallResults = ({ id }) => {
         outData += '==='
         outData += '\n' + exportData[city].interviewer
         count++
-
-        const outDataCp866 = utfTocp866(outData)
+        const outDataCp866 = utfToCP866(outData)
         downloadIt(outDataCp866, rusToLatin(city))                                  // транслит для имени файла
       }
     }
   }
 
-  const utfTocp866 = (data) => {
-    // let encoder = new TextEncoder();
-    // let uint8Array = encoder.encode(data);
-    // console.log(uint8Array);
-
-    // let decoder = new TextDecoder('cp1251')
-    // const dd = decoder.decode(uint8Array)
-
-    // return dd
+  // преобразование кодировки
+  const utfToCP866 = (data) => {
     const buf = Buffer.from(data);
-    const buff = iconvlite.encode(data, 'utf8');
-
-    // const decoder = new TextDecoder('866')
-    // const result = decoder.decode(buf)
-    const result = iconvlite.decode(buff, 'cp866')
-    return data
+    const buff = iconvlite.decode(buf, 'utf8');
+    const result = iconvlite.encode(buff, 'cp866')
+    return result
   }
 
   const showOnlyDuplicates = () => {
@@ -437,6 +526,8 @@ const OverallResults = ({ id }) => {
 
   const closeDuplicateAnalyzeMode = () => {
     setDuplicateAnalyze(false)
+    setActiveFilters(null)
+    setReset(true)
     setActiveWorksheets(pollResults.poll.results)
   }
 
@@ -446,6 +537,31 @@ const OverallResults = ({ id }) => {
       .map(obj => obj.result)
     const allResults = prepareResultsDataToExport(resultsPool)
     downloadIt(allResults, 'allData.txt')
+  }
+
+  const handleStatusChange = (type) => {
+    switch (type) {
+      case 'set':
+        const setPool = activeWorksheets.filter(obj => !obj.processed).map(obj => obj.id)
+        saveResultStatus({
+          variables: {
+            type: 'set',
+            results: setPool
+          }
+        })
+        break
+      case 'unset':
+        const unsetPool = activeWorksheets.filter(obj => obj.processed).map(obj => obj.id)
+        saveResultStatus({
+          variables: {
+            type: 'unset',
+            results: unsetPool
+          }
+        })
+        break
+      default:
+        return
+    }
   }
 
   const downloadIt = (data, fileName) => {
@@ -549,16 +665,10 @@ const OverallResults = ({ id }) => {
                 <EqualizerIcon />
               </IconButton>
             </Tooltip>
-            {/* <Tooltip title="Изменить статус">
-              <IconButton
-                color="primary"
-                component="span"
-                onClick={() => setBatchOpen(true)}
-                disabled={!selectPool.length}
-              >
-                <CheckCircleOutlineOutlinedIcon />
-              </IconButton>
-            </Tooltip> */}
+            <StatusMenu
+              visible={!selectPool.length}
+              handleStatus={handleStatusChange}
+            />
             <Tooltip title="Удалить">
               <IconButton
                 color="secondary"
@@ -610,7 +720,11 @@ const OverallResults = ({ id }) => {
             </Box>
           </Grid>
         </Grid>
-        <Filters filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters} quota={quota} />
+        <Filters
+          filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
+          reset={reset}
+          pollFilters={pollResults.poll.filters}
+          quota={quota} />
         <DataGrid
           data={activeWorksheets}
           selectPool={selectPool}

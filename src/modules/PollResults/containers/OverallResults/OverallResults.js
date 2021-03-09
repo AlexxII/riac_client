@@ -12,6 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import { withStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
@@ -29,6 +30,7 @@ import ResultView from '../../containers/ResultView'
 import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
+import StatusMenu from '../../components/StatusMenu'
 
 import { useHistory } from "react-router-dom";
 import { useQuery } from '@apollo/client'
@@ -307,6 +309,22 @@ const OverallResults = ({ id }) => {
           }
           return res
         })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.custom) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (activeFilters.custom.includes(result.result[i].code)) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
       const newSelectPool = selectPool.filter(
         selectId => {
           const len = newResult.length
@@ -492,6 +510,21 @@ const OverallResults = ({ id }) => {
     downloadIt(allResults, 'allData.txt')
   }
 
+  const handleStatusChange = (type) => {
+    switch (type) {
+      case 'set':
+        const setPool = activeWorksheets.filter(obj => !obj.process).map(obj => obj.id)
+        console.log('set', setPool);
+        break
+      case 'unset':
+        const unsetPool = activeWorksheets.filter(obj => obj.process).map(obj => obj.id)
+        console.log('set', unsetPool);
+        break
+      default:
+        return
+    }
+  }
+
   const downloadIt = (data, fileName) => {
     const element = document.createElement('a')
     const file = new Blob([data], { type: 'text/plain' });
@@ -593,16 +626,10 @@ const OverallResults = ({ id }) => {
                 <EqualizerIcon />
               </IconButton>
             </Tooltip>
-            {/* <Tooltip title="Изменить статус">
-              <IconButton
-                color="primary"
-                component="span"
-                onClick={() => setBatchOpen(true)}
-                disabled={!selectPool.length}
-              >
-                <CheckCircleOutlineOutlinedIcon />
-              </IconButton>
-            </Tooltip> */}
+            <StatusMenu
+              visible={!selectPool.length}
+              handleStatus={handleStatusChange}
+            />
             <Tooltip title="Удалить">
               <IconButton
                 color="secondary"

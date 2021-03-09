@@ -151,6 +151,15 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
     }))
     setUpdated(true)
   }
+  
+  const handleCustomChange = (_, values) => {
+    const customAr = values.map(obj => obj.value)
+    setNewFilters(prevState => ({
+      ...prevState,
+      custom: customAr.length ? customAr : null
+    }))
+    setUpdated(true)
+  }
 
   const handleStatusChange = (_, value) => {
     setNewFilters(prevState => ({
@@ -196,12 +205,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title} />
+                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
                 );
               }
             }}
@@ -272,12 +281,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title} />
+                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
                 );
               }
             }}
@@ -322,12 +331,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title} />
+                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
                 );
               }
             }}
@@ -361,7 +370,7 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
             options={avaiableFilters.custom}
             disableCloseOnSelect
             clearOnEscape
-            onChange={handleAgeChange}
+            onChange={handleCustomChange}
             size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
@@ -399,7 +408,7 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               </Fragment>
             )}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Свой фильтр" />
+              <TextField {...params} variant="outlined" label="Настраиваемый фильтр" />
             )}
           />
         </Grid>

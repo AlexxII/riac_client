@@ -101,6 +101,14 @@ query ($id: ID!) {
         title
         order
         code
+        results {
+          id
+          code
+          text
+          respondent {
+            id
+          }
+        }
       }
     }
   }

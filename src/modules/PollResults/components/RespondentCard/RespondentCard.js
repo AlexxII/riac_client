@@ -20,7 +20,7 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
           <Typography variant="caption" display="block" gutterBottom>
             {respondent.id.slice(-12)}
           </Typography>
-          {respondent.processed ?
+          {/* {respondent.processed ?
             <p>
               <Typography variant="caption" display="block" gutterBottom>
                 чек
@@ -28,7 +28,7 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
             </p>
             :
             ''
-          }
+          } */}
           <Checkbox
             color="primary"
             checked={selected}

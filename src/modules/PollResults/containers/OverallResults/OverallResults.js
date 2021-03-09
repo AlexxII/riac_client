@@ -86,7 +86,6 @@ const OverallResults = ({ id }) => {
     onCompleted: () => {
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
-      console.log(pollResults);
       setQuota({
         users: handleUserQuotaData(pollResults.poll.results),
         cities: handleCityQuotaData(pollResults.poll.results)
@@ -325,7 +324,6 @@ const OverallResults = ({ id }) => {
             }
           }
           return res
-          // console.log(activeFilters);
         })
         .filter(result => {
           const len = result.result.length
@@ -360,10 +358,14 @@ const OverallResults = ({ id }) => {
           return res
         })
         .filter(result => {
-          if (activeFilters.status === null) {
+          if (!activeFilters.status) {
             return true
           }
-          return result.processed === activeFilters.status
+          if (activeFilters.status === 'set') {
+            return result.processed === true
+          } else {
+            return result.processed === false
+          }
         })
       const newSelectPool = selectPool.filter(
         selectId => {
@@ -526,8 +528,8 @@ const OverallResults = ({ id }) => {
 
   const closeDuplicateAnalyzeMode = () => {
     setDuplicateAnalyze(false)
-    setActiveFilters(null)
-    setReset(true)
+    // setActiveFilters(null)
+    // setReset(true)
     setActiveWorksheets(pollResults.poll.results)
   }
 
@@ -722,7 +724,6 @@ const OverallResults = ({ id }) => {
         </Grid>
         <Filters
           filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
-          reset={reset}
           pollFilters={pollResults.poll.filters}
           quota={quota} />
         <DataGrid

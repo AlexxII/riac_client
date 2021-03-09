@@ -16,22 +16,24 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   const [newFilter, setNewFilters] = useState(null)
   const [updated, setUpdated] = useState(false)
 
-  useEffect(() => {
-    if (avaiableFilters) {
-      setAviableFilters({
-        ...avaiableFilters,
-        intervs: filters.intervievers
-          .map(interv => ({
-            value: interv.id,
-            title: interv.username
-          }))
-          .map(interv => ({
-            ...interv,
-            count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
-          }))
-      })
-    }
-  }, [quota])
+  // useEffect(() => {
+  //   if (avaiableFilters) {
+  //     console.log(filters);
+
+  //     setAviableFilters({
+  //       ...avaiableFilters,
+  //       intervs: filters.intervievers
+  //         .map(interv => ({
+  //           value: interv.id,
+  //           title: interv.username
+  //         }))
+  //         .map(interv => ({
+  //           ...interv,
+  //           count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
+  //         }))
+  //     })
+  //   }
+  // }, [quota])
 
   useEffect(() => {
     const ageDef = pollFilters.age.reduce((acum, item) => {
@@ -117,7 +119,6 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   }
 
   const handleAgeChange = (_, values) => {
-    console.log(values);
     const ages = values.map(age => age.value)
     setNewFilters(prevState => ({
       ...prevState,
@@ -309,8 +310,7 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               </Fragment>
             )}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Город"
-              />
+              <TextField {...params} variant="outlined" label="Город" />
             )}
           />
         </Grid>
@@ -408,7 +408,7 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               </Fragment>
             )}
             renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Настраиваемый фильтр" />
+              <TextField {...params} variant="outlined" label="Настраиваемый" />
             )}
           />
         </Grid>
@@ -416,11 +416,11 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
           <Autocomplete
             options={[
               {
-                value: true,
+                value: 'set',
                 title: 'Обработан'
               },
               {
-                value: false,
+                value: 'unset',
                 title: 'Не обработан'
               }
             ]}

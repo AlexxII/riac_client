@@ -36,6 +36,7 @@ const BatchCharts = ({ data, selectPool, open, close }) => {
 
   useEffect(() => {
     if (open) {
+      console.log(data);
       const newQuestions = data.poll.questions.map(question => {
         if (selectPool.length) {
           const newAnswer = question.answers.map(answer => {

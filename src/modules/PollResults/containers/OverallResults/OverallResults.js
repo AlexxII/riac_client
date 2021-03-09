@@ -37,7 +37,7 @@ import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
-import { DELETE_RESULTS } from './mutations'
+import { DELETE_RESULTS, SAVE_RESULTS_STATUS } from './mutations'
 
 const iconvlite = require('iconv-lite')
 
@@ -162,6 +162,42 @@ const OverallResults = ({ id }) => {
       })
     },
     onCompleted: () => {
+      setSelectPool([])
+      setSelectAll(false)
+    }
+  })
+
+  const [
+    saveResultStatus,
+    { loading: loadOnStatusSave }
+  ] = useMutation(SAVE_RESULTS_STATUS, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Изменить статус не удалось. Смотрите консоль.'
+      })
+      console.log(e);
+    },
+    update: (cache, { data }) => {
+      const updatePool = data.saveResultStatus.map(obj => obj.id)
+      const bool = data.saveResultStatus[0].processed
+      setActiveWorksheets(activeWorksheets.map(
+        result => updatePool.includes(result.id) ? { ...result, processed: bool } : result
+      ))
+    },
+    // update: (cache, { data }) => {
+    //   const deletedPool = data.deleteResults.map(del => del.id)
+    //   setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
+    //   cache.modify({
+    //     fields: {
+    //       pollResults(existingRefs, { readField }) {
+    //         return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
+    //       }
+    //     }
+    //   })
+    // },
+    onCompleted: () => {
+
       setSelectPool([])
       setSelectAll(false)
     }
@@ -360,7 +396,7 @@ const OverallResults = ({ id }) => {
   }
 
   const Loading = () => {
-    if (loadOnDelete) return <LoadingStatus />
+    if (loadOnDelete || loadOnStatusSave) return <LoadingStatus />
     return null
   }
 
@@ -513,12 +549,22 @@ const OverallResults = ({ id }) => {
   const handleStatusChange = (type) => {
     switch (type) {
       case 'set':
-        const setPool = activeWorksheets.filter(obj => !obj.process).map(obj => obj.id)
-        console.log('set', setPool);
+        const setPool = activeWorksheets.filter(obj => !obj.processed).map(obj => obj.id)
+        saveResultStatus({
+          variables: {
+            type: 'set',
+            results: setPool
+          }
+        })
         break
       case 'unset':
-        const unsetPool = activeWorksheets.filter(obj => obj.process).map(obj => obj.id)
-        console.log('set', unsetPool);
+        const unsetPool = activeWorksheets.filter(obj => obj.processed).map(obj => obj.id)
+        saveResultStatus({
+          variables: {
+            type: 'unset',
+            results: unsetPool
+          }
+        })
         break
       default:
         return

@@ -5,7 +5,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
-import Typography from '@material-ui/core/Typography';
 
 const StatusMenu = ({ visible, handleStatus }) => {
   const [anchorEl, setAnchorEl] = useState(null);

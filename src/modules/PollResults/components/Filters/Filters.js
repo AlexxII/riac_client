@@ -151,7 +151,7 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
     }))
     setUpdated(true)
   }
-  
+
   const handleCustomChange = (_, values) => {
     const customAr = values.map(obj => obj.value)
     setNewFilters(prevState => ({
@@ -205,12 +205,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
+                  <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />
                 );
               }
             }}
@@ -281,12 +281,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
+                  <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />
                 );
               }
             }}
@@ -331,12 +331,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
+                  <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />
                 );
               }
             }}
@@ -378,12 +378,12 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               if (selected.length > 1) {
                 return (
                   <Fragment>
-                    <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />{' +' + (selected.length - 1)}
+                    <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />{' +' + (selected.length - 1)}
                   </Fragment>
                 )
               } else {
                 return (
-                  <Chip size="small" label={selected[0].title.slice(0,25) + '...'} />
+                  <Chip size="small" label={selected[0].title.slice(0, 25) + '...'} />
                 );
               }
             }}
@@ -412,9 +412,18 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
             )}
           />
         </Grid>
-        {/* <Grid item xs={12} sm={6} md={3} lg={3}>
+        <Grid item xs={12} sm={6} md={3} lg={3}>
           <Autocomplete
-            options={avaiableFilters.status}
+            options={[
+              {
+                value: true,
+                title: 'Обработан'
+              },
+              {
+                value: false,
+                title: 'Не обработан'
+              }
+            ]}
             onChange={handleStatusChange}
             size="small"
             noOptionsText={"Опции не настроены"}
@@ -423,8 +432,7 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
               <TextField {...params} variant="outlined" label="Статус" />
             )}
           />
-        </Grid> */}
-
+        </Grid>
         <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-start">
           <Button
             variant="contained"

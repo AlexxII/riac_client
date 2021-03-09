@@ -12,7 +12,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import { withStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
@@ -197,7 +196,6 @@ const OverallResults = ({ id }) => {
     //   })
     // },
     onCompleted: () => {
-
       setSelectPool([])
       setSelectAll(false)
     }
@@ -361,6 +359,12 @@ const OverallResults = ({ id }) => {
           }
           return res
         })
+        .filter(result => {
+          if (activeFilters.status === null) {
+            return true
+          }
+          return result.processed === activeFilters.status
+        })
       const newSelectPool = selectPool.filter(
         selectId => {
           const len = newResult.length
@@ -477,7 +481,7 @@ const OverallResults = ({ id }) => {
         outData += '\n' + exportData[city].interviewer + '\n\n'
         count++
       }
-      const outDataCp866 = utfTocp866(outData)
+      const outDataCp866 = utfToCP866(outData)
       downloadIt(outDataCp866, 'allData.opr')
     } else {
       for (let city in exportData) {
@@ -500,29 +504,18 @@ const OverallResults = ({ id }) => {
         outData += '==='
         outData += '\n' + exportData[city].interviewer
         count++
-
-        const outDataCp866 = utfTocp866(outData)
+        const outDataCp866 = utfToCP866(outData)
         downloadIt(outDataCp866, rusToLatin(city))                                  // транслит для имени файла
       }
     }
   }
 
-  const utfTocp866 = (data) => {
-    // let encoder = new TextEncoder();
-    // let uint8Array = encoder.encode(data);
-    // console.log(uint8Array);
-
-    // let decoder = new TextDecoder('cp1251')
-    // const dd = decoder.decode(uint8Array)
-
-    // return dd
+  // преобразование кодировки
+  const utfToCP866 = (data) => {
     const buf = Buffer.from(data);
-    const buff = iconvlite.encode(data, 'utf8');
-
-    // const decoder = new TextDecoder('866')
-    // const result = decoder.decode(buf)
-    const result = iconvlite.decode(buff, 'cp866')
-    return data
+    const buff = iconvlite.decode(buf, 'utf8');
+    const result = iconvlite.encode(buff, 'cp866')
+    return result
   }
 
   const showOnlyDuplicates = () => {

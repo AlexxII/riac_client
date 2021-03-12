@@ -16,6 +16,7 @@ import BarChart from '../../components/BarChart'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
+import { parseOprFile } from '../../lib/utils'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -33,43 +34,40 @@ const BatchInput = ({ id }) => {
   const [dataPool, setDataPool] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
-
   const [displayData, setDisplayData] = useState(false)
 
-  useEffect(() => {
-
-    if (dataPool) {
-      const poll = pollData ? pollData.poll : null
-      if (poll) {
-        const questions = poll.questions
-        const resultPoolLength = dataPool.length
-        // пройтись по невидимым сперва
-
-        const newQuestionsPool = questions.map(question => {
-          const newAnswersPool = question.answers.map(answer => {
-            let temp = [...answer.results]
-            for (let i = 0; i < resultPoolLength; i++) {
-              if (dataPool[i].includes(answer.code)) {
-                temp.push({
-                  code: answer.code,
-                  text: ''
-                })
-              }
-            }
-            return {
-              ...answer,
-              results: temp
-            }
-          })
-          return {
-            ...question,
-            answers: newAnswersPool
-          }
-        })
-        setDisplayData(newQuestionsPool)
-      }
-    }
-  }, [dataPool])
+  // useEffect(() => {
+  //   if (dataPool) {
+  //     const poll = pollData ? pollData.poll : null
+  //     if (poll) {
+  //       const questions = poll.questions
+  //       const resultPoolLength = dataPool.length
+  //       // пройтись по невидимым сперва
+  //       const newQuestionsPool = questions.map(question => {
+  //         const newAnswersPool = question.answers.map(answer => {
+  //           let temp = [...answer.results]
+  //           for (let i = 0; i < resultPoolLength; i++) {
+  //             if (dataPool[i].includes(answer.code)) {
+  //               temp.push({
+  //                 code: answer.code,
+  //                 text: ''
+  //               })
+  //             }
+  //           }
+  //           return {
+  //             ...answer,
+  //             results: temp
+  //           }
+  //         })
+  //         return {
+  //           ...question,
+  //           answers: newAnswersPool
+  //         }
+  //       })
+  //       setDisplayData(newQuestionsPool)
+  //     }
+  //   }
+  // }, [dataPool])
 
   const {
     data: pollData,
@@ -101,30 +99,34 @@ const BatchInput = ({ id }) => {
     setProcessing(true)
     let reader = new FileReader();
     let file = e.target.files[0];
-
     if (file) {
       reader.onloadend = () => {
         // + удаляем перенос строк
-        const oprTextRaw = reader.result.replace(/\r?\n/g, "")
-        const oprArrayRaw = oprTextRaw.split(',999')
-        const oprArray = oprArrayRaw.filter(arr => arr.length)
-        const aLength = oprArray.length
-        let splitedCodesArrays = []
-        for (let i = 0; i < aLength; i++) {
-          const tempAr = oprArray[i].split(',')
-          const tempLength = tempAr.length
-          let normTemp = []
-          for (let j = 0; j < tempLength; j++) {
-            const atomData = tempAr[j]
-            normTemp.push(atomData.trim())
-          }
-          splitedCodesArrays.push(normTemp)
-        }
-        setDataPool(splitedCodesArrays)
+        const fileData = reader.result
+        const correctData = parseOprFile(fileData)
+
+        // const oprTextRaw = reader.result.replace(/\r?\n/g, "")
+        // const oprArrayRaw = oprTextRaw.split(',999')
+        // console.log(oprTextRaw);
+        // const oprArray = oprArrayRaw.filter(arr => arr.length)
+        // const aLength = oprArray.length
+        // let splitedCodesArrays = []
+        // for (let i = 0; i < aLength; i++) {
+        //   const tempAr = oprArray[i].split(',')
+        //   const tempLength = tempAr.length
+        //   let normTemp = []
+        //   for (let j = 0; j < tempLength; j++) {
+        //     const atomData = tempAr[j]
+        //     normTemp.push(atomData.trim())
+        //   }
+        //   splitedCodesArrays.push(normTemp)
+        // }
+        // setDataPool(splitedCodesArrays)
+        // setProcessing(false)
         setProcessing(false)
       }
     }
-    reader.readAsText(file);
+    reader.readAsText(file, 'cp866');
     e.target.value = ""
   }
 
@@ -208,19 +210,8 @@ const BatchInput = ({ id }) => {
         }
       />
       <Grid container spacing={3} xs={12} className="batchinput-result-zone">
-        {displayData &&
-          displayData.map((question, index) => (
-            <Fragment>
-              <Grid xs={12} md={6}>
-                <LinearTable index={index} key={question.id} question={question} />
-                <p></p>
-              </Grid>
-              <Grid xs={12} md={6}>
-                <BarChart question={question} />
-                <p></p>
-              </Grid>
-            </Fragment>
-          ))}
+        {displayData
+        }
       </Grid>
     </Fragment>
   )

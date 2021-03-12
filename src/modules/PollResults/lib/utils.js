@@ -1,3 +1,5 @@
+const iconvlite = require('iconv-lite')
+
 export const rusToLatin = (str) => {
   var ru = {
     'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd',
@@ -44,4 +46,26 @@ export const prepareResultsDataToExport = (resultsPool) => {
     allResults += tempResult + '999' + '\n'
   }
   return allResults
+}
+
+
+export const parseOprFile = (inputData) => {
+  const buf = Buffer.from(inputData);
+  const utf8Text = iconvlite.decode(buf, 'utf8')
+  const bloсkExp = /((АО[\s\S]+?===\r?\n?)([А-Яа-я .]+))/g
+  // const headerExp = /АО[\s\S]+?04\/[\s\S]+?\n/g
+  const headerExp = /АО[\s\S]+?04\/[\D\d]+\n/gm
+  const pollCodeExp = /00\/([\s\S]+?\n)/g
+  const dateExp = /02\/(\d*)/g
+  const cityExp = /04\/[\D\d]+\n/g
+
+  const match = utf8Text.match(bloсkExp)
+  for (let i = 0; i < match.length; i++) {
+    const block = match[i]
+    const header = block.match(headerExp)[0]
+    const pollCode = header.match(pollCodeExp)[0]
+    const date = header.match(dateExp)
+    const city = header.match(cityExp)[0]
+    console.log(date);
+  }
 }

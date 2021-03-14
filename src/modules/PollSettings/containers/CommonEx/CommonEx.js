@@ -6,6 +6,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import Chip from '@material-ui/core/Chip';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import ErrorState from '../../../../components/ErrorState'
@@ -18,14 +21,66 @@ import { useMutation } from '@apollo/react-hooks'
 import { GET_POLL_DATA } from "./queries"
 import { SAVE_POLL_STATUS } from './mutations'
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    '& > *': {
+      margin: theme.spacing(0.5),
+    }
+  },
+  text: {
+    fontWeight: 800
+  }
+}));
+
 const CommonEx = ({ id }) => {
+  const classes = useStyles();
   const [noti, setNoti] = useState(false)
+  const [topics, setTopics] = useState(false)
   const {
     loading,
     error,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
-    variables: { id }
+    variables: { id },
+    onCompleted: (data) => {
+      console.log(data);
+      const topicsObj = data.poll.questions.reduce((acum, item) => {
+        if (acum[item.topic.id] === undefined) {
+          acum[item.topic.id] = {
+            title: item.topic.title,
+            questions: [{
+              id: item.id,
+              order: item.order
+            }]
+          }
+        } else {
+          acum[item.topic.id] = {
+            ...acum[item.topic.id],
+            questions: [
+              ...acum[item.topic.id].questions,
+              {
+                id: item.id,
+                order: item.order
+              }
+            ]
+          }
+        }
+        return acum
+      }, {})
+      let topics = []
+      for (let key in topicsObj) {
+        topics.push({
+          ...topicsObj[key],
+          order: topicsObj[key].questions.length > 0 ? topicsObj[key].questions[0].order : null
+        })
+      }
+      console.log(topics);
+      const oderedTopics = topics.sort((a, b) => (a.order > b.order) ? 1 : -1)
+      console.log(oderedTopics);
+      setTopics(oderedTopics)
+    }
   })
 
   const [saveNewStatus, { loading: saveStatusLoading }] = useMutation(SAVE_POLL_STATUS, {
@@ -65,7 +120,7 @@ const CommonEx = ({ id }) => {
     return null
   }
 
-  if (loading) return (
+  if (loading || !topics) return (
     <LoadingState type="card" />
   )
 
@@ -109,12 +164,30 @@ const CommonEx = ({ id }) => {
           alignItems="flex-start"
         >
           <Box>
-            <div> Вопросов: {pollData.poll.questionsCount}</div>
+            <div className={classes.text}> Вопросов: {pollData.poll.questionsCount}</div>
           </Box>
           <Box>
-            <div> Ответов: {pollData.poll.answersCount}</div>
+            <div className={classes.text}> Ответов: {pollData.poll.answersCount}</div>
           </Box>
+          <Grid>
+            <p className={classes.text}>
+              Темы:
+            </p>
+            <div className={classes.root}>
+              {topics.map(topic => (
+                <Chip
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  // onDelete={() => { }}
+                  deleteIcon={<InfoOutlinedIcon />}
+                  label={(topic.title ? topic.title : '-') + ' - ' + topic.questions.length}
+                />
+              ))}
+            </div>
+          </Grid>
         </Grid>
+
         <FormControlLabel
           style={{ marginLeft: '0px' }}
           label="Активный"

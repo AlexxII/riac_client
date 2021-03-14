@@ -10,6 +10,15 @@ export const GET_POLL_DATA = gql`
       questionsCount
       answersCount
       active
+      questions {
+        id
+        title
+        order
+        topic {
+          id
+          title
+        }
+      }
     }
   }
 `

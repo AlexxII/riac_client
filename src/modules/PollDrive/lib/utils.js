@@ -89,7 +89,7 @@ function parseParams(data) {
   // избавляемся от пробелов
   let trimData = data.replace(/\s*/g, '');
   let regex = {
-    srange: /([0-9]{1,3})|\[(.+?)\]/gm
+    srange: /([0-9_]{1,3})|\[(.+?)\]/gm
   };
   let output = [];
   let temp;
@@ -214,8 +214,13 @@ export const normalizeLogic = (logic) => {
           invisible: invisiblePool
         }
         break
+      case 'cities':
+        normalizedLogic = {
+          ...normalizedLogic,
+          cities: logic[key][1].cities
+        }
       default:
-        return
+        break
     }
   }
   return normalizedLogic

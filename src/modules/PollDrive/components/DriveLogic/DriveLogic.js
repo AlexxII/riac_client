@@ -31,7 +31,7 @@ const SET_RADIO_ANSWER = 3
 
 const DriveLogic = React.memo(props => {
   const {
-    poll, logic, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode, update
+    poll, logic, cityCode, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode, update
   } = props
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
@@ -49,7 +49,7 @@ const DriveLogic = React.memo(props => {
   })
   useEffect(() => {
     // первичная инициализация, наложение логики и сохранение в стор следующего вопроса + восстановление промежуточных итогов
-    const nextQuestion = questionFormationEx(poll.questions[count], count, logic, results, setResults);
+    const nextQuestion = questionFormationEx(poll.questions[count], count, logic, cityCode, results, setResults);
     if (nextQuestion.skip) {
       if (direction) {
         if (count === questionsLimit - 1) {

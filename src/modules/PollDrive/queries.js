@@ -18,10 +18,17 @@ export const GET_POLL_DATA = gql`
       cities {
         id
         title
+        category {
+          id
+          title
+        }
       }
       logic {
         path
       }
+    }
+    cityCategories {
+      id
     }
   }
 `

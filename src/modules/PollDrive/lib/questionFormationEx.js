@@ -2,7 +2,7 @@ import { keycodes } from './keycodes'
 
 // режим - обновление, вколачивание
 
-const questionFormationEx = (question, count, logic, results, setResults) => {
+const questionFormationEx = (question, count, logic, cityCode, results, setResults) => {
   let questionSuffix = {
     selectedAnswer: '',
     skip: false,
@@ -134,6 +134,32 @@ const questionFormationEx = (question, count, logic, results, setResults) => {
       ...answerSuffix
     }
   })
+
+  // проверка на вопрос с категорией города
+  if (cityCode !== '') {
+    if (codesPool.includes(cityCode)) {
+      // код ответа на вопрос города присутствует -> сохраняем ответ
+      const answerId = answersEx.filter(obj => obj.code === cityCode).map(obj => obj.id)[0]
+      let newResultState = Object.assign({}, results);
+      newResultState[question.id] = {
+        data: [{
+          answerCode: cityCode,
+          answerId,
+          freeAnswer: false,
+          freeAnswerText: ''
+        }],
+        codesPool,
+        count
+      }
+      setResults(newResultState)
+      return {
+        skip: true,
+        results: newResultState
+      }
+    }
+  }
+
+
 
   // ограничение введенных ответов
   let answersExEx = []

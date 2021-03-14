@@ -28,7 +28,7 @@ const ResultView = ({ data, selectPool, logic, open, close, update }) => {
       const modeResults = prepareSavedData(respondent)
       setResults(modeResults)
       const modQuestions = questions.map((question, index) => {
-        return questionFormationEx(question, index, logic, modeResults, setResults)
+        return questionFormationEx(question, index, logic, '', modeResults, setResults)
       })
       setQuestions(modQuestions)
     }

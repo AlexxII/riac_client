@@ -179,7 +179,8 @@ const CommonSetting = ({ id }) => {
     fetch(url + filePath)
       .then((r) => r.text())
       .then(text => {
-        const normalizedLogic = normalizeLogic(parseIni(text))
+        const parsedText = parseIni(text)
+        const normalizedLogic = normalizeLogic(parsedText)
         const updatedQuestions = modulateQuestionsWithLogic(normalizedLogic)
         setQuestions(updatedQuestions.sort((a, b) => (a.order > b.order) ? 1 : -1))
         setReady(true)

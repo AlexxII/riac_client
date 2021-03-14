@@ -74,6 +74,7 @@ const PollDrive = ({ pollId }) => {
     }
   )
   const [currentCity, setCurrentCity] = useState(null)
+  const [cityCode, setCityCode] = useState(null)
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id: pollId },
     onCompleted: (_, __) => {
@@ -88,8 +89,8 @@ const PollDrive = ({ pollId }) => {
         const logic = parseIni(text)
         // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
         const normLogic = normalizeLogic(logic)
+        console.log(normLogic);
         setPollLogic(normLogic)
-        console.log(logic.difficult);
       })
   }
   const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
@@ -165,6 +166,20 @@ const PollDrive = ({ pollId }) => {
 
   const saveCity = (city) => {
     setCurrentCity(city)
+    const configCities = logic.cities ? logic.cities : []
+    let cityCode = ''
+    if (configCities.length) {
+      // сохраняем код выбранного города
+      const activeCitiesCategories = data.cityCategories
+      const selectedCityCategory = poolOfCities.filter(obj => obj.id === city.id).map(obj => obj.category.id)[0]
+      for (let i = 0; i < activeCitiesCategories.length; i++) {
+        if (activeCitiesCategories[i].id === selectedCityCategory) {
+          cityCode = configCities[i] ? configCities[i] : ''
+          break
+        }
+      }
+    }
+    setCityCode(cityCode)
     setOpenCityDialog(false)
   }
 
@@ -280,6 +295,7 @@ const PollDrive = ({ pollId }) => {
         <DriveLogic
           poll={poll}
           logic={logic}
+          cityCode={cityCode}
           userSettings={userSettings}
           results={results}
           setResults={setResults}

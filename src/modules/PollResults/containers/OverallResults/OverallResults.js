@@ -65,7 +65,9 @@ const OverallResults = ({ id }) => {
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
   const [activeFilters, setActiveFilters] = useState(null)
-  const [calculating, setCalculating] = useState(true)
+
+  const [calculating, setCalculating] = useState(false)
+  
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                        // количество н.п. для выгрузки -> файлов
@@ -76,6 +78,12 @@ const OverallResults = ({ id }) => {
   const [quota, setQuota] = useState(false)
 
   const {
+    data: filtersResults,
+    loading: filtersResultsLoading,
+    error: filtersResultsError
+  } = useQuery(GET_FILTER_SELECTS)
+
+  const {
     data: pollResults,
     loading: pollResultsLoading,
     error: pollResultsError
@@ -84,6 +92,7 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: () => {
+      console.log(pollResults);
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
       setQuota({
@@ -130,12 +139,6 @@ const OverallResults = ({ id }) => {
       return acum
     }, {})
   }
-
-  const {
-    data: filtersResults,
-    loading: filtersResultsLoading,
-    error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS)
 
   const [
     deleteResult,
@@ -200,6 +203,7 @@ const OverallResults = ({ id }) => {
     }
   })
 
+  /*
   useEffect(() => {
     if (activeWorksheets.length) {
       setQuota({
@@ -276,6 +280,7 @@ const OverallResults = ({ id }) => {
       setCalculating(false)
     }
   }, [activeWorksheets])
+*/
 
   useEffect(() => {
     if (selectPool.length) {
@@ -527,8 +532,6 @@ const OverallResults = ({ id }) => {
 
   const closeDuplicateAnalyzeMode = () => {
     setDuplicateAnalyze(false)
-    // setActiveFilters(null)
-    // setReset(true)
     setActiveWorksheets(pollResults.poll.results)
   }
 

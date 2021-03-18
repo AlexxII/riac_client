@@ -67,11 +67,6 @@ query ($id: ID!) {
         id
         title
         type
-        category {
-          order
-          id
-          title
-        }
       }
       created
       lastModified
@@ -83,11 +78,6 @@ query ($id: ID!) {
         }
         code
         text
-        question {
-          id
-          order
-          codesPool
-        }
       }
     }
     questions {
@@ -101,44 +91,8 @@ query ($id: ID!) {
         title
         order
         code
-        results {
-          id
-          code
-          text
-          respondent {
-            id
-          }
-        }
       }
     }
   }
 }
-`
-
-export const GET_POLL_RESULTS_OLD = gql`
-  query ($id: String!) {
-    pollResults(id: $id) {
-      id
-      user {
-        id
-        username
-      }
-      city {
-        id
-        title
-        category {
-          title
-        }
-      }
-      created
-      lastModified
-      processed
-      result {
-        answer
-        code
-        text
-      }
-    }
-  }
-
 `

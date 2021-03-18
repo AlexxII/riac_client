@@ -430,7 +430,6 @@ const OverallResults = ({ id }) => {
     const needCityCategory = city.replace(/город|населенный пункт|поселок|ж.д. станция|село/gi, function (matched) {
       return cityObj[matched]
     })
-    console.log(needCityCategory);
     return needCityCategory
   }
 

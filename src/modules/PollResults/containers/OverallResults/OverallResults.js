@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import IconButton from '@material-ui/core/IconButton';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -67,7 +68,7 @@ const OverallResults = ({ id }) => {
   const [activeFilters, setActiveFilters] = useState(null)
 
   const [calculating, setCalculating] = useState(false)
-  
+
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                        // количество н.п. для выгрузки -> файлов
@@ -532,6 +533,7 @@ const OverallResults = ({ id }) => {
 
   const closeDuplicateAnalyzeMode = () => {
     setDuplicateAnalyze(false)
+
     setActiveWorksheets(pollResults.poll.results)
   }
 
@@ -568,6 +570,69 @@ const OverallResults = ({ id }) => {
     }
   }
 
+  const checkForDuplicates = () => {
+    const activeAndSelectedSheets = activeWorksheets.filter(obj => selectPool.includes(obj.id))
+    setSelectPool([])
+    setCalculating(true)
+    setTimeout(function () {
+      const results = activeAndSelectedSheets.map(obj => (
+        {
+          id: obj.id,
+          answers: obj.result
+        }
+      ))
+      // процесс анализа дублей
+      const lResults = results.length - 1                                                 // кол-во итераций N-1, т.к. предпоследний сравнивается с последним
+      let arrayOfDublWorksheets = []
+      for (let i = 0; i < lResults; i++) {
+        const result = results[i].answers
+        const lresult = result.length
+        for (let k = i + 1; k < lResults + 1; k++) {
+          const nextResult = results[k].answers                                           // следующий по очереди массив с ответами, с ним и происходит сравнение
+          // если размерность массива ответов разная -> дубли быть не могут
+          if (result.length === nextResult.length) {
+            // выстроить очередность
+            const resultOrd = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+            const nextResultOrd = nextResult.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
+            let count = 0
+            for (let j = 0; j < lresult; j++) {
+              if (resultOrd[j].code === nextResultOrd[j].code) {
+                // свободные отеты совпадают -> продолжаем анализ
+                if (resultOrd[j].text !== nextResultOrd[j].text) {
+                  break
+                }
+                count++
+                continue
+              }
+              break
+            }
+            if (count === result.length) {
+              arrayOfDublWorksheets.push({
+                first: results[i].id,
+                second: results[k].id
+              })
+            }
+          }
+        }
+      }
+      if (arrayOfDublWorksheets.length) {
+        const dublArray = arrayOfDublWorksheets.reduce((group, item) => {
+          return [
+            ...group,
+            item.first,
+            item.second
+          ]
+        }, [])
+        const uniqueDublArray = [...new Set(dublArray)]
+        setDuplicateResults(uniqueDublArray)
+      } else {
+        setDuplicateResults(null)
+      }
+      setCalculating(false)
+    }, 1000)
+
+  }
+
   const downloadIt = (data, fileName) => {
     const element = document.createElement('a')
     const file = new Blob([data], { type: 'text/plain' });
@@ -593,23 +658,25 @@ const OverallResults = ({ id }) => {
   }
 
   const updateSingleResult = (respondent) => {
-    console.log(respondent);
     history.push(`/update-result/${id}/${respondent.id}`);
   }
 
   return (
     <Fragment>
       <BatchCharts
+        // Графики
         data={pollResults}
         selectPool={selectPool}
         open={batchGrOpen}
         close={() => setBatchGrOpen(false)} />
       <BriefInfo
+        // краткая информация - просто коды
         data={pollResults.poll.results}
         selectPool={selectPool}
         open={briefOpen}
         close={() => setBrifOpen(false)} />
       <ResultView
+        // просмотр результатов
         data={pollResults}
         selectPool={selectPool}
         open={batchOpen}
@@ -673,6 +740,16 @@ const OverallResults = ({ id }) => {
               visible={!selectPool.length}
               handleStatus={handleStatusChange}
             />
+            <Tooltip title="Проверить на дубли">
+              <IconButton
+                color="primary"
+                component="span"
+                onClick={checkForDuplicates}
+                disabled={selectPool.length < 2}
+              >
+                <FileCopyOutlinedIcon />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Удалить">
               <IconButton
                 color="secondary"

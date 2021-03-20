@@ -67,6 +67,11 @@ query ($id: ID!) {
         id
         title
         type
+        category {
+          id
+          order
+          title
+        }
       }
       created
       lastModified

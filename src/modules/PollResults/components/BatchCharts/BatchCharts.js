@@ -30,33 +30,40 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const BatchCharts = ({ data, selectPool, open, close }) => {
+const BatchCharts = ({ data, selectPool, questions, open, close }) => {
   const classes = useStyles();
   const [selectedData, setSelectedData] = useState()
 
   useEffect(() => {
     if (open) {
-      console.log(data);
-      const newQuestions = data.poll.questions.map(question => {
-        if (selectPool.length) {
-          const newAnswer = question.answers.map(answer => {
-            if (answer.results.length) {
-              const newResults = answer.results.filter(result =>
-                selectPool.includes(result.respondent.id)
-              )
-              return { ...answer, results: newResults }
-            }
-            return answer
-          })
-          return { ...question, answers: newAnswer }
+      const respondents = data.filter(obj => selectPool.includes(obj.id));
+      let resultsPool = {}
+      for (let i = 0; i < respondents.length; i++) {
+        const result = respondents[i].result
+        for (let j = 0; j < result.length; j++) {
+          if (resultsPool[result[j].answer.id]) {
+            resultsPool[result[j].answer.id] = [
+              ...resultsPool[result[j].answer.id],
+              result[j].id
+            ]
+          } else {
+            resultsPool[result[j].answer.id] = [result[j].id]
+          }
         }
-        return question
-      })
-      const dd = {
-        ...data.poll,
-        questions: newQuestions
       }
-      setSelectedData(dd)
+      const newQuestions = questions.map(question => {
+        const newAnswers = question.answers.map(answer => {
+          return {
+            ...answer,
+            results: resultsPool[answer.id] ? resultsPool[answer.id] : []
+          }
+        })
+        return {
+          ...question,
+          answers: newAnswers
+        }
+      })
+      setSelectedData(newQuestions)
     }
   }, [open])
 
@@ -80,7 +87,7 @@ const BatchCharts = ({ data, selectPool, open, close }) => {
         <Container className="batch-linear">
           <Grid item container>
             {selectedData ?
-              selectedData.questions.map((question, index) => (
+              selectedData.map((question, index) => (
                 <Fragment>
                   <Grid xs={12} style={{ textAlign: 'center' }}>
                     <p className="question-title">{index + 1}. {question.title}</p>

@@ -13,7 +13,7 @@ import questionFormationEx from '../../../PollDrive/lib/questionFormationEx'
 
 import QuestionCard from '../../../PollDrive/components/QuestionCard'
 
-const ResultView = ({ data, selectPool, logic, open, close, update }) => {
+const ResultView = ({ workSheets, pollQuestions, selectPool, logic, open, close, update }) => {
   const [questions, setQuestions] = useState(false)
   const [results, setResults] = useState(false)
   const [respondentId, setRespondentId] = useState(false)
@@ -22,13 +22,16 @@ const ResultView = ({ data, selectPool, logic, open, close, update }) => {
 
   useEffect(() => {
     if (selectPool.length && open) {
-      const questions = data.poll.questions
-      const respondent = data.poll.results.filter(result => result.id === selectPool[0])[0]
+      const respondent = workSheets.filter(workSheet => workSheet.id === selectPool[0])[0]
       setRespondentId(respondent.id)
-      const modeResults = prepareSavedData(respondent)
-      setResults(modeResults)
-      const modQuestions = questions.map((question, index) => {
-        return questionFormationEx(question, index, logic, '', modeResults, setResults)
+      const pool = respondent.result.map(result => result.code)
+      const poolOfTexts = respondent.result.reduce((acum, item) => {
+        acum[item.id] = item.text
+        return acum
+      }, {})
+      const preparedResultsData = prepareResults(pool, poolOfTexts, pollQuestions)
+      const modQuestions = pollQuestions.map((question, index) => {
+        return questionFormationEx(question, index, logic, '', preparedResultsData, setResults)
       })
       setQuestions(modQuestions)
     }
@@ -41,6 +44,36 @@ const ResultView = ({ data, selectPool, logic, open, close, update }) => {
   const handleUpdate = () => {
     update({ id: respondentId })
     close()
+  }
+
+  const prepareResults = (pool, poolOfTexts, pollQuestions) => {
+    const pData = pollQuestions.reduce((acum, item) => {
+      const answers = item.answers
+      const lAnswers = answers.length
+      let data = []
+      let codesPool = []
+      for (let j = 0; j < lAnswers; j++) {
+        const answer = answers[j]
+        codesPool.push(answer.code)
+        if (pool.includes(answer.code)) {
+          data.push({
+            answerCode: answer.code,
+            answerId: answer.id,
+            freeAnswer: poolOfTexts[answer.id] ? poolOfTexts[answer.id] !== '' : false,
+            freeAnswerText: poolOfTexts[answer.id] ? poolOfTexts[answer.id] : ''
+          })
+        }
+      }
+      acum[item.id] = {
+        codesPool,
+        data
+      }
+      return acum
+    }, {})
+    return {
+      pool,
+      ...pData
+    }
   }
 
   const prepareSavedData = (data) => {

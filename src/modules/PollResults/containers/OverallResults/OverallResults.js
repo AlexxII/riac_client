@@ -62,7 +62,8 @@ const OverallResults = ({ id }) => {
 
   const [delOpen, setDelOpen] = useState(false)
   const [reset, setReset] = useState(false)
-  const [activeWorksheets, setActiveWorksheets] = useState([])                // отображаемые анкеты
+  const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
+  const [activeFiltrWorksheets, setActiveFilterWorksheets] = useState([])                // отображаемые и отфилтрованные анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
   const [activeFilters, setActiveFilters] = useState(null)
@@ -204,85 +205,6 @@ const OverallResults = ({ id }) => {
     }
   })
 
-  /*
-  useEffect(() => {
-    if (activeWorksheets.length) {
-      setQuota({
-        users: handleUserQuotaData(activeWorksheets),
-        cities: handleCityQuotaData(activeWorksheets)
-      })
-      // console.log(pollResults);
-      // анализ дублей
-      // если кол-во вопросов в опросе больше 5, то проходит анализ, в противном случае нет
-      setLoadingMsg({
-        ...loadingMsg,
-        description: 'Анализ дублей'
-      })
-      if (pollResults.poll.questions.length > 4) {
-        setCalculating(true)
-        setTimeout(function () {
-          const results = activeWorksheets.map(worksheet => (
-            {
-              id: worksheet.id,
-              answers: worksheet.result
-            }
-          ))
-          // процесс анализа дублей
-          const lResults = results.length - 1                                                 // кол-во итераций N-1, т.к. предпоследний сравнивается с последним
-          let arrayOfDublWorksheets = []
-          for (let i = 0; i < lResults; i++) {
-            const result = results[i].answers
-            const lresult = result.length
-            for (let k = i + 1; k < lResults + 1; k++) {
-              const nextResult = results[k].answers                                           // следующий по очереди массив с ответами, с ним и происходит сравнение
-              // если размерность массива ответов разная -> дубли быть не могут
-              if (result.length === nextResult.length) {
-                // выстроить очередность
-                const resultOrd = result.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-                const nextResultOrd = nextResult.slice().sort((a, b) => (a.code > b.code) ? 1 : -1)
-                let count = 0
-                for (let j = 0; j < lresult; j++) {
-                  if (resultOrd[j].code === nextResultOrd[j].code) {
-                    // свободные отеты совпадают -> продолжаем анализ
-                    if (resultOrd[j].text !== nextResultOrd[j].text) {
-                      break
-                    }
-                    count++
-                    continue
-                  }
-                  break
-                }
-                if (count === result.length) {
-                  arrayOfDublWorksheets.push({
-                    first: results[i].id,
-                    second: results[k].id
-                  })
-                }
-              }
-            }
-          }
-          if (arrayOfDublWorksheets.length) {
-            const dublArray = arrayOfDublWorksheets.reduce((group, item) => {
-              return [
-                ...group,
-                item.first,
-                item.second
-              ]
-            }, [])
-            const uniqueDublArray = [...new Set(dublArray)]
-            setDuplicateResults(uniqueDublArray)
-          } else {
-            setDuplicateResults(null)
-          }
-          setCalculating(false)
-        }, 1000)
-      }
-    } else {
-      setCalculating(false)
-    }
-  }, [activeWorksheets])
-*/
-
   useEffect(() => {
     if (selectPool.length) {
       const selectedData = activeWorksheets
@@ -383,6 +305,7 @@ const OverallResults = ({ id }) => {
         })
       setSelectPool(newSelectPool)
       setActiveWorksheets(newResult)
+      setActiveFilterWorksheets(newResult)
     }
   }, [activeFilters])
 
@@ -533,7 +456,6 @@ const OverallResults = ({ id }) => {
 
   const closeDuplicateAnalyzeMode = () => {
     setDuplicateAnalyze(false)
-
     setActiveWorksheets(pollResults.poll.results)
   }
 
@@ -665,8 +587,9 @@ const OverallResults = ({ id }) => {
     <Fragment>
       <BatchCharts
         // Графики
-        data={pollResults}
+        data={activeWorksheets}
         selectPool={selectPool}
+        questions={pollResults.poll.questions}
         open={batchGrOpen}
         close={() => setBatchGrOpen(false)} />
       <BriefInfo
@@ -677,7 +600,8 @@ const OverallResults = ({ id }) => {
         close={() => setBrifOpen(false)} />
       <ResultView
         // просмотр результатов
-        data={pollResults}
+        workSheets={activeWorksheets}
+        pollQuestions={pollResults.poll.questions}
         selectPool={selectPool}
         open={batchOpen}
         logic={logic}

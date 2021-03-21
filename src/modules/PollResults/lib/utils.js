@@ -75,23 +75,26 @@ export const parseOprFile = (inputData) => {
       const blockOfCodes = header.match(codesExp) ? header.match(codesExp)[1] : null
 
       const user = block.match(userExp) ? block.match(userExp)[1] : null
+      /*
       console.log(pollCode);
       console.log(date);
       console.log(city);
       console.log(blockOfCodes);
       console.log(user);
-      const linesOfCodes = ''.match(linesOfCodesExp)
+      */
+      const linesOfCodes = blockOfCodes.match(linesOfCodesExp)
       // что-то нашлось
       if (linesOfCodes) {
         for (let j = 0; j < linesOfCodes.length; j++) {
-          
+          const line = linesOfCodes[j]
+          console.log(line);
         }
       }
     }
 
   } else {
-    const onlyCodes = /./gm
-    const match = utf8Text.match(bloсkExp)
+    const match = utf8Text.match(linesOfCodesExp)
+    console.log(match);
   }
 
 }

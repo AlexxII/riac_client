@@ -45,7 +45,6 @@ const CommonEx = ({ id }) => {
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: (data) => {
-      console.log(data);
       const topicsObj = data.poll.questions.reduce((acum, item) => {
         if (acum[item.topic.id] === undefined) {
           acum[item.topic.id] = {
@@ -76,9 +75,7 @@ const CommonEx = ({ id }) => {
           order: topicsObj[key].questions.length > 0 ? topicsObj[key].questions[0].order : null
         })
       }
-      console.log(topics);
       const oderedTopics = topics.sort((a, b) => (a.order > b.order) ? 1 : -1)
-      console.log(oderedTopics);
       setTopics(oderedTopics)
     }
   })
@@ -106,7 +103,6 @@ const CommonEx = ({ id }) => {
   })
 
   const changePollStatus = (event) => {
-    console.log(event.target.checked);
     saveNewStatus({
       variables: {
         id,

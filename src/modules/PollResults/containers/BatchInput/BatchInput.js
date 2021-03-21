@@ -79,6 +79,7 @@ const BatchInput = ({ id }) => {
     },
     onCompleted: () => {
       handleConfigFile(pollData.poll.logic.path)
+      console.log(pollData);
     }
   });
 

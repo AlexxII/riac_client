@@ -17,11 +17,6 @@ export const GET_POLL_DATA = gql`
           title
           order
           code
-          results {
-            id
-            code
-            text
-          }
         }
       }
       logic {

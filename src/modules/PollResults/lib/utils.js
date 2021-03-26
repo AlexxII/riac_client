@@ -60,9 +60,10 @@ export const parseOprFile = (inputData) => {
   const codesExp = /04\/[\D\d].*$([\s\S]+?)===/m
   const endBlockExp = /===/mg
   const userExp = /===\r?\n?(.*$)/m
-  const linesOfCodesExp = /^.*999$/mg
+  const linesOfCodesExp = /.*999/g
 
   if (match) {
+    // for (let i = 0; i < match.length; i++) {
     for (let i = 0; i < match.length; i++) {
       const block = match[i]
 
@@ -79,15 +80,20 @@ export const parseOprFile = (inputData) => {
       console.log(pollCode);
       console.log(date);
       console.log(city);
-      console.log(blockOfCodes);
       console.log(user);
       */
+      console.log(blockOfCodes);
       const linesOfCodes = blockOfCodes.match(linesOfCodesExp)
+
+
+      const dd = blockOfCodes.split('999')
+      console.log(dd);
+
       // что-то нашлось
       if (linesOfCodes) {
         for (let j = 0; j < linesOfCodes.length; j++) {
           const line = linesOfCodes[j]
-          console.log(line);
+          // console.log(line);
         }
       }
     }

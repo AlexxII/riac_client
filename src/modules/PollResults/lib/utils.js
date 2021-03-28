@@ -60,10 +60,12 @@ export const parseOprFile = (inputData) => {
   const codesExp = /04\/[\D\d].*$([\s\S]+?)===/m
   const endBlockExp = /===/mg
   const userExp = /===\r?\n?(.*$)/m
-  const linesOfCodesExp = /.*999/g
+  const codeTextExp = /([0-9]{3})([\s\S]*)/m
+
+  const zz = []
 
   if (match) {
-    // for (let i = 0; i < match.length; i++) {
+
     for (let i = 0; i < match.length; i++) {
       const block = match[i]
 
@@ -76,31 +78,45 @@ export const parseOprFile = (inputData) => {
       const blockOfCodes = header.match(codesExp) ? header.match(codesExp)[1] : null
 
       const user = block.match(userExp) ? block.match(userExp)[1] : null
-      /*
-      console.log(pollCode);
-      console.log(date);
-      console.log(city);
-      console.log(user);
-      */
-      console.log(blockOfCodes);
-      const linesOfCodes = blockOfCodes.match(linesOfCodesExp)
+      const linesOfCodes = blockOfCodes.split('999').filter(obj => obj !== '\n')
 
-
-      const dd = blockOfCodes.split('999')
-      console.log(dd);
-
-      // что-то нашлось
-      if (linesOfCodes) {
+      // разделение на строки
+      if (linesOfCodes.length) {
         for (let j = 0; j < linesOfCodes.length; j++) {
+          const result = []
           const line = linesOfCodes[j]
-          // console.log(line);
+          const poolOfCodes = line.split(',')
+          let respondent = {}
+          if (poolOfCodes.length) {
+            for (let k = 0; k < poolOfCodes.length; k++) {
+              const codeWithText = poolOfCodes[k]
+              const match = codeWithText.match(codeTextExp)
+              if (match) {
+                const code = match[1].trim()
+                const text = match[2].trim()
+                result.push({
+                  code,
+                  text
+                })
+              }
+            }
+            respondent = {
+              city,
+              pollCode,
+              user,
+              date,
+              result
+            }
+            zz.push(respondent)
+          }
         }
+        console.log(zz);
       }
     }
 
   } else {
-    const match = utf8Text.match(linesOfCodesExp)
-    console.log(match);
+    const linesOfCodes = utf8Text.split('999').filter(obj => obj !== '\n')
+    console.log(linesOfCodes)
   }
 
 }

@@ -94,6 +94,7 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: () => {
+      console.log(pollResults)
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
       setQuota({

@@ -464,7 +464,8 @@ const OverallResults = ({ id }) => {
       .filter(result => selectPool.includes(result.id))
       .map(obj => obj.result)
     const allResults = prepareResultsDataToExport(resultsPool)
-    downloadIt(allResults, 'allData.txt')
+    const outDataCp866 = utfToCP866(allResults)
+    downloadIt(outDataCp866, 'allData.txt')
   }
 
   const handleStatusChange = (type) => {

@@ -105,6 +105,7 @@ const BatchInput = ({ id }) => {
         // + удаляем перенос строк
         const fileData = reader.result
         const correctData = parseOprFile(fileData)
+        console.log(correctData);
 
         // const oprTextRaw = reader.result.replace(/\r?\n/g, "")
         // const oprArrayRaw = oprTextRaw.split(',999')

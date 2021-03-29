@@ -110,13 +110,40 @@ export const parseOprFile = (inputData) => {
             zz.push(respondent)
           }
         }
-        console.log(zz);
       }
     }
-
   } else {
     const linesOfCodes = utf8Text.split('999').filter(obj => obj !== '\n')
-    console.log(linesOfCodes)
+    if (linesOfCodes.length) {
+      for (let j = 0; j < linesOfCodes.length; j++) {
+        const result = []
+        const line = linesOfCodes[j]
+        const poolOfCodes = line.split(',')
+        let respondent = {}
+        if (poolOfCodes.length) {
+          for (let k = 0; k < poolOfCodes.length; k++) {
+            const codeWithText = poolOfCodes[k]
+            const match = codeWithText.match(codeTextExp)
+            if (match) {
+              const code = match[1].trim()
+              const text = match[2].trim()
+              result.push({
+                code,
+                text
+              })
+            }
+          }
+          respondent = {
+            city: null,
+            pollCode: null,
+            user: null,
+            date: null,
+            result
+          }
+          zz.push(respondent)
+        }
+      }
+    }
   }
-
+  return zz
 }

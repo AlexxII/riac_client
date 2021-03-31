@@ -63,24 +63,11 @@ query ($id: ID!) {
         id
         username
       }
-      city {
-        id
-        title
-        type
-        category {
-          id
-          order
-          title
-        }
-      }
       created
       lastModified
       processed
       result {
         id
-        answer {
-          id
-        }
         code
         text
       }

@@ -9,6 +9,10 @@ import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
+import DataGrid from '../../components/DataGrid'
+
+import RespondentCard from '../../components/RespondentCard'
+import VirtMasonry from '../../../../components/VirtMasonry'
 
 import LinearTable from '../../components/LinearTable'
 import BarChart from '../../components/BarChart'
@@ -27,6 +31,16 @@ const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
+class Example extends React.Component {
+  render() {
+    return (
+      <div className="example">
+        This is {this.props.index}
+      </div>
+    );
+  }
+}
+
 const BatchInput = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
@@ -36,6 +50,7 @@ const BatchInput = ({ id }) => {
   const [processing, setProcessing] = useState(false)
   const [displayData, setDisplayData] = useState(false)
 
+  var items = []
   // useEffect(() => {
   //   if (dataPool) {
   //     const poll = pollData ? pollData.poll : null
@@ -106,6 +121,22 @@ const BatchInput = ({ id }) => {
         const fileData = reader.result
         const correctData = parseOprFile(fileData)
         console.log(correctData);
+        for (let i = 0; i < correctData.length; i++) {
+          items.push(
+            <Example index={i} key={"example-" + i} />
+            // <RespondentCard
+            //   key={"example-" + i}
+            //   index={i}
+            //   respondent={correctData[i]}
+            //   show={() => { }}
+            //   edit={() => { }}
+            //   selected={false}
+            //   select={() => { }}
+            //   count={correctData.length}
+            // />
+          )
+        }
+        setDisplayData(correctData)
 
         // const oprTextRaw = reader.result.replace(/\r?\n/g, "")
         // const oprArrayRaw = oprTextRaw.split(',999')
@@ -211,10 +242,7 @@ const BatchInput = ({ id }) => {
           }
         }
       />
-      <Grid container spacing={3} xs={12} className="batchinput-result-zone">
-        {displayData
-        }
-      </Grid>
+      <VirtMasonry />
     </Fragment>
   )
 }

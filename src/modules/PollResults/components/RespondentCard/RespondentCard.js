@@ -12,13 +12,12 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
 
   return (
     <Fragment>
-      <Paper className="respondent-card">
         <Grid container item justify="space-between">
           <Typography variant="h6" gutterBottom>
             {index + 1}
           </Typography>
           <Typography variant="caption" display="block" gutterBottom>
-            {respondent.id.slice(-12)}
+            {respondent.id ? respondent.id.slice(-12) : ''}
           </Typography>
           {/* {respondent.processed ?
             <p>
@@ -65,7 +64,6 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
             <ListAltIcon fontSize="small" />
           </IconButton>
         </Grid>
-      </Paper>
     </Fragment>
   )
 }

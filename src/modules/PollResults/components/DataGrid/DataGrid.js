@@ -54,6 +54,7 @@ const DataGrid = ({ data, selectPool, setSelectPool, showDetails, updateSingle }
   const dataItems = data.map((result, index) => (
     <Grid item xs={12} sm={6} md={3} lg={2} key={index} >
       <RespondentCard
+        key={index}
         respondent={result}
         index={index}
         show={showDetails}

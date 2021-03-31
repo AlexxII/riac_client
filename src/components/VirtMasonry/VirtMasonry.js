@@ -140,10 +140,11 @@ function createData(id, dessert, calories, fat, carbs, protein) {
 
 const rows = [];
 
-for (let i = 0; i < 200000; i += 1) {
+for (let i = 0; i < 2000000; i += 1) {
   const randomSelection = sample[Math.floor(Math.random() * sample.length)];
   rows.push(createData(i, ...randomSelection));
 }
+console.log(rows);
 
 
 
@@ -154,6 +155,11 @@ export default function ReactVirtualizedTable() {
         rowCount={rows.length}
         rowGetter={({ index }) => rows[index]}
         columns={[
+          {
+            width: 200,
+            label: 'index',
+            dataKey: 'id',
+          },
           {
             width: 400,
             label: 'Dessert',

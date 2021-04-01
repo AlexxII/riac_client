@@ -37,17 +37,27 @@ const BatchCharts = ({ data, selectPool, questions, open, close }) => {
   useEffect(() => {
     if (open) {
       const respondents = data.filter(obj => selectPool.includes(obj.id));
+      // сопоставим коды с ответами для быстрого доступа к id ответа
+      const poolOfAnswers = questions.reduce((acum, item) => {
+        for (let i = 0; i < item.answers.length; i++) {
+          acum[item.answers[i].code] = item.answers[i].id
+        }
+        return acum
+      }, {})
+
       let resultsPool = {}
       for (let i = 0; i < respondents.length; i++) {
         const result = respondents[i].result
         for (let j = 0; j < result.length; j++) {
-          if (resultsPool[result[j].answer.id]) {
-            resultsPool[result[j].answer.id] = [
-              ...resultsPool[result[j].answer.id],
+          // определяем id ответа
+          const answerId = poolOfAnswers[result[j].code]
+          if (resultsPool[answerId]) {
+            resultsPool[answerId] = [
+              ...resultsPool[answerId],
               result[j].id
             ]
           } else {
-            resultsPool[result[j].answer.id] = [result[j].id]
+            resultsPool[answerId] = [result[j].id]
           }
         }
       }

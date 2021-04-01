@@ -31,16 +31,6 @@ const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
-class Example extends React.Component {
-  render() {
-    return (
-      <div className="example">
-        This is {this.props.index}
-      </div>
-    );
-  }
-}
-
 const BatchInput = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
@@ -49,40 +39,6 @@ const BatchInput = ({ id }) => {
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [displayData, setDisplayData] = useState(false)
-
-  var items = []
-  // useEffect(() => {
-  //   if (dataPool) {
-  //     const poll = pollData ? pollData.poll : null
-  //     if (poll) {
-  //       const questions = poll.questions
-  //       const resultPoolLength = dataPool.length
-  //       // пройтись по невидимым сперва
-  //       const newQuestionsPool = questions.map(question => {
-  //         const newAnswersPool = question.answers.map(answer => {
-  //           let temp = [...answer.results]
-  //           for (let i = 0; i < resultPoolLength; i++) {
-  //             if (dataPool[i].includes(answer.code)) {
-  //               temp.push({
-  //                 code: answer.code,
-  //                 text: ''
-  //               })
-  //             }
-  //           }
-  //           return {
-  //             ...answer,
-  //             results: temp
-  //           }
-  //         })
-  //         return {
-  //           ...question,
-  //           answers: newAnswersPool
-  //         }
-  //       })
-  //       setDisplayData(newQuestionsPool)
-  //     }
-  //   }
-  // }, [dataPool])
 
   const {
     data: pollData,
@@ -120,42 +76,7 @@ const BatchInput = ({ id }) => {
         // + удаляем перенос строк
         const fileData = reader.result
         const correctData = parseOprFile(fileData)
-        console.log(correctData);
-        for (let i = 0; i < correctData.length; i++) {
-          items.push(
-            <Example index={i} key={"example-" + i} />
-            // <RespondentCard
-            //   key={"example-" + i}
-            //   index={i}
-            //   respondent={correctData[i]}
-            //   show={() => { }}
-            //   edit={() => { }}
-            //   selected={false}
-            //   select={() => { }}
-            //   count={correctData.length}
-            // />
-          )
-        }
         setDisplayData(correctData)
-
-        // const oprTextRaw = reader.result.replace(/\r?\n/g, "")
-        // const oprArrayRaw = oprTextRaw.split(',999')
-        // console.log(oprTextRaw);
-        // const oprArray = oprArrayRaw.filter(arr => arr.length)
-        // const aLength = oprArray.length
-        // let splitedCodesArrays = []
-        // for (let i = 0; i < aLength; i++) {
-        //   const tempAr = oprArray[i].split(',')
-        //   const tempLength = tempAr.length
-        //   let normTemp = []
-        //   for (let j = 0; j < tempLength; j++) {
-        //     const atomData = tempAr[j]
-        //     normTemp.push(atomData.trim())
-        //   }
-        //   splitedCodesArrays.push(normTemp)
-        // }
-        // setDataPool(splitedCodesArrays)
-        // setProcessing(false)
         setProcessing(false)
       }
     }
@@ -242,8 +163,14 @@ const BatchInput = ({ id }) => {
           }
         }
       />
-      <div style={{marginTop: '10px', marginLeft: '-5px'}}>
-        <VirtMasonry />
+      <div style={{ marginTop: '10px', marginLeft: '-5px' }}>
+        <VirtMasonry
+          data={displayData}
+          selectPool={[]}
+          setSelectPool={() => { }}
+          showDetails={() => { }}
+          updateSingle={() => { }}
+        />
       </div>
     </Fragment>
   )

@@ -14,6 +14,7 @@ const GUTTER_SIZE = 10;
 const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   const theme = useTheme();
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
+  const [count, setCount] = useState(data.length)
 
   const handleSelect = (inData) => {
     if (inData.event.nativeEvent.shiftKey) {
@@ -77,8 +78,8 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   }, [])
 
   const recalcSize = () => {
-    const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 180);
-    const height = window.innerHeight - 220;
+    const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 200);
+    const height = window.innerHeight - 270;
     const columns = Math.floor((width - 40) / COLUMN_WIDTH);
     setConfig({
       width,
@@ -107,12 +108,19 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
 
   const isItemLoaded = true
 
-  const count = 600
 
   if (!config) return 'Загрузка'
 
   const renderCell = ({ rowIndex, columnIndex, style }) => {
-    const item = data[rowIndex * config.columns + columnIndex]
+    const maxLen = data.length
+    const index = rowIndex * config.columns + columnIndex
+    if (index >= maxLen) {
+      return null
+    } 
+    console.log(maxLen);
+    console.log(index);
+    const item = data[index]
+    console.log(item);
     return (
       <div
         style={{

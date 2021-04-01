@@ -13,10 +13,10 @@ const VirtCell = ({ respondent, index, show, edit, selected, select, count }) =>
     <Paper className="respondent-card">
       <Grid container item justify="space-between">
         <Typography variant="h6" gutterBottom>
-          {index}
+          {index + 1}
         </Typography>
         <Typography variant="caption" display="block" gutterBottom>
-          {respondent.id}
+        {respondent.id ? respondent.id.slice(-12) : ''}
         </Typography>
         <Checkbox
           color="primary"

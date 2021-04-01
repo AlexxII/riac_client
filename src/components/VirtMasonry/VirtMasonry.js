@@ -2,11 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { FixedSizeGrid } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 
-const COLUMN_WIDTH = 170;
-const ROW_HEIGHT = 220;
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
+
+const COLUMN_WIDTH = 210;
+const ROW_HEIGHT = 180;
 const GUTTER_SIZE = 5;
 
 const V = () => {
+  const theme = useTheme();
+
+  // Надо разобраться
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
   const [config, setConfig] = useState(null)
 
   useEffect(() => {
@@ -21,8 +29,7 @@ const V = () => {
   }, [])
 
   const recalcSize = () => {
-    console.log(33333333333);
-    const width = (document.documentElement.clientWidth || document.body.clientWidth) - 50;
+    const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 180);
     const height = window.innerHeight - 220;
     const columns = Math.floor((width - 40) / COLUMN_WIDTH);
     setConfig({
@@ -52,7 +59,7 @@ const V = () => {
 
   const isItemLoaded = true
 
-  const count = 10000
+  const count = 1000000
 
   if (!config) return 'Загрузка'
 

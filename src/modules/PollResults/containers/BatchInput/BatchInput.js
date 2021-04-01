@@ -242,7 +242,9 @@ const BatchInput = ({ id }) => {
           }
         }
       />
-      <VirtMasonry />
+      <div style={{marginTop: '10px', marginLeft: '-5px'}}>
+        <VirtMasonry />
+      </div>
     </Fragment>
   )
 }

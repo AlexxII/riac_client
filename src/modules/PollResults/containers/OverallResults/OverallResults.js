@@ -24,7 +24,6 @@ import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { rusToLatin, prepareResultsDataToExport } from '../../lib/utils'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
-import DataGrid from '../../components/DataGrid'
 import Filters from '../../components/Filters'
 import ResultView from '../../containers/ResultView'
 import BatchCharts from '../../components/BatchCharts'
@@ -63,7 +62,6 @@ const OverallResults = ({ id }) => {
   const history = useHistory();
 
   const [delOpen, setDelOpen] = useState(false)
-  const [reset, setReset] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
   const [activeFiltrWorksheets, setActiveFilterWorksheets] = useState([])                // отображаемые и отфилтрованные анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
@@ -742,13 +740,6 @@ const OverallResults = ({ id }) => {
           showDetails={showOneResultDetails}
           updateSingle={updateSingleResult}
         />
-        {/* <DataGrid
-          data={activeWorksheets}
-          selectPool={selectPool}
-          setSelectPool={setSelectPool}
-          showDetails={showOneResultDetails}
-          updateSingle={updateSingleResult}
-        /> */}
       </div>
     </Fragment>
   )

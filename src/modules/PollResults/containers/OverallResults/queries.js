@@ -69,6 +69,7 @@ query ($id: ID!) {
       city {
         id
         title
+        type
         category {
           id
           order

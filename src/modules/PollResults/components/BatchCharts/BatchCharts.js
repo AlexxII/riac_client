@@ -63,6 +63,7 @@ const BatchCharts = ({ data, selectPool, questions, open, close }) => {
           answers: newAnswers
         }
       })
+      console.log(newQuestions)
       setSelectedData(newQuestions)
     }
   }, [open])

@@ -15,11 +15,25 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   const theme = useTheme();
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
   const [count, setCount] = useState(data.length)
+  // Надо разобраться
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const [config, setConfig] = useState(null)
 
   useEffect(() => {
     setCount(data.length)
   }, [data])
 
+  useEffect(() => {
+    window.addEventListener('resize', recalcSize)
+    return () => {
+      window.removeEventListener('resize', recalcSize)
+    };
+  })
+
+  useEffect(() => {
+    recalcSize()
+  }, [])
 
   const handleSelect = (inData) => {
     if (inData.event.nativeEvent.shiftKey) {
@@ -65,23 +79,6 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
     }
   }
 
-
-  // Надо разобраться
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-
-  const [config, setConfig] = useState(null)
-
-  useEffect(() => {
-    window.addEventListener('resize', recalcSize)
-    return () => {
-      window.removeEventListener('resize', recalcSize)
-    };
-  })
-
-  useEffect(() => {
-    recalcSize()
-  }, [])
-
   const recalcSize = () => {
     const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 200);
     const height = window.innerHeight - 270;
@@ -93,27 +90,6 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
     });
   }
 
-  const onItemsRendered = infiniteOnItemsRendered => ({
-    visibleColumnStartIndex,
-    visibleColumnStopIndex,
-    visibleRowStartIndex,
-    visibleRowStopIndex,
-  }) => {
-    const visibleStartIndex = visibleRowStartIndex * config.columns + visibleColumnStartIndex;
-    const visibleStopIndex = visibleRowStopIndex * config.columns + visibleColumnStopIndex;
-    infiniteOnItemsRendered({
-      visibleStartIndex,
-      visibleStopIndex,
-    });
-  };
-
-  const loadMoreItems = () => {
-    console.log('Нужно отрисовать');
-  }
-
-  const isItemLoaded = true
-
-
   if (!config) return 'Загрузка'
 
   const renderCell = ({ rowIndex, columnIndex, style }) => {
@@ -121,11 +97,8 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
     const index = rowIndex * config.columns + columnIndex
     if (index >= maxLen) {
       return null
-    } 
-    console.log(maxLen);
-    console.log(index);
+    }
     const item = data[index]
-    console.log(item);
     return (
       <div
         style={{
@@ -151,30 +124,16 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   }
 
   return (
-    <InfiniteLoader
-      isItemLoaded={isItemLoaded}
-      loadMoreItems={loadMoreItems}
-      itemCount={count}
+    <FixedSizeGrid
+      columnCount={config.columns}
+      columnWidth={COLUMN_WIDTH}
+      height={config.height}
+      rowCount={Math.ceil(count / config.columns)}
+      rowHeight={ROW_HEIGHT}
+      width={config.width}
     >
-      {({ onItemsRendered, ref }) => (
-        <section>
-          <FixedSizeGrid
-            onItemsRendered={onItemsRendered(onItemsRendered)}
-            columnCount={config.columns}
-            columnWidth={COLUMN_WIDTH}
-            height={config.height}
-            rowCount={Math.ceil(count / config.columns)}
-            rowHeight={ROW_HEIGHT}
-            width={config.width}
-            ref={gridRef => {
-              ref(gridRef);
-            }}
-          >
-            {renderCell}
-          </FixedSizeGrid>
-        </section>
-      )}
-    </InfiniteLoader>
+      {renderCell}
+    </FixedSizeGrid>
   )
 }
 

@@ -688,7 +688,7 @@ const OverallResults = ({ id }) => {
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
-            <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={999}>
+            <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
               <FormControlLabel id="selectall-checkbox"
                 control={
                   <Checkbox
@@ -715,7 +715,7 @@ const OverallResults = ({ id }) => {
                     vertical: 'top',
                     horizontal: 'left',
                   }}
-                    max={999}>
+                    max={9999}>
                     <Button
                       style={{ marginBottom: '0px', padding: '4px 8px 0px 8px' }}
                       onClick={showOnlyDuplicates}

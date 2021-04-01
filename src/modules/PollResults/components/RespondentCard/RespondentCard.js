@@ -12,6 +12,7 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
 
   return (
     <Fragment>
+      <Paper className="respondent-card">
         <Grid container item justify="space-between">
           <Typography variant="h6" gutterBottom>
             {index + 1}
@@ -64,6 +65,7 @@ const RespondentCard = ({ respondent, index, show, edit, selected, select, count
             <ListAltIcon fontSize="small" />
           </IconButton>
         </Grid>
+      </Paper>
     </Fragment>
   )
 }

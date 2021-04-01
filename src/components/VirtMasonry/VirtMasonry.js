@@ -1,195 +1,93 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { withStyles } from '@material-ui/core/styles';
-import TableCell from '@material-ui/core/TableCell';
-import Paper from '@material-ui/core/Paper';
-import { AutoSizer, Column, Table } from 'react-virtualized';
+import React, { useEffect, useState } from 'react'
+import { FixedSizeGrid } from 'react-window';
+import InfiniteLoader from 'react-window-infinite-loader';
 
-const styles = (theme) => ({
-  flexContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-  },
-  table: {
-    '& .ReactVirtualized__Table__headerRow': {
-      flip: false,
-      paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
-    },
-  },
-  tableRow: {
-    cursor: 'pointer',
-  },
-  tableRowHover: {
-    '&:hover': {
-      backgroundColor: theme.palette.grey[200],
-    },
-  },
-  tableCell: {
-    flex: 1,
-  },
-  noClick: {
-    cursor: 'initial',
-  },
-});
+const COLUMN_WIDTH = 170;
+const ROW_HEIGHT = 220;
 
-class MuiVirtualizedTable extends React.PureComponent {
-  static defaultProps = {
-    headerHeight: 48,
-    rowHeight: 48,
-  };
+const width = (document.documentElement.clientWidth || document.body.clientWidth) - 40;
 
-  getRowClassName = ({ index }) => {
-    const { classes, onRowClick } = this.props;
+const V = () => {
+  const [config, setConfig] = useState(null)
 
-    return clsx(classes.tableRow, classes.flexContainer, {
-      [classes.tableRowHover]: index !== -1 && onRowClick != null,
+  useEffect(() => {
+    window.addEventListener('resize', recalcSize)
+    return () => {
+      window.removeEventListener('resize', recalcSize)
+    };
+  })
+
+  useEffect(() => {
+    recalcSize()
+  }, [])
+
+  const recalcSize = () => {
+    const width = (document.documentElement.clientWidth || document.body.clientWidth) - 40;
+    const height = window.innerHeight - 160;
+    const columns = Math.floor((width - 40) / COLUMN_WIDTH);
+    setConfig({
+      width,
+      height,
+      columns,
+    });
+  }
+
+  const onItemsRendered = infiniteOnItemsRendered => ({
+    visibleColumnStartIndex,
+    visibleColumnStopIndex,
+    visibleRowStartIndex,
+    visibleRowStopIndex,
+  }) => {
+    const visibleStartIndex = visibleRowStartIndex * this.state.columns + visibleColumnStartIndex;
+    const visibleStopIndex = visibleRowStopIndex * this.state.columns + visibleColumnStopIndex;
+    infiniteOnItemsRendered({
+      visibleStartIndex,
+      visibleStopIndex,
     });
   };
 
-  cellRenderer = ({ cellData, columnIndex }) => {
-    const { columns, classes, rowHeight, onRowClick } = this.props;
-    return (
-      <TableCell
-        component="div"
-        className={clsx(classes.tableCell, classes.flexContainer, {
-          [classes.noClick]: onRowClick == null,
-        })}
-        variant="body"
-        style={{ height: rowHeight }}
-        align={(columnIndex != null && columns[columnIndex].numeric) || false ? 'right' : 'left'}
-      >
-        {cellData}
-      </TableCell>
-    );
-  };
 
-  headerRenderer = ({ label, columnIndex }) => {
-    const { headerHeight, columns, classes } = this.props;
-
-    return (
-      <TableCell
-        component="div"
-        className={clsx(classes.tableCell, classes.flexContainer, classes.noClick)}
-        variant="head"
-        style={{ height: headerHeight }}
-        align={columns[columnIndex].numeric || false ? 'right' : 'left'}
-      >
-        <span>{label}</span>
-      </TableCell>
-    );
-  };
-
-  render() {
-    const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
-    return (
-      <AutoSizer>
-        {({ height, width }) => (
-          <Table
-            height={height}
-            width={width}
-            rowHeight={rowHeight}
-            gridStyle={{
-              direction: 'inherit',
-            }}
-            headerHeight={headerHeight}
-            className={classes.table}
-            {...tableProps}
-            rowClassName={this.getRowClassName}
-          >
-            {columns.map(({ dataKey, ...other }, index) => {
-              return (
-                <Column
-                  key={dataKey}
-                  headerRenderer={(headerProps) =>
-                    this.headerRenderer({
-                      ...headerProps,
-                      columnIndex: index,
-                    })
-                  }
-                  className={classes.flexContainer}
-                  cellRenderer={this.cellRenderer}
-                  dataKey={dataKey}
-                  {...other}
-                />
-              );
-            })}
-          </Table>
-        )}
-      </AutoSizer>
-    );
+  const loadMoreItems = () => {
+    console.log('Нужно отрисовать');
   }
-}
 
-const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
+  const isItemLoaded = true
 
-// ---
+  const count = 100
 
-const sample = [
-  ['Frozen yoghurt', 159, 6.0, 24, 4.0],
-  ['Ice cream sandwich', 237, 9.0, 37, 4.3],
-  ['Eclair', 262, 16.0, 24, 6.0],
-  ['Cupcake', 305, 3.7, 67, 4.3],
-  ['Gingerbread', 356, 16.0, 49, 3.9],
-];
+  if (!config) return 'Загрузка'
 
-function createData(id, dessert, calories, fat, carbs, protein) {
-  return { id, dessert, calories, fat, carbs, protein };
-}
+  const renderCell = ({ rowIndex, columnIndex, style }) => {
+    return <div>{rowIndex}</div>;
+  };
 
-const rows = [];
-
-for (let i = 0; i < 2000000; i += 1) {
-  const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-  rows.push(createData(i, ...randomSelection));
-}
-console.log(rows);
-
-
-
-export default function ReactVirtualizedTable() {
   return (
-      <VirtualizedTable
-        height={800}
-        rowCount={rows.length}
-        rowGetter={({ index }) => rows[index]}
-        columns={[
-          {
-            width: 200,
-            label: 'index',
-            dataKey: 'id',
-          },
-          {
-            width: 400,
-            label: 'Dessert',
-            dataKey: 'dessert',
-          },
-          {
-            width: 120,
-            label: 'Calories\u00A0(g)',
-            dataKey: 'calories',
-            numeric: true,
-          },
-          {
-            width: 120,
-            label: 'Fat\u00A0(g)',
-            dataKey: 'fat',
-            numeric: true,
-          },
-          {
-            width: 120,
-            label: 'Carbs\u00A0(g)',
-            dataKey: 'carbs',
-            numeric: true,
-          },
-          {
-            width: 120,
-            label: 'Protein\u00A0(g)',
-            dataKey: 'protein',
-            numeric: true,
-          },
-        ]}
-      />
-  );
+    <InfiniteLoader
+      isItemLoaded={isItemLoaded}
+      loadMoreItems={loadMoreItems}
+      itemCount={count}
+    >
+      {({ onItemsRendered, ref }) => (
+        <section>
+          <FixedSizeGrid
+            onItemsRendered={onItemsRendered(onItemsRendered)}
+            columnCount={config.columns}
+            columnWidth={COLUMN_WIDTH}
+            height={config.height}
+            rowCount={Math.ceil(count / config.columns)}
+            rowHeight={ROW_HEIGHT}
+            width={config.width}
+            ref={gridRef => {
+              gridRef = gridRef;
+              ref(gridRef);
+            }}
+          >
+            {renderCell}
+          </FixedSizeGrid>
+        </section>
+      )}
+    </InfiniteLoader>
+  )
 }
+
+export default V

@@ -68,6 +68,12 @@ query ($id: ID!) {
       processed
       city {
         id
+        title
+        category {
+          id
+          order
+          title
+        }
       }
       result {
         id

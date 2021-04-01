@@ -729,10 +729,12 @@ const OverallResults = ({ id }) => {
             </Box>
           </Grid>
         </Grid>
-        <Filters
-          filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
-          pollFilters={pollResults.poll.filters}
-          quota={quota} />
+        <div style={{marginBottom: '10px'}}>
+          <Filters
+            filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
+            pollFilters={pollResults.poll.filters}
+            quota={quota} />
+        </div>
         <VirtMasonry
           data={activeWorksheets}
           selectPool={selectPool}
@@ -740,7 +742,6 @@ const OverallResults = ({ id }) => {
           showDetails={showOneResultDetails}
           updateSingle={updateSingleResult}
         />
-
         {/* <DataGrid
           data={activeWorksheets}
           selectPool={selectPool}

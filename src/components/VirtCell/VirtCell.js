@@ -16,33 +16,41 @@ const VirtCell = ({ respondent, index, show, edit, selected, select, count }) =>
           {index + 1}
         </Typography>
         <Typography variant="caption" display="block" gutterBottom>
-        {respondent.id ? respondent.id.slice(-12) : ''}
+          {respondent.id ? respondent.id.slice(-12) : ''}
         </Typography>
         <Checkbox
           color="primary"
-          checked={false}
+          checked={selected}
+          onChange={(e) => select({
+            id: respondent.id,
+            index,
+            event: e
+          })}
         />
       </Grid>
       <Typography variant="subtitle2" gutterBottom>
-        н.п.: {'Мурманск'}
+        н.п.: {respondent.city ? respondent.city.title : '-'}
       </Typography>
       <Typography variant="caption" display="block" gutterBottom>
-        сохранен: {"09042019"}
+        сохранен: {respondent.created}
       </Typography>
       <Typography variant="caption" display="block" gutterBottom>
-        обновлен: {"09042019"}
+        обновлен: {respondent.lastModified}
       </Typography>
       <Grid container item justify="space-between" className="card-service-buttons">
         <IconButton
           className="card-button"
           aria-label="delete"
+          onClick={() => edit(respondent)}
+          disabled={count > 1}
         >
           <EditIcon fontSize="small" />
         </IconButton>
         <IconButton
           className="card-button"
           aria-label="delete"
-          disabled={false}>
+          onClick={() => show(respondent)}
+          disabled={count > 1}>
           <ListAltIcon fontSize="small" />
         </IconButton>
       </Grid>

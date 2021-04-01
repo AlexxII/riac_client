@@ -16,6 +16,11 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   const [lastSelectedIndex, setLastSelectedIndex] = useState()
   const [count, setCount] = useState(data.length)
 
+  useEffect(() => {
+    setCount(data.length)
+  }, [data])
+
+
   const handleSelect = (inData) => {
     if (inData.event.nativeEvent.shiftKey) {
       let ar = []

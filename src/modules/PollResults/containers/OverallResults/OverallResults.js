@@ -32,6 +32,8 @@ import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
 import StatusMenu from '../../components/StatusMenu'
 
+import VirtMasonry from '../../../../components/VirtMasonry'
+
 import { useHistory } from "react-router-dom";
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
@@ -731,13 +733,21 @@ const OverallResults = ({ id }) => {
           filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
           pollFilters={pollResults.poll.filters}
           quota={quota} />
-        <DataGrid
+        <VirtMasonry
           data={activeWorksheets}
           selectPool={selectPool}
           setSelectPool={setSelectPool}
           showDetails={showOneResultDetails}
           updateSingle={updateSingleResult}
         />
+
+        {/* <DataGrid
+          data={activeWorksheets}
+          selectPool={selectPool}
+          setSelectPool={setSelectPool}
+          showDetails={showOneResultDetails}
+          updateSingle={updateSingleResult}
+        /> */}
       </div>
     </Fragment>
   )

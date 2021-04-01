@@ -130,6 +130,7 @@ const OverallResults = ({ id }) => {
 
   // распределение ответов по городам
   const handleCityQuotaData = (data) => {
+    console.log(data);
     return data.reduce((acum, item) => {
       if (item.city) {
         if (!acum[item.city.id]) {

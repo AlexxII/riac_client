@@ -66,6 +66,9 @@ query ($id: ID!) {
       created
       lastModified
       processed
+      city {
+        id
+      }
       result {
         id
         code

@@ -4,8 +4,7 @@ import InfiniteLoader from 'react-window-infinite-loader';
 
 const COLUMN_WIDTH = 170;
 const ROW_HEIGHT = 220;
-
-const width = (document.documentElement.clientWidth || document.body.clientWidth) - 40;
+const GUTTER_SIZE = 5;
 
 const V = () => {
   const [config, setConfig] = useState(null)
@@ -22,8 +21,9 @@ const V = () => {
   }, [])
 
   const recalcSize = () => {
-    const width = (document.documentElement.clientWidth || document.body.clientWidth) - 40;
-    const height = window.innerHeight - 160;
+    console.log(33333333333);
+    const width = (document.documentElement.clientWidth || document.body.clientWidth) - 50;
+    const height = window.innerHeight - 220;
     const columns = Math.floor((width - 40) / COLUMN_WIDTH);
     setConfig({
       width,
@@ -46,20 +46,32 @@ const V = () => {
     });
   };
 
-
   const loadMoreItems = () => {
     console.log('Нужно отрисовать');
   }
 
   const isItemLoaded = true
 
-  const count = 100
+  const count = 10000
 
   if (!config) return 'Загрузка'
 
   const renderCell = ({ rowIndex, columnIndex, style }) => {
-    return <div>{rowIndex}</div>;
-  };
+    return (
+      <div
+        style={{
+          ...style,
+          backgroundColor: 'lightgray',
+          left: style.left + GUTTER_SIZE,
+          top: style.top + GUTTER_SIZE,
+          width: style.width - GUTTER_SIZE,
+          height: style.height - GUTTER_SIZE
+        }}
+      >
+        {`${rowIndex} - ${columnIndex}`}
+      </div>
+    )
+  }
 
   return (
     <InfiniteLoader

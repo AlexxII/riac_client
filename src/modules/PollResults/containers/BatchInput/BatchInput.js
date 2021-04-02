@@ -74,10 +74,12 @@ const BatchInput = ({ id }) => {
     if (file) {
       reader.onloadend = () => {
         // + удаляем перенос строк
-        const fileData = reader.result
-        const correctData = parseOprFile(fileData)
-        setDisplayData(correctData)
-        setProcessing(false)
+        setTimeout(() => {
+          const fileData = reader.result
+          const correctData = parseOprFile(fileData)
+          setDisplayData(correctData)
+          setProcessing(false)
+        }, 1500)
       }
     }
     reader.readAsText(file, 'cp866');
@@ -121,15 +123,6 @@ const BatchInput = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
-      <div className="batchinput-service-zone">
-        <Typography variant="h5" gutterBottom className="header">Пакетный ввод данных</Typography>
-      </div>
-      <Divider />
-      <div className="info-zone">
-        <Typography variant="body2" gutterBottom>
-          Подгрузите данные в формате кодов.
-        </Typography>
-      </div>
       <div className="bachinput-add-zone">
         <input
           accept="*.opr"

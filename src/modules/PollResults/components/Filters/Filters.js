@@ -36,77 +36,88 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   // }, [quota])
 
   useEffect(() => {
-    const ageDef = pollFilters.age.reduce((acum, item) => {
-      if (item.active) {
-        acum[item.id] = item.code
-      }
-      return acum
-    }, {})
-    const sexDef = pollFilters.sex.reduce((acum, item) => {
-      if (item.active) {
-        acum[item.id] = item.code
-      }
-      return acum
-    }, {})
-    const customDef = pollFilters.custom.reduce((acum, item) => {
-      if (item.active) {
-        acum[item.id] = item.code
-      }
-      return acum
-    }, {})
-    const filter = {
-      cities: cities
-        .slice()
-        .sort((a, b) => a.category.id > b.category.id ? 1 : -1)
-        .sort((a, b) => a.category.order > b.category.order ? 1 : -1)
-        .map(city => ({
-          value: city.id,
-          title: city.title,
-          category: city.category.title
-        })).map(city => ({
-          ...city,
-          count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
+    if (pollFilters.length) {
+
+      const ageDef = pollFilters.age.reduce((acum, item) => {
+        if (item.active) {
+          acum[item.id] = item.code
+        }
+        return acum
+      }, {})
+      const sexDef = pollFilters.sex.reduce((acum, item) => {
+        if (item.active) {
+          acum[item.id] = item.code
+        }
+        return acum
+      }, {})
+      const customDef = pollFilters.custom.reduce((acum, item) => {
+        if (item.active) {
+          acum[item.id] = item.code
+        }
+        return acum
+      }, {})
+      const filter = {
+        cities: cities
+          .slice()
+          .sort((a, b) => a.category.id > b.category.id ? 1 : -1)
+          .sort((a, b) => a.category.order > b.category.order ? 1 : -1)
+          .map(city => ({
+            value: city.id,
+            title: city.title,
+            category: city.category.title
+          })).map(city => ({
+            ...city,
+            count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
+          })),
+        intervs: filters.intervievers.map(interv => ({
+          value: interv.id,
+          title: interv.username,
+        })).map(interv => ({
+          ...interv,
+          count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
         })),
-      intervs: filters.intervievers.map(interv => ({
-        value: interv.id,
-        title: interv.username,
-      })).map(interv => ({
-        ...interv,
-        count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
-      })),
-      age: filters.ageCategories
-        .filter(
-          age => ageDef[age.id]
-        )
-        .map(
-          age => ({
-            value: ageDef[age.id] ? ageDef[age.id] : null,
-            title: age.title
-          })
-        ),
-      sex: filters.sex
-        .filter(
-          sex => sexDef[sex.id]
-        )
-        .map(
-          sex => ({
-            value: sexDef[sex.id] ? sexDef[sex.id] : null,
-            title: sex.title
-          })
-        ),
-      custom: filters.customFilters
-        .filter(
-          custom => customDef[custom.id]
-        )
-        .map(
-          custom => ({
-            value: customDef[custom.id] ? customDef[custom.id] : null,
-            title: custom.title
-          })
-        ),
-      status: filters.status
+        age: filters.ageCategories
+          .filter(
+            age => ageDef[age.id]
+          )
+          .map(
+            age => ({
+              value: ageDef[age.id] ? ageDef[age.id] : null,
+              title: age.title
+            })
+          ),
+        sex: filters.sex
+          .filter(
+            sex => sexDef[sex.id]
+          )
+          .map(
+            sex => ({
+              value: sexDef[sex.id] ? sexDef[sex.id] : null,
+              title: sex.title
+            })
+          ),
+        custom: filters.customFilters
+          .filter(
+            custom => customDef[custom.id]
+          )
+          .map(
+            custom => ({
+              value: customDef[custom.id] ? customDef[custom.id] : null,
+              title: custom.title
+            })
+          ),
+        status: filters.status
+      }
+      setAviableFilters(filter)
+    } else {
+      setAviableFilters({
+        cities: [],
+        custom: [],
+        age: [],
+        sex: [],
+        intervs: []
+      })
     }
-    setAviableFilters(filter)
   }, [])
 
   // ФИЛЬТРЫ

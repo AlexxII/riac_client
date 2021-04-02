@@ -2,22 +2,22 @@ import React, { Fragment, useEffect, useState } from 'react'
 
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
+import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
-import DataGrid from '../../components/DataGrid'
-
-import RespondentCard from '../../components/RespondentCard'
 import VirtMasonry from '../../../../components/VirtMasonry'
-
-import LinearTable from '../../components/LinearTable'
-import BarChart from '../../components/BarChart'
-
 import ConfirmDialog from '../../../../components/ConfirmDialog'
+
+import Filters from '../../components/Filters'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { parseOprFile } from '../../lib/utils'
@@ -147,6 +147,60 @@ const BatchInput = ({ id }) => {
             Выбрать
         </Button>
         </label>
+        <Tooltip title="Просмотр кодов">
+          <IconButton
+            color="primary"
+            component="span"
+            onClick={() => { }}
+            disabled={false}
+          >
+            <InfoOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Графики">
+          <IconButton
+            color="primary"
+            component="span"
+            onClick={() => { }}
+            disabled={false}
+          >
+            <EqualizerIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Проверить на дубли">
+          <IconButton
+            color="primary"
+            component="span"
+            onClick={() => { }}
+            disabled={false}
+          >
+            <FileCopyOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Удалить">
+          <IconButton
+            color="secondary"
+            component="span"
+            onClick={() => { }}
+            disabled={false}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+        {/* <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
+          <FormControlLabel id="selectall-checkbox"
+            control={
+              <Checkbox
+                checked={selectAll && selectPool.length === activeWorksheets.length}
+                onChange={selectAllActive}
+                color="primary"
+                indeterminate={Boolean(selectPool.length > 0 & !selectAll)}
+              />
+            }
+            label="Выделить все"
+          />
+        </StyledBadge> */}
+
       </div>
       <ConfirmDialog
         open={delId}
@@ -163,6 +217,12 @@ const BatchInput = ({ id }) => {
           }
         }
       />
+      <div style={{ marginTop: '10px', marginBottom: '10px' }}>
+        <Filters
+          filters={[]} cities={[]} setActiveFilters={() => { }}
+          pollFilters={[]}
+          quota={0} />
+      </div>
       <div style={{ marginTop: '10px', marginLeft: '-5px' }}>
         <VirtMasonry
           data={displayData}

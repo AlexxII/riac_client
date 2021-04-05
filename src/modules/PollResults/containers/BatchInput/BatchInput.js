@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
+import uuid from "uuid";
 
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
@@ -9,7 +10,10 @@ import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
+import ResultView from '../../containers/ResultView'
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
@@ -18,6 +22,7 @@ import VirtMasonry from '../../../../components/VirtMasonry'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
 import Filters from '../../components/Filters'
+import StyledBadge from '../../../../components/StyledBadge'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { parseOprFile } from '../../lib/utils'
@@ -34,11 +39,15 @@ const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 const BatchInput = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
-  const [delId, setDelId] = useState(false)
+  const [delOpen, setDelOpen] = useState(false)
   const [dataPool, setDataPool] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [displayData, setDisplayData] = useState(false)
+  const [selectPool, setSelectPool] = useState([])
+  const [selectAll, setSelectAll] = useState(false)
+  const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
+  const [batchOpen, setBatchOpen] = useState(false)
 
   const {
     data: pollData,
@@ -50,7 +59,6 @@ const BatchInput = ({ id }) => {
     },
     onCompleted: () => {
       handleConfigFile(pollData.poll.logic.path)
-      console.log(pollData);
     }
   });
 
@@ -65,7 +73,7 @@ const BatchInput = ({ id }) => {
       })
   }
 
-  const handleWarInput = (e) => {
+  const handleRawInput = (e) => {
     e.preventDefault()
     if (!e.target.files[0]) return
     setProcessing(true)
@@ -77,7 +85,9 @@ const BatchInput = ({ id }) => {
         setTimeout(() => {
           const fileData = reader.result
           const correctData = parseOprFile(fileData)
-          setDisplayData(correctData)
+          const updatedData = correctData.map(obj => ({ ...obj, id: uuid.v4() }))
+          // setDisplayData(updatedData)
+          setActiveWorksheets(updatedData)
           setProcessing(false)
         }, 1500)
       }
@@ -90,12 +100,34 @@ const BatchInput = ({ id }) => {
     <LoadingState type="card" />
   )
 
-  const handleDelConfirm = () => {
+  const deleteComplitely = () => {
+    // необходимо удалить из данных, подготовленных для загрузки и из данных уже сохраненных в БД
 
+    // deleteResult({
+    //   variables: {
+    //     results: selectPool
+    //   },
+    // })
+    setDelOpen(false)
+    setSelectPool([])
   }
 
-  const handleDelDialogClose = () => {
+  const selectAllActive = (event) => {
+    if (activeWorksheets.length) {
+      setSelectAll(event.target.checked)
+      if (event.target.checked) {
+        const selectPool = activeWorksheets.map(result => result.id)
+        setSelectPool(selectPool)
+      } else {
+        setSelectPool([])
+        setSelectAll()
+      }
+    }
+  }
 
+  const showOneResultDetails = (respondent) => {
+    setSelectPool([respondent.id])
+    setBatchOpen(true)
   }
 
   if (pollDataError) {
@@ -116,6 +148,15 @@ const BatchInput = ({ id }) => {
   return (
 
     <Fragment>
+      <ResultView
+        // просмотр результатов
+        workSheets={activeWorksheets}
+        pollQuestions={pollData.poll.questions}
+        selectPool={selectPool}
+        open={batchOpen}
+        logic={logic}
+        // update={updateSingleResult}
+        close={() => setBatchOpen(false)} />
       <SystemNoti
         open={noti}
         text={noti ? noti.text : ""}
@@ -127,7 +168,7 @@ const BatchInput = ({ id }) => {
         <input
           accept="*.opr"
           id="contained-button-file"
-          onInput={handleWarInput}
+          onInput={handleRawInput}
           type="file"
         />
         <label htmlFor="contained-button-file">
@@ -145,7 +186,7 @@ const BatchInput = ({ id }) => {
             color="primary"
             component="span"
             onClick={() => { }}
-            disabled={false}
+            disabled={!selectPool.length}
           >
             <InfoOutlinedIcon />
           </IconButton>
@@ -155,7 +196,7 @@ const BatchInput = ({ id }) => {
             color="primary"
             component="span"
             onClick={() => { }}
-            disabled={false}
+            disabled={!selectPool.length}
           >
             <EqualizerIcon />
           </IconButton>
@@ -165,7 +206,7 @@ const BatchInput = ({ id }) => {
             color="primary"
             component="span"
             onClick={() => { }}
-            disabled={false}
+            disabled={selectPool.length < 2}
           >
             <FileCopyOutlinedIcon />
           </IconButton>
@@ -174,13 +215,13 @@ const BatchInput = ({ id }) => {
           <IconButton
             color="secondary"
             component="span"
-            onClick={() => { }}
-            disabled={false}
+            onClick={() => setDelOpen(true)}
+            disabled={!selectPool.length}
           >
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-        {/* <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
+        <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
           <FormControlLabel id="selectall-checkbox"
             control={
               <Checkbox
@@ -192,21 +233,20 @@ const BatchInput = ({ id }) => {
             }
             label="Выделить все"
           />
-        </StyledBadge> */}
-
+        </StyledBadge>
       </div>
       <ConfirmDialog
-        open={delId}
-        confirm={handleDelConfirm}
-        close={handleDelDialogClose}
+        open={delOpen}
+        confirm={deleteComplitely}
+        close={() => setDelOpen(false)}
         config={{
           closeBtn: "Отмена",
           confirmBtn: "Удалить"
         }}
         data={
           {
-            title: 'Удалить результат?',
-            content: `Внимание! Результаты опросов учитывают возраст респондента, удаление приведет к потере части статистики и некорректности ее отображения.`
+            title: 'Удалить выбранные результаты?',
+            content: 'Внимание! Выбранные результаты будут уничтожены безвозвратно. Будьте внимательны!'
           }
         }
       />
@@ -218,10 +258,10 @@ const BatchInput = ({ id }) => {
       </div>
       <div style={{ marginTop: '10px', marginLeft: '-5px' }}>
         <VirtMasonry
-          data={displayData}
-          selectPool={[]}
-          setSelectPool={() => { }}
-          showDetails={() => { }}
+          data={activeWorksheets}
+          selectPool={selectPool}
+          setSelectPool={setSelectPool}
+          showDetails={showOneResultDetails}
           updateSingle={() => { }}
         />
       </div>

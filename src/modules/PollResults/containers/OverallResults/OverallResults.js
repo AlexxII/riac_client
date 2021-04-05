@@ -13,7 +13,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -32,6 +31,7 @@ import ExportMenu from '../../components/ExportMenu'
 import StatusMenu from '../../components/StatusMenu'
 
 import VirtMasonry from '../../../../components/VirtMasonry'
+import StyledBadge from '../../../../components/StyledBadge'
 
 import { useHistory } from "react-router-dom";
 import { useQuery } from '@apollo/client'
@@ -47,14 +47,6 @@ const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 // кол-во выделенных анкет
-const StyledBadge = withStyles((theme) => ({
-  badge: {
-    right: 0,
-    top: 13,
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-  },
-}))(Badge);
 
 const OverallResults = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -62,7 +54,7 @@ const OverallResults = ({ id }) => {
   const history = useHistory();
 
   const [delOpen, setDelOpen] = useState(false)
-  const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
+  const [activeWorksheets, setActiveWorksheets] = useState([])                           // отображаемые анкеты
   const [activeFiltrWorksheets, setActiveFilterWorksheets] = useState([])                // отображаемые и отфилтрованные анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)

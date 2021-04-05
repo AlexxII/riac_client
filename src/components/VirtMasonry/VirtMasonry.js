@@ -36,6 +36,7 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   }, [])
 
   const handleSelect = (inData) => {
+    console.log(inData);
     if (inData.event.nativeEvent.shiftKey) {
       let ar = []
       if (inData.index + 1 > lastSelectedIndex) {

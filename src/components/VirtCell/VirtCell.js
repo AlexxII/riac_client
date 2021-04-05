@@ -32,10 +32,10 @@ const VirtCell = ({ respondent, index, show, edit, selected, select, count }) =>
         н.п.: {respondent.city ? respondent.city.title : '-'}
       </Typography>
       <Typography variant="caption" display="block" gutterBottom>
-        сохранен: {respondent.created}
+        сохранен: {respondent.created ?? ''}
       </Typography>
       <Typography variant="caption" display="block" gutterBottom>
-        обновлен: {respondent.lastModified}
+        обновлен: {respondent.lastModified ?? ''}
       </Typography>
       <Grid container item justify="space-between" className="card-service-buttons">
         <IconButton

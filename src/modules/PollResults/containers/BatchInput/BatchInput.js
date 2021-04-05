@@ -1,8 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import uuid from "uuid";
 
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';

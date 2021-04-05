@@ -36,7 +36,6 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
   }, [])
 
   const handleSelect = (inData) => {
-    console.log(inData);
     if (inData.event.nativeEvent.shiftKey) {
       let ar = []
       if (inData.index + 1 > lastSelectedIndex) {
@@ -79,7 +78,6 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
       setSelectPool([inData.id])
     }
   }
-
   const recalcSize = () => {
     const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 200);
     const height = window.innerHeight - 270;

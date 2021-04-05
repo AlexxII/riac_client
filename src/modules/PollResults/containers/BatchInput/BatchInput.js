@@ -29,6 +29,8 @@ import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_DATA } from './queries'
+import VirtCell from '../../../../components/VirtCell';
+import { Paper } from '@material-ui/core';
 
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
@@ -141,6 +143,13 @@ const BatchInput = ({ id }) => {
   const Loading = () => {
     if (processing) return <LoadingStatus />
     return null
+  }
+
+  const Pp = () => {
+    return (
+      <VirtCell
+      />
+    )
   }
 
   return (
@@ -261,6 +270,7 @@ const BatchInput = ({ id }) => {
           setSelectPool={setSelectPool}
           showDetails={showOneResultDetails}
           updateSingle={() => { }}
+          element={<Pp />}
         />
       </div>
     </Fragment>

@@ -186,7 +186,7 @@ const BatchInput = ({ id }) => {
     },
     onCompleted: () => {
       setNoti({
-        type: 'sucess',
+        type: 'success',
         text: 'Данные сохранены'
       })
       console.log(('saved'));

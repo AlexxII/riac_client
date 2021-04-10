@@ -11,7 +11,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SaveIcon from '@material-ui/icons/Save';
-import ClearIcon from '@material-ui/icons/Clear';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import ResultView from '../../containers/ResultView'
@@ -24,6 +23,7 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 import Filters from '../../components/Filters'
 import StyledBadge from '../../../../components/StyledBadge'
 import BriefInfo from '../../components/BriefInfo'
+import BatchCharts from '../../components/BatchCharts'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { parseOprFile } from '../../lib/utils'
@@ -53,6 +53,7 @@ const BatchInput = ({ id }) => {
   const [batchOpen, setBatchOpen] = useState(false)
   const [activeFilters, setActiveFilters] = useState(null)
   const [briefOpen, setBrifOpen] = useState(false)
+  const [batchGrOpen, setBatchGrOpen] = useState(false)
 
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
@@ -161,11 +162,7 @@ const BatchInput = ({ id }) => {
     data: filtersResults,
     loading: filtersResultsLoading,
     error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS, {
-    onCompleted: () => {
-      console.log(filtersResults);
-    }
-  })
+  } = useQuery(GET_FILTER_SELECTS)
 
   const {
     data: pollData,
@@ -188,6 +185,10 @@ const BatchInput = ({ id }) => {
       })
     },
     onCompleted: () => {
+      setNoti({
+        type: 'sucess',
+        text: 'Данные сохранены'
+      })
       console.log(('saved'));
       // setUserBack(true)
     }
@@ -246,8 +247,9 @@ const BatchInput = ({ id }) => {
     setActiveWorksheets(activeWorksheets.filter(obj => !selectPool.includes(obj.id)))
 
     // setRawInputData(updatedData)
-    setDelOpen(false)
     setSelectPool([])
+    setSelectAll(false)
+    setDelOpen(false)
   }
 
   const selectAllActive = (event) => {
@@ -258,7 +260,7 @@ const BatchInput = ({ id }) => {
         setSelectPool(selectPool)
       } else {
         setSelectPool([])
-        setSelectAll()
+        setSelectAll(false)
       }
     }
   }
@@ -313,6 +315,7 @@ const BatchInput = ({ id }) => {
 
   const clearAll = () => {
     setSelectPool([])
+    setSelectAll(false)
     setRawInputData([])
     setActiveWorksheets([])
   }
@@ -328,13 +331,20 @@ const BatchInput = ({ id }) => {
   }
 
   const Loading = () => {
-    if (processing) return <LoadingStatus />
+    if (processing || saveLoading) return <LoadingStatus />
     return null
   }
 
   return (
 
     <Fragment>
+      <BatchCharts
+        // Графики
+        data={activeWorksheets}
+        selectPool={selectPool}
+        questions={pollData.poll.questions}
+        open={batchGrOpen}
+        close={() => setBatchGrOpen(false)} />
       <BriefInfo
         // краткая информация - просто коды
         data={activeWorksheets}
@@ -398,7 +408,7 @@ const BatchInput = ({ id }) => {
           <IconButton
             color="primary"
             component="span"
-            onClick={() => { }}
+            onClick={() => setBatchGrOpen(true)}
             disabled={!selectPool.length}
           >
             <EqualizerIcon />

@@ -74,11 +74,7 @@ const OverallResults = ({ id }) => {
     data: filtersResults,
     loading: filtersResultsLoading,
     error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS, {
-    onCompleted: () => {
-      console.log(filtersResults);
-    }
-  })
+  } = useQuery(GET_FILTER_SELECTS)
 
   const {
     data: pollResults,
@@ -89,7 +85,6 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: () => {
-      console.log(pollResults)
       setActiveWorksheets(pollResults.poll.results)
       handleConfigFileAndUpdateCache(pollResults.poll)
       setQuota({

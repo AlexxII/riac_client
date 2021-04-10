@@ -79,7 +79,8 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
     }
   }
   const recalcSize = () => {
-    const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 200);
+    // const width = (document.documentElement.clientWidth || document.body.clientWidth) - (fullScreen ? 0 : 200);
+    const width = (document.documentElement.clientWidth || document.body.clientWidth) - 200;
     const height = window.innerHeight - 270;
     const columns = Math.floor((width - 40) / COLUMN_WIDTH);
     setConfig({

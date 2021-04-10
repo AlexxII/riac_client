@@ -38,7 +38,7 @@ export const prepareResultsDataToExport = (resultsPool) => {
     let counter = 0
     for (let j = 0; j < rLength; j++) {
       tempResult += details[j] + ','
-      if (tempResult.length - counter > 160) {
+      if (tempResult.length - counter > 80) {
         tempResult += '\n'
         counter = tempResult.length
       }

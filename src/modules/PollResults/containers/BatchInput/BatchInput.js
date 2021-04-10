@@ -11,6 +11,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SaveIcon from '@material-ui/icons/Save';
+import ClearIcon from '@material-ui/icons/Clear';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 
 import ResultView from '../../containers/ResultView'
 import LoadingState from '../../../../components/LoadingState'
@@ -19,9 +21,9 @@ import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import VirtMasonry from '../../../../components/VirtMasonry'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
-
 import Filters from '../../components/Filters'
 import StyledBadge from '../../../../components/StyledBadge'
+import BriefInfo from '../../components/BriefInfo'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { parseOprFile } from '../../lib/utils'
@@ -42,14 +44,118 @@ const BatchInput = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
   const [delOpen, setDelOpen] = useState(false)
-  const [dataPool, setDataPool] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
-  const [displayData, setDisplayData] = useState(false)
+  const [rawInputData, setRawInputData] = useState(false)
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
   const [batchOpen, setBatchOpen] = useState(false)
+  const [activeFilters, setActiveFilters] = useState(null)
+  const [briefOpen, setBrifOpen] = useState(false)
+
+  // процесс фильтрации данных в зависимости от выбора пользователя
+  useEffect(() => {
+    if (activeFilters) {
+      const results = rawInputData
+      const newResult = results
+        .filter(result => {
+          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
+        })
+        .filter(result => {
+          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : false : true
+        })
+        .filter(result => {
+          return activeFilters.date ?
+            activeFilters.date.length
+              ? result.lastModified
+                ? activeFilters.date.includes(result.lastModified)
+                : false
+              : true
+            : true
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.sex) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (result.result[i].code === activeFilters.sex) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.ages) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (activeFilters.ages.includes(result.result[i].code)) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
+        .filter(result => {
+          const len = result.result.length
+          let res = true
+          if (!activeFilters.custom) {
+            return true
+          }
+          for (let i = 0; i < len; i++) {
+            if (activeFilters.custom.includes(result.result[i].code)) {
+              res = true
+              break
+            } else {
+              res = false
+            }
+          }
+          return res
+        })
+        .filter(result => {
+          if (!activeFilters.status) {
+            return true
+          }
+          if (activeFilters.status === 'set') {
+            return result.processed === true
+          } else {
+            return result.processed === false
+          }
+        })
+      const newSelectPool = selectPool.filter(
+        selectId => {
+          const len = newResult.length
+          for (let i = 0; i < len; i++) {
+            if (selectId === newResult[i].id) return true
+          }
+          return false
+        })
+      setSelectPool(newSelectPool)
+      setActiveWorksheets(newResult)
+    }
+  }, [activeFilters])
+
+  useEffect(() => {
+    if (selectPool.length) {
+      // const selectedData = activeWorksheets
+      //   .filter(result => selectPool.includes(result.id))
+      // кол-во уникальных городов, которые были выбраны
+      // const uniqueCitites = selectedData.map(obj => obj.city ? obj.city.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
+      // setCitiesUpload(uniqueCitites)
+      // для отображения промежуточного положения checkbox-a 
+      activeWorksheets.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
+    }
+  }, [selectPool])
 
   const {
     data: filtersResults,
@@ -112,7 +218,7 @@ const BatchInput = ({ id }) => {
           const fileData = reader.result
           const correctData = parseOprFile(fileData)
           const updatedData = correctData.map(obj => ({ ...obj, id: uuid.v4() }))
-          // setDisplayData(updatedData)
+          setRawInputData(updatedData)
           setActiveWorksheets(updatedData)
           setProcessing(false)
         }, 1500)
@@ -134,6 +240,12 @@ const BatchInput = ({ id }) => {
     //     results: selectPool
     //   },
     // })
+    console.log(selectPool);
+
+    setRawInputData(rawInputData.filter(obj => !selectPool.includes(obj.id)))
+    setActiveWorksheets(activeWorksheets.filter(obj => !selectPool.includes(obj.id)))
+
+    // setRawInputData(updatedData)
     setDelOpen(false)
     setSelectPool([])
   }
@@ -169,7 +281,6 @@ const BatchInput = ({ id }) => {
     })
   }
 
-
   const prepareResultsToSave = (selectedPool, questions) => {
     // массив соответствия {код ответа : id ответа}
     const answerCodePool = questions.reduce((acum, question) => {
@@ -200,6 +311,12 @@ const BatchInput = ({ id }) => {
     return preparedData
   }
 
+  const clearAll = () => {
+    setSelectPool([])
+    setRawInputData([])
+    setActiveWorksheets([])
+  }
+
   if (pollDataError || filtersResultsError) {
     console.log(JSON.stringify(pollDataError));
     return (
@@ -218,6 +335,12 @@ const BatchInput = ({ id }) => {
   return (
 
     <Fragment>
+      <BriefInfo
+        // краткая информация - просто коды
+        data={activeWorksheets}
+        selectPool={selectPool}
+        open={briefOpen}
+        close={() => setBrifOpen(false)} />
       <ResultView
         // просмотр результатов
         workSheets={activeWorksheets}
@@ -249,9 +372,9 @@ const BatchInput = ({ id }) => {
             size="small"
           >
             Выбрать
-        </Button>
+          </Button>
         </label>
-        <Tooltip title="Сохранить">
+        <Tooltip title="Сохранить в БД">
           <IconButton
             color="primary"
             component="span"
@@ -265,7 +388,7 @@ const BatchInput = ({ id }) => {
           <IconButton
             color="primary"
             component="span"
-            onClick={() => { }}
+            onClick={() => setBrifOpen(true)}
             disabled={!selectPool.length}
           >
             <InfoOutlinedIcon />
@@ -299,6 +422,16 @@ const BatchInput = ({ id }) => {
             disabled={!selectPool.length}
           >
             <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Очистить все">
+          <IconButton
+            color="secondary"
+            component="span"
+            onClick={clearAll}
+            disabled={!rawInputData.length}
+          >
+            <HighlightOffIcon />
           </IconButton>
         </Tooltip>
         <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
@@ -336,7 +469,7 @@ const BatchInput = ({ id }) => {
           // pollFilters={pollResults.poll.filters}
           // quota={quota} />
 
-          filters={filtersResults} cities={pollData.poll.cities} setActiveFilters={() => { }}
+          filters={filtersResults} cities={pollData.poll.cities} setActiveFilters={setActiveFilters}
           pollFilters={pollData.poll.filters}
           quota={0} />
       </div>

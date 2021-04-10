@@ -16,30 +16,8 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   const [newFilter, setNewFilters] = useState(null)
   const [updated, setUpdated] = useState(false)
 
-  // useEffect(() => {
-  //   if (avaiableFilters) {
-  //     console.log(filters);
-
-  //     setAviableFilters({
-  //       ...avaiableFilters,
-  //       intervs: filters.intervievers
-  //         .map(interv => ({
-  //           value: interv.id,
-  //           title: interv.username
-  //         }))
-  //         .map(interv => ({
-  //           ...interv,
-  //           count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
-  //         }))
-  //     })
-  //   }
-  // }, [quota])
-
   useEffect(() => {
-    console.log(pollFilters);
-    console.log(cities);
     if (pollFilters) {
-
       const ageDef = pollFilters.age.reduce((acum, item) => {
         if (item.active) {
           acum[item.id] = item.code
@@ -69,14 +47,16 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
             category: city.category.title
           })).map(city => ({
             ...city,
-            count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
+            count: quota.cities ? quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0 : 0
+            // count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
           })),
         intervs: filters.intervievers.map(interv => ({
           value: interv.id,
           title: interv.username,
         })).map(interv => ({
           ...interv,
-          count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
+          count: quota.users ? quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0 : 0
+          // count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
         })),
         age: filters.ageCategories
           .filter(

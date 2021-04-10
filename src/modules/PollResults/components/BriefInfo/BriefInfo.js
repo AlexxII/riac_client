@@ -47,8 +47,8 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
         {!groupedData ?
           <LoadingState />
           :
-          groupedData.map(line => (
-            <Fragment>
+          groupedData.map((line, index) => (
+            <Fragment key={index}>
               <span>{line}</span><br />
             </Fragment>
           ))

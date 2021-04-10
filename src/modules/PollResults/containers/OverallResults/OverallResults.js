@@ -55,7 +55,6 @@ const OverallResults = ({ id }) => {
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                           // отображаемые анкеты
-  const [activeFiltrWorksheets, setActiveFilterWorksheets] = useState([])                // отображаемые и отфилтрованные анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
   const [activeFilters, setActiveFilters] = useState(null)
@@ -302,7 +301,6 @@ const OverallResults = ({ id }) => {
         })
       setSelectPool(newSelectPool)
       setActiveWorksheets(newResult)
-      setActiveFilterWorksheets(newResult)
     }
   }, [activeFilters])
 

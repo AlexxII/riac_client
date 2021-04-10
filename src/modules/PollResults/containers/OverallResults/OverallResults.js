@@ -75,7 +75,11 @@ const OverallResults = ({ id }) => {
     data: filtersResults,
     loading: filtersResultsLoading,
     error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS)
+  } = useQuery(GET_FILTER_SELECTS, {
+    onCompleted: () => {
+      console.log(filtersResults);
+    }
+  })
 
   const {
     data: pollResults,
@@ -120,9 +124,9 @@ const OverallResults = ({ id }) => {
     }, {})
   }
 
+
   // распределение ответов по городам
   const handleCityQuotaData = (data) => {
-    console.log(data);
     return data.reduce((acum, item) => {
       if (item.city) {
         if (!acum[item.city.id]) {
@@ -719,12 +723,13 @@ const OverallResults = ({ id }) => {
             </Box>
           </Grid>
         </Grid>
-        <div style={{marginBottom: '10px'}}>
+        <div style={{ marginBottom: '10px' }}>
           <Filters
             filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
             pollFilters={pollResults.poll.filters}
             quota={quota} />
         </div>
+
         <VirtMasonry
           data={activeWorksheets}
           selectPool={selectPool}

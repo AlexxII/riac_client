@@ -36,7 +36,9 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   // }, [quota])
 
   useEffect(() => {
-    if (pollFilters.length) {
+    console.log(pollFilters);
+    console.log(cities);
+    if (pollFilters) {
 
       const ageDef = pollFilters.age.reduce((acum, item) => {
         if (item.active) {

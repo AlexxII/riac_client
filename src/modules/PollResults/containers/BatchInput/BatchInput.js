@@ -10,6 +10,7 @@ import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import SaveIcon from '@material-ui/icons/Save';
 
 import ResultView from '../../containers/ResultView'
 import LoadingState from '../../../../components/LoadingState'
@@ -28,9 +29,10 @@ import { parseOprFile } from '../../lib/utils'
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
-import { GET_POLL_DATA } from './queries'
+import { GET_FILTER_SELECTS, GET_POLL_DATA } from './queries'
+import { SAVE_BATCH_RESULT } from './mutaions'
+
 import VirtCell from '../../../../components/VirtCell';
-import { Paper } from '@material-ui/core';
 
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
@@ -50,6 +52,16 @@ const BatchInput = ({ id }) => {
   const [batchOpen, setBatchOpen] = useState(false)
 
   const {
+    data: filtersResults,
+    loading: filtersResultsLoading,
+    error: filtersResultsError
+  } = useQuery(GET_FILTER_SELECTS, {
+    onCompleted: () => {
+      console.log(filtersResults);
+    }
+  })
+
+  const {
     data: pollData,
     loading: pollDataLoading,
     error: pollDataError
@@ -61,6 +73,20 @@ const BatchInput = ({ id }) => {
       handleConfigFile(pollData.poll.logic.path)
     }
   });
+
+  const [saveResult, { loading: saveLoading }] = useMutation(SAVE_BATCH_RESULT, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Сохранить не удалось. Смотрите консоль.'
+      })
+    },
+    onCompleted: () => {
+      console.log(('saved'));
+      // setUserBack(true)
+    }
+  })
+
 
   const handleConfigFile = (filePath) => {
     fetch(url + filePath)
@@ -96,7 +122,7 @@ const BatchInput = ({ id }) => {
     e.target.value = ""
   }
 
-  if (pollDataLoading) return (
+  if (!activeWorksheets || pollDataLoading || filtersResultsLoading) return (
     <LoadingState type="card" />
   )
 
@@ -130,7 +156,51 @@ const BatchInput = ({ id }) => {
     setBatchOpen(true)
   }
 
-  if (pollDataError) {
+  const saveResults = () => {
+    const selectedPool = activeWorksheets.filter(obj => selectPool.includes(obj.id))
+    const questions = pollData.poll.questions
+    const preparedData = prepareResultsToSave(selectedPool, questions)
+    console.log(preparedData);
+    saveResult({
+      variables: {
+        poll: id,
+        results: preparedData
+      }
+    })
+  }
+
+
+  const prepareResultsToSave = (selectedPool, questions) => {
+    // массив соответствия {код ответа : id ответа}
+    const answerCodePool = questions.reduce((acum, question) => {
+      const answers = question.answers
+      const lAnswers = answers.length
+      for (let i = 0; i < lAnswers; i++) {
+        const answer = answers[i]
+        acum[answer.code] = { answer: answer.id, question: question.id }
+      }
+      return acum
+    }, {})
+    // 
+    const preparedData = selectedPool.map(obj => {
+      const results = obj.result
+      const modResults = results.map(obj => ({
+        ...obj,
+        answer: answerCodePool[obj.code].answer ?? null,
+        question: answerCodePool[obj.code].question ?? null,
+      }))
+      // TODO: проверить если id ответа или вопроса отсутствует
+      return {
+        city: obj.city,
+        date: obj.date,
+        user: obj.user,
+        result: modResults
+      }
+    })
+    return preparedData
+  }
+
+  if (pollDataError || filtersResultsError) {
     console.log(JSON.stringify(pollDataError));
     return (
       <ErrorState
@@ -143,13 +213,6 @@ const BatchInput = ({ id }) => {
   const Loading = () => {
     if (processing) return <LoadingStatus />
     return null
-  }
-
-  const Pp = () => {
-    return (
-      <VirtCell
-      />
-    )
   }
 
   return (
@@ -188,6 +251,16 @@ const BatchInput = ({ id }) => {
             Выбрать
         </Button>
         </label>
+        <Tooltip title="Сохранить">
+          <IconButton
+            color="primary"
+            component="span"
+            onClick={saveResults}
+            disabled={!selectPool.length}
+          >
+            <SaveIcon />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Просмотр кодов">
           <IconButton
             color="primary"
@@ -259,8 +332,12 @@ const BatchInput = ({ id }) => {
       />
       <div style={{ marginTop: '10px', marginBottom: '10px' }}>
         <Filters
-          filters={[]} cities={[]} setActiveFilters={() => { }}
-          pollFilters={[]}
+          // filters={filtersResults} cities={pollResults.poll.cities} setActiveFilters={setActiveFilters}
+          // pollFilters={pollResults.poll.filters}
+          // quota={quota} />
+
+          filters={filtersResults} cities={pollData.poll.cities} setActiveFilters={() => { }}
+          pollFilters={pollData.poll.filters}
           quota={0} />
       </div>
       <div style={{ marginTop: '10px', marginLeft: '-5px' }}>
@@ -270,7 +347,7 @@ const BatchInput = ({ id }) => {
           setSelectPool={setSelectPool}
           showDetails={showOneResultDetails}
           updateSingle={() => { }}
-          element={<Pp />}
+          element={<VirtCell />}
         />
       </div>
     </Fragment>

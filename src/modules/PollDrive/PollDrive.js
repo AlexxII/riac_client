@@ -214,7 +214,6 @@ const PollDrive = ({ pollId }) => {
         poll: poll.id,
         city: currentCity.id,
         user: currentUser.id,
-        pool: data.pool,
         data: result
       }
     }).then(res => {

@@ -17,6 +17,7 @@ export const ADD_NEW_POLL = gql`
       questionsCount
       answersCount
       active
+      resultsCount
       cities {
         id
         title

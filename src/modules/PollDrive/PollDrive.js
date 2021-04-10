@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
+import { GET_ALL_ACTIVE_POLLS } from '../PollHome/queries'
 import { GET_POLL_RESULTS } from '../PollResults/containers/OverallResults/queries'
 
 import { SAVE_NEW_RESULT } from './mutaions'
@@ -100,12 +101,32 @@ const PollDrive = ({ pollId }) => {
         text: 'Сохранить не удалось. Смотрите консоль.'
       })
     },
-    refetchQueries: [{
-      query: GET_POLL_RESULTS,
-      variables: {
-        id: pollId
-      }
-    }],
+    update: (cache, { data }) => {
+      const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+      const currentPoll = polls.filter(obj => obj.id === pollId)
+      cache.modify({
+        id: cache.identify(currentPoll[0]),
+        fields: {
+          resultsCount(previous) {
+            return previous + 1
+          }
+        }
+      })
+      const { poll } = cache.readQuery({
+        query: GET_POLL_RESULTS,
+        variables: {
+          id: pollId
+        }
+      })
+      cache.modify({
+        id: cache.identify(poll),
+        fields: {
+          results(previous, { toReference }) {
+            return [...previous, toReference(data.saveResult)]
+          }
+        }
+      })
+    },
     onCompleted: () => {
       setUserBack(true)
     }

@@ -7,6 +7,30 @@ mutation ($poll: String!, $city: String!, $user: String!, $data: [ResultData]) {
     city: $city,
     user: $user,
     data: $data
-  )
+  ) {
+    id
+    user {
+      id
+      username
+    }
+    created
+    lastModified
+    processed
+    city {
+      id
+      title
+      type
+      category {
+        id
+        order
+        title
+      }
+    }
+    result {
+      id
+      code
+      text
+    }
+  }
 }
 `

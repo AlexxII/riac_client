@@ -31,6 +31,8 @@ import { parseOprFile } from '../../lib/utils'
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
+import {GET_POLL_RESULTS} from '../../containers/OverallResults/queries'
+
 import { GET_FILTER_SELECTS, GET_POLL_DATA } from './queries'
 import { SAVE_BATCH_RESULT } from './mutaions'
 
@@ -189,9 +191,16 @@ const BatchInput = ({ id }) => {
         type: 'success',
         text: 'Данные сохранены'
       })
+
       console.log(('saved'));
       // setUserBack(true)
-    }
+    },
+    refetchQueries: [{
+      query: GET_POLL_RESULTS,
+      variables: {
+        id: id
+      }
+    }],
   })
 
 
@@ -235,18 +244,8 @@ const BatchInput = ({ id }) => {
 
   const deleteComplitely = () => {
     // необходимо удалить из данных, подготовленных для загрузки и из данных уже сохраненных в БД
-
-    // deleteResult({
-    //   variables: {
-    //     results: selectPool
-    //   },
-    // })
-    console.log(selectPool);
-
     setRawInputData(rawInputData.filter(obj => !selectPool.includes(obj.id)))
     setActiveWorksheets(activeWorksheets.filter(obj => !selectPool.includes(obj.id)))
-
-    // setRawInputData(updatedData)
     setSelectPool([])
     setSelectAll(false)
     setDelOpen(false)

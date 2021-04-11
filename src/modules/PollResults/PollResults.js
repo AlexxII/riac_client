@@ -23,10 +23,10 @@ const PollResults = ({ id }) => {
       label: 'Линейка',
       component: <LinearDistibution id={id} />
     },
-    // {
-    //   label: 'Аналитика',
-    //   component: <Analytics id={id} />
-    // },
+    {
+      label: 'Аналитика',
+      component: <Analytics id={id} />
+    },
     {
       label: 'Пакетный',
       component: <BatchInput id={id} />

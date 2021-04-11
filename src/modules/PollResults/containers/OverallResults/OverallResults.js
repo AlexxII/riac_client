@@ -58,9 +58,7 @@ const OverallResults = ({ id }) => {
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
   const [activeFilters, setActiveFilters] = useState(null)
-
   const [calculating, setCalculating] = useState(false)
-
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
   const [citiesUpload, setCitiesUpload] = useState(null)                        // количество н.п. для выгрузки -> файлов
@@ -179,17 +177,6 @@ const OverallResults = ({ id }) => {
         result => updatePool.includes(result.id) ? { ...result, processed: bool } : result
       ))
     },
-    // update: (cache, { data }) => {
-    //   const deletedPool = data.deleteResults.map(del => del.id)
-    //   setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
-    //   cache.modify({
-    //     fields: {
-    //       pollResults(existingRefs, { readField }) {
-    //         return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
-    //       }
-    //     }
-    //   })
-    // },
     onCompleted: () => {
       setSelectPool([])
       setSelectAll(false)
@@ -539,6 +526,10 @@ const OverallResults = ({ id }) => {
         const uniqueDublArray = [...new Set(dublArray)]
         setDuplicateResults(uniqueDublArray)
       } else {
+        setNoti({
+          type: 'success',
+          text: 'Дублей не обнаружено'
+        })
         setDuplicateResults(null)
       }
       setCalculating(false)

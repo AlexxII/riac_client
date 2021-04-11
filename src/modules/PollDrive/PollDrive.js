@@ -90,7 +90,6 @@ const PollDrive = ({ pollId }) => {
         const logic = parseIni(text)
         // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
         const normLogic = normalizeLogic(logic)
-        console.log(normLogic);
         setPollLogic(normLogic)
       })
   }

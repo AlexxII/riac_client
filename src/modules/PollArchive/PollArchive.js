@@ -21,7 +21,7 @@ const PollArchive = () => {
     data: pollsData
   } = useQuery(GET_ARCHIVE_POLLS,{
     onCompleted: () => {
-      console.log(pollsData);
+      // console.log(pollsData);
     }
   })
 

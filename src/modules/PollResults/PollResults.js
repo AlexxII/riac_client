@@ -12,6 +12,10 @@ import Quota from './containers/Quota'
 const PollResults = ({ id }) => {
   const data = [
     {
+      label: 'Аналитика',
+      component: <Analytics id={id} />
+    },
+    {
       label: 'Общие',
       component: <OverallResults id={id} />
     },
@@ -22,10 +26,6 @@ const PollResults = ({ id }) => {
     {
       label: 'Линейка',
       component: <LinearDistibution id={id} />
-    },
-    {
-      label: 'Аналитика',
-      component: <Analytics id={id} />
     },
     {
       label: 'Пакетный',

@@ -65,29 +65,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
         text: 'Сохранить не удалось. Смотрите консоль.'
       })
     },
-    update: (cache, { data }) => {
-      const { poll } = cache.readQuery({
-        query: GET_POLL_RESULTS,
-        variables: {
-          id: pollId
-        }
-      })
-      cache.modify({
-        id: cache.identify(poll),
-        fields: {
-          results(previous, { toReference }) {
-            return [...previous, toReference(data.updateResult)]
-          }
-        }
-      })
-    },
-
-    // refetchQueries: [{
-    //   query: GET_POLL_RESULTS,
-    //   variables: {
-    //     id: pollId
-    //   }
-    // }],
+    // обновляется автоматически т.к. возвращается респондент
     onCompleted: () => {
       setUserBack(true)
       history.goBack()

@@ -18,6 +18,7 @@ import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
+import DialogWithSelect from '../../../../components/DialogWithSelect';
 
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { rusToLatin, prepareResultsDataToExport } from '../../lib/utils'
@@ -38,7 +39,10 @@ import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
-import { DELETE_RESULTS, SAVE_RESULTS_STATUS } from './mutations'
+import {
+  DELETE_RESULTS, SAVE_RESULTS_STATUS,
+  UPDATE_RESULT_CITY, UPDATE_RESULT_USER
+} from './mutations'
 
 const iconvlite = require('iconv-lite')
 
@@ -67,6 +71,10 @@ const OverallResults = ({ id }) => {
   const [batchGrOpen, setBatchGrOpen] = useState(false)
   const [logic, setLogic] = useState(false)
   const [quota, setQuota] = useState(false)
+  const [dialogSelect, setDialogSelect] = useState({
+    open: false,
+    select: []
+  })
 
   const {
     data: filtersResults,
@@ -182,6 +190,16 @@ const OverallResults = ({ id }) => {
       setSelectAll(false)
     }
   })
+
+  const [
+    updateRespondentCity,
+    { loading: updateRespondentCityLoading, error: updateRespondentCityError }
+  ] = useMutation(UPDATE_RESULT_CITY)
+
+  const [
+    updateRespondentUser,
+    { loading: updateRespondentUserLoading, error: updateRespondentUserError }
+  ] = useMutation(UPDATE_RESULT_USER)
 
   useEffect(() => {
     if (selectPool.length) {
@@ -561,6 +579,81 @@ const OverallResults = ({ id }) => {
     setBatchOpen(true)
   }
 
+  const saveDialogData = (data) => {
+    const type = dialogSelect.type
+    switch (type) {
+      case 'city':
+        saveNewCity(data)
+        setDialogSelect({ ...dialogSelect, open: false })
+        break
+      case 'user':
+        saveNewUser(data)
+        setDialogSelect({ ...dialogSelect, open: false })
+        break
+      default:
+        setDialogSelect({ ...dialogSelect, open: false })
+        return
+    }
+  }
+
+  const saveNewCity = (data) => {
+    const city = data.id
+    updateRespondentCity({
+      variables: {
+        results: selectPool,
+        city
+      },
+      onError: (e) => {
+        setNoti({
+          type: 'error',
+          text: 'Изменить статус не удалось. Смотрите консоль.'
+        })
+        console.log(e);
+      }
+    })
+  }
+
+  const saveNewUser = (data) => {
+    const user = data.id
+    updateRespondentUser({
+      variables: {
+        results: selectPool,
+        user
+      },
+      onError: (e) => {
+        setNoti({
+          type: 'error',
+          text: 'Изменить статус не удалось. Смотрите консоль.'
+        })
+        console.log(e);
+      }
+    })
+  }
+
+  const handleCityChange = () => {
+    setDialogSelect({
+      type: 'city',
+      select: pollResults.poll.cities ?? [],
+      header: 'Смена города',
+      text: 'Выберите город в котором проводился опрос',
+      open: true
+    })
+  }
+
+  const handleUserChange = () => {
+    const data = filtersResults.intervievers.map(obj => ({
+      id: obj.id,
+      title: obj.username
+    }))
+    setDialogSelect({
+      type: 'user',
+      select: data,
+      header: 'Смена интервьюера',
+      text: 'Выберите интервьюера, который проводил опрос',
+      open: true
+    })
+  }
+
   const updateSingleResult = (respondent) => {
     history.push(`/update-result/${id}/${respondent.id}`);
   }
@@ -596,6 +689,14 @@ const OverallResults = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
+      <DialogWithSelect
+        open={dialogSelect.open}
+        options={dialogSelect.select}
+        header={dialogSelect.header}
+        text={dialogSelect.text}
+        save={saveDialogData}
+        handleClose={() => setDialogSelect({ ...dialogSelect, open: false })}
+      />
       <ConfirmDialog
         open={delOpen}
         confirm={deleteComplitely}
@@ -645,6 +746,8 @@ const OverallResults = ({ id }) => {
             <StatusMenu
               visible={!selectPool.length}
               handleStatus={handleStatusChange}
+              handleCityChange={handleCityChange}
+              handleUserChange={handleUserChange}
             />
             <Tooltip title="Проверить на дубли">
               <IconButton

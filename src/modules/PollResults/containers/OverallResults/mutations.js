@@ -15,3 +15,33 @@ export const SAVE_RESULTS_STATUS = gql`
     }
   }
 `
+
+export const UPDATE_RESULT_CITY = gql`
+  mutation($results: [String], $city: String) {
+    updateResultCity(results: $results, city: $city) {
+      id
+      city {
+        id
+        title
+        type
+        category {
+          id
+          order
+          title
+        }
+      }
+    }
+  }
+`
+
+export const UPDATE_RESULT_USER = gql`
+  mutation($results: [String], $user: String) {
+    updateResultUser(results: $results, user: $user) {
+      id
+      user {
+        id
+        username
+      }
+    }
+  }
+`

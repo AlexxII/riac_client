@@ -4,9 +4,12 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
+import { assertNullableType } from 'graphql';
 
-const StatusMenu = ({ visible, handleStatus }) => {
+const StatusMenu = ({ visible, handleStatus, handleCityChange, handleUserChange }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -24,6 +27,16 @@ const StatusMenu = ({ visible, handleStatus }) => {
 
   const handleUnsetStatus = () => {
     handleStatus('unset')
+    setAnchorEl(null)
+  }
+
+  const handleCityChangeEx = () => {
+    handleCityChange()
+    setAnchorEl(null)
+  }
+
+  const handleUserChangeEx = () => {
+    handleUserChange()
     setAnchorEl(null)
   }
 
@@ -46,8 +59,36 @@ const StatusMenu = ({ visible, handleStatus }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
+        <Typography
+          className="menu-subtext"
+          color="textSecondary"
+          display="block"
+          variant="caption"
+        >
+          Статус
+        </Typography>
+
         <MenuItem onClick={handleSetStatus}>Обработан</MenuItem>
         <MenuItem onClick={handleUnsetStatus}>Не обработан</MenuItem>
+        <Divider style={{ marginTop: '5px' }} />
+        <Typography
+          className="menu-subtext"
+          color="textSecondary"
+          display="block"
+          variant="caption"
+        >
+          Город
+        </Typography>
+        <MenuItem onClick={handleCityChangeEx}>Изменить</MenuItem>
+        <Typography
+          className="menu-subtext"
+          color="textSecondary"
+          display="block"
+          variant="caption"
+        >
+          Интервьюер
+        </Typography>
+        <MenuItem onClick={handleUserChangeEx}>Изменить</MenuItem>
       </Menu>
     </Fragment>
   );

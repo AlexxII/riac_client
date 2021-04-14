@@ -28,7 +28,7 @@ const updateAndStoreInApolloCache = (data) => {
       title: `${index + 1} - ${item.title}`
     }))
   }
-  // доступ ко всем вопросам и обновление их через фрагменты - быстро -> предусмотреть задержку отрисовки
+###### доступ ко всем вопросам и обновление их через фрагменты - быстро -> предусмотреть задержку отрисовки
   for (let i = 0; i < mData.questions.length; i++) {
     const question = mData.questions[i]
     const qId = question.id

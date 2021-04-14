@@ -606,9 +606,12 @@ const OverallResults = ({ id }) => {
       onError: (e) => {
         setNoti({
           type: 'error',
-          text: 'Изменить статус не удалось. Смотрите консоль.'
+          text: 'Изменить город не удалось. Смотрите консоль.'
         })
         console.log(e);
+      },
+      onCompleted: () => {
+        handleUserQuotaData(pollResults.poll.results)
       }
     })
   }
@@ -623,7 +626,7 @@ const OverallResults = ({ id }) => {
       onError: (e) => {
         setNoti({
           type: 'error',
-          text: 'Изменить статус не удалось. Смотрите консоль.'
+          text: 'Изменить пользователя не удалось. Смотрите консоль.'
         })
         console.log(e);
       }

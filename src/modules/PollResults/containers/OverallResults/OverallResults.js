@@ -29,7 +29,7 @@ import ResultView from '../../containers/ResultView'
 import BatchCharts from '../../components/BatchCharts'
 import BriefInfo from '../../components/BriefInfo'
 import ExportMenu from '../../components/ExportMenu'
-import StatusMenu from '../../components/StatusMenu'
+import EditMenu from '../../components/EditMenu'
 
 import VirtMasonry from '../../../../components/VirtMasonry'
 import StyledBadge from '../../../../components/StyledBadge'
@@ -204,6 +204,10 @@ const OverallResults = ({ id }) => {
       setActiveWorksheets(activeWorksheets.map(
         result => respondentIdPool[result.id] ? respondentIdPool[result.id] : result
       ))
+      // фильтруем
+      const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      const newResult = doFiltration(results)
+      setActiveWorksheets(newResult)
       setQuota({
         ...quota,
         cities: handleCityQuotaData(pollResults.poll.results)
@@ -222,10 +226,13 @@ const OverallResults = ({ id }) => {
         acum[item.id] = item
         return acum
       }, {})
-      console.log(activeWorksheets);
       setActiveWorksheets(activeWorksheets.map(
         result => respondentIdPool[result.id] ? respondentIdPool[result.id] : result
       ))
+      // фильтруем
+      const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      const newResult = doFiltration(results)
+      setActiveWorksheets(newResult)
       setQuota({
         ...quota,
         users: handleUserQuotaData(pollResults.poll.results)
@@ -249,80 +256,7 @@ const OverallResults = ({ id }) => {
   useEffect(() => {
     if (activeFilters) {
       const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
-      const newResult = results
-        .filter(result => {
-          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
-        })
-        .filter(result => {
-          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
-        })
-        .filter(result => {
-          return activeFilters.date ?
-            activeFilters.date.length
-              ? result.lastModified
-                ? activeFilters.date.includes(result.lastModified)
-                : true
-              : true
-            : true
-        })
-        .filter(result => {
-          const len = result.result.length
-          let res = true
-          if (!activeFilters.sex) {
-            return true
-          }
-          for (let i = 0; i < len; i++) {
-            if (result.result[i].code === activeFilters.sex) {
-              res = true
-              break
-            } else {
-              res = false
-            }
-          }
-          return res
-        })
-        .filter(result => {
-          const len = result.result.length
-          let res = true
-          if (!activeFilters.ages) {
-            return true
-          }
-          for (let i = 0; i < len; i++) {
-            if (activeFilters.ages.includes(result.result[i].code)) {
-              res = true
-              break
-            } else {
-              res = false
-            }
-          }
-          return res
-        })
-        .filter(result => {
-          const len = result.result.length
-          let res = true
-          if (!activeFilters.custom) {
-            return true
-          }
-          for (let i = 0; i < len; i++) {
-            if (activeFilters.custom.includes(result.result[i].code)) {
-              res = true
-              break
-            } else {
-              res = false
-            }
-          }
-          return res
-        })
-        .filter(result => {
-          if (!activeFilters.status) {
-            return true
-          }
-          if (activeFilters.status === 'set') {
-            return result.processed === true
-          } else {
-            return result.processed === false
-          }
-        })
+      const newResult = doFiltration(results)
       const newSelectPool = selectPool.filter(
         selectId => {
           const len = newResult.length
@@ -335,6 +269,84 @@ const OverallResults = ({ id }) => {
       setActiveWorksheets(newResult)
     }
   }, [activeFilters])
+
+  const doFiltration = (results) => {
+    const newResult = results
+      .filter(result => {
+        return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
+      })
+      .filter(result => {
+        return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : true : true
+      })
+      .filter(result => {
+        return activeFilters.date ?
+          activeFilters.date.length
+            ? result.lastModified
+              ? activeFilters.date.includes(result.lastModified)
+              : true
+            : true
+          : true
+      })
+      .filter(result => {
+        const len = result.result.length
+        let res = true
+        if (!activeFilters.sex) {
+          return true
+        }
+        for (let i = 0; i < len; i++) {
+          if (result.result[i].code === activeFilters.sex) {
+            res = true
+            break
+          } else {
+            res = false
+          }
+        }
+        return res
+      })
+      .filter(result => {
+        const len = result.result.length
+        let res = true
+        if (!activeFilters.ages) {
+          return true
+        }
+        for (let i = 0; i < len; i++) {
+          if (activeFilters.ages.includes(result.result[i].code)) {
+            res = true
+            break
+          } else {
+            res = false
+          }
+        }
+        return res
+      })
+      .filter(result => {
+        const len = result.result.length
+        let res = true
+        if (!activeFilters.custom) {
+          return true
+        }
+        for (let i = 0; i < len; i++) {
+          if (activeFilters.custom.includes(result.result[i].code)) {
+            res = true
+            break
+          } else {
+            res = false
+          }
+        }
+        return res
+      })
+      .filter(result => {
+        if (!activeFilters.status) {
+          return true
+        }
+        if (activeFilters.status === 'set') {
+          return result.processed === true
+        } else {
+          return result.processed === false
+        }
+      })
+    return newResult
+  }
 
   if (!activeWorksheets || filtersResultsLoading || pollResultsLoading || !quota) return (
     <LoadingState
@@ -793,7 +805,7 @@ const OverallResults = ({ id }) => {
                 <EqualizerIcon />
               </IconButton>
             </Tooltip>
-            <StatusMenu
+            <EditMenu
               visible={!selectPool.length}
               handleStatus={handleStatusChange}
               handleCityChange={handleCityChange}

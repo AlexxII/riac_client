@@ -6,10 +6,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import CheckCircleOutlineOutlinedIcon from '@material-ui/icons/CheckCircleOutlineOutlined';
 import { assertNullableType } from 'graphql';
 
-const StatusMenu = ({ visible, handleStatus, handleCityChange, handleUserChange }) => {
+const EditMenu = ({ visible, handleStatus, handleCityChange, handleUserChange }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -42,14 +43,14 @@ const StatusMenu = ({ visible, handleStatus, handleCityChange, handleUserChange 
 
   return (
     <Fragment>
-      <Tooltip title="Изменить статус">
+      <Tooltip title="Изменить">
         <IconButton
           color="primary"
           component="span"
           onClick={handleClick}
           disabled={visible}
         >
-          <CheckCircleOutlineOutlinedIcon />
+          <ListAltIcon />
         </IconButton>
       </Tooltip>
       <Menu
@@ -93,4 +94,4 @@ const StatusMenu = ({ visible, handleStatus, handleCityChange, handleUserChange 
     </Fragment>
   );
 }
-export default StatusMenu
+export default EditMenu

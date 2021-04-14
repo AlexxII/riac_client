@@ -53,9 +53,9 @@ const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 // кол-во выделенных анкет
 
 const OverallResults = ({ id }) => {
+  const history = useHistory();
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
-  const history = useHistory();
 
   const [delOpen, setDelOpen] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                           // отображаемые анкеты
@@ -123,7 +123,6 @@ const OverallResults = ({ id }) => {
       return acum
     }, {})
   }
-
 
   // распределение ответов по городам
   const handleCityQuotaData = (data) => {
@@ -194,12 +193,45 @@ const OverallResults = ({ id }) => {
   const [
     updateRespondentCity,
     { loading: updateRespondentCityLoading, error: updateRespondentCityError }
-  ] = useMutation(UPDATE_RESULT_CITY)
+  ] = useMutation(UPDATE_RESULT_CITY, {
+    onCompleted: (data) => {
+      // обновление вью
+      const repondents = data.updateResultCity
+      const respondentIdPool = repondents.reduce((acum, item) => {
+        acum[item.id] = item
+        return acum
+      }, {})
+      setActiveWorksheets(activeWorksheets.map(
+        result => respondentIdPool[result.id] ? respondentIdPool[result.id] : result
+      ))
+      setQuota({
+        ...quota,
+        cities: handleCityQuotaData(pollResults.poll.results)
+      })
+    }
+  })
 
   const [
     updateRespondentUser,
     { loading: updateRespondentUserLoading, error: updateRespondentUserError }
-  ] = useMutation(UPDATE_RESULT_USER)
+  ] = useMutation(UPDATE_RESULT_USER, {
+    onCompleted: (data) => {
+      // обновление вью
+      const repondents = data.updateResultUser
+      const respondentIdPool = repondents.reduce((acum, item) => {
+        acum[item.id] = item
+        return acum
+      }, {})
+      console.log(activeWorksheets);
+      setActiveWorksheets(activeWorksheets.map(
+        result => respondentIdPool[result.id] ? respondentIdPool[result.id] : result
+      ))
+      setQuota({
+        ...quota,
+        users: handleUserQuotaData(pollResults.poll.results)
+      })
+    }
+  })
 
   useEffect(() => {
     if (selectPool.length) {
@@ -575,6 +607,7 @@ const OverallResults = ({ id }) => {
   }
 
   const showOneResultDetails = (respondent) => {
+    console.log(respondent);
     setSelectPool([respondent.id])
     setBatchOpen(true)
   }
@@ -610,14 +643,12 @@ const OverallResults = ({ id }) => {
         })
         console.log(e);
       },
-      onCompleted: () => {
-        handleUserQuotaData(pollResults.poll.results)
-      }
     })
   }
 
   const saveNewUser = (data) => {
     const user = data.id
+    console.log(user);
     updateRespondentUser({
       variables: {
         results: selectPool,
@@ -629,7 +660,23 @@ const OverallResults = ({ id }) => {
           text: 'Изменить пользователя не удалось. Смотрите консоль.'
         })
         console.log(e);
-      }
+      },
+      update: (cache, { data }) => {
+        const repondents = data.updateResultUser
+        for (let i = 0; i < repondents.length; i++) {
+          const respondent = repondents[i];
+          const cacheId = cache.identify(respondent.user)
+          // обновление кэш
+          cache.modify({
+            id: cache.identify(respondent),
+            fields: {
+              user: (existingFieldsData, { toReference }) => {
+                return toReference(cacheId)
+              }
+            }
+          })
+        }
+      },
     })
   }
 

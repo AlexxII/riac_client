@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 
 import FlatPicker from '../../../../components/FlatPicker'
+import { useUtils } from '@material-ui/pickers';
 
 const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   const [avaiableFilters, setAviableFilters] = useState()
@@ -18,79 +19,9 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
 
   useEffect(() => {
     if (pollFilters) {
-      const ageDef = pollFilters.age.reduce((acum, item) => {
-        if (item.active) {
-          acum[item.id] = item.code
-        }
-        return acum
-      }, {})
-      const sexDef = pollFilters.sex.reduce((acum, item) => {
-        if (item.active) {
-          acum[item.id] = item.code
-        }
-        return acum
-      }, {})
-      const customDef = pollFilters.custom.reduce((acum, item) => {
-        if (item.active) {
-          acum[item.id] = item.code
-        }
-        return acum
-      }, {})
-      const filter = {
-        cities: cities
-          .slice()
-          .sort((a, b) => a.category.id > b.category.id ? 1 : -1)
-          .sort((a, b) => a.category.order > b.category.order ? 1 : -1)
-          .map(city => ({
-            value: city.id,
-            title: city.title,
-            category: city.category.title
-          })).map(city => ({
-            ...city,
-            count: quota.cities ? quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0 : 0
-            // count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
-          })),
-        intervs: filters.intervievers.map(interv => ({
-          value: interv.id,
-          title: interv.username,
-        })).map(interv => ({
-          ...interv,
-          count: quota.users ? quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0 : 0
-          // count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
-        })),
-        age: filters.ageCategories
-          .filter(
-            age => ageDef[age.id]
-          )
-          .map(
-            age => ({
-              value: ageDef[age.id] ? ageDef[age.id] : null,
-              title: age.title
-            })
-          ),
-        sex: filters.sex
-          .filter(
-            sex => sexDef[sex.id]
-          )
-          .map(
-            sex => ({
-              value: sexDef[sex.id] ? sexDef[sex.id] : null,
-              title: sex.title
-            })
-          ),
-        custom: filters.customFilters
-          .filter(
-            custom => customDef[custom.id]
-          )
-          .map(
-            custom => ({
-              value: customDef[custom.id] ? customDef[custom.id] : null,
-              title: custom.title
-            })
-          ),
-        status: filters.status
-      }
-      setAviableFilters(filter)
+      const filters = setFilters()
+      console.log(filters);
+      setAviableFilters(filters)
     } else {
       setAviableFilters({
         cities: [],
@@ -101,6 +32,87 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
       })
     }
   }, [])
+
+  const setFilters = () => {
+    const ageDef = pollFilters.age.reduce((acum, item) => {
+      if (item.active) {
+        acum[item.id] = item.code
+      }
+      return acum
+    }, {})
+    const sexDef = pollFilters.sex.reduce((acum, item) => {
+      if (item.active) {
+        acum[item.id] = item.code
+      }
+      return acum
+    }, {})
+    const customDef = pollFilters.custom.reduce((acum, item) => {
+      if (item.active) {
+        acum[item.id] = item.code
+      }
+      return acum
+    }, {})
+    const filter = {
+      cities: cities
+        .slice()
+        .sort((a, b) => a.category.id > b.category.id ? 1 : -1)
+        .sort((a, b) => a.category.order > b.category.order ? 1 : -1)
+        .map(city => ({
+          value: city.id,
+          title: city.title,
+          category: city.category.title
+        })).map(city => ({
+          ...city,
+          count: quota.cities ? quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0 : 0
+          // count: quota.cities[city.value] !== undefined ? quota.cities[city.value] : 0
+        })),
+      intervs: filters.intervievers.map(interv => ({
+        value: interv.id,
+        title: interv.username,
+      })).map(interv => ({
+        ...interv,
+        count: quota.users ? quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0 : 0
+        // count: quota.users[interv.value] !== undefined ? quota.users[interv.value] : 0
+      })),
+      age: filters.ageCategories
+        .filter(
+          age => ageDef[age.id]
+        )
+        .map(
+          age => ({
+            value: ageDef[age.id] ? ageDef[age.id] : null,
+            title: age.title
+          })
+        ),
+      sex: filters.sex
+        .filter(
+          sex => sexDef[sex.id]
+        )
+        .map(
+          sex => ({
+            value: sexDef[sex.id] ? sexDef[sex.id] : null,
+            title: sex.title
+          })
+        ),
+      custom: filters.customFilters
+        .filter(
+          custom => customDef[custom.id]
+        )
+        .map(
+          custom => ({
+            value: customDef[custom.id] ? customDef[custom.id] : null,
+            title: custom.title
+          })
+        ),
+      status: filters.status
+    }
+    return filter
+  }
+
+  useEffect(() => {
+    const filters = setFilters()
+    setAviableFilters(filters)
+  }, [quota])
 
   // ФИЛЬТРЫ
   const handleDataChange = (dates) => {
@@ -271,6 +283,9 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
             size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
+            getOptionSelected={(option, value) => {                                         // чтобы при обновлении квоты - не забывались чекбоксы
+              return newFilter?.cities.includes(option.value)
+            }}
             renderTags={selected => {
               if (selected.length > 1) {
                 return (
@@ -320,6 +335,9 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
             size="small"
             noOptionsText={"Опции не настроены"}
             getOptionLabel={(option) => option.title}
+            getOptionSelected={(option, value) => {                                         // чтобы при обновлении квоты - не забывались чекбоксы
+              return newFilter?.intervs.includes(option.value)
+            }}
             renderTags={selected => {
               if (selected.length > 1) {
                 return (

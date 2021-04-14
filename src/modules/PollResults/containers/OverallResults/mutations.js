@@ -7,6 +7,7 @@ mutation ($results: [String]!) {
   }
 }
 `
+
 export const SAVE_RESULTS_STATUS = gql`
   mutation($results: [String]!, $type: String) {
     saveResultStatus(results: $results, type: $type) {
@@ -20,6 +21,13 @@ export const UPDATE_RESULT_CITY = gql`
   mutation($results: [String], $city: String) {
     updateResultCity(results: $results, city: $city) {
       id
+      user {
+        id
+        username
+      }
+      created
+      lastModified
+      processed
       city {
         id
         title
@@ -29,6 +37,11 @@ export const UPDATE_RESULT_CITY = gql`
           order
           title
         }
+      }
+      result {
+        id
+        code
+        text
       }
     }
   }
@@ -41,6 +54,24 @@ export const UPDATE_RESULT_USER = gql`
       user {
         id
         username
+      }
+      created
+      lastModified
+      processed
+      city {
+        id
+        title
+        type
+        category {
+          id
+          order
+          title
+        }
+      }
+      result {
+        id
+        code
+        text
       }
     }
   }

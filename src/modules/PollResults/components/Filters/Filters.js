@@ -20,7 +20,6 @@ const Filters = ({ filters, pollFilters, cities, setActiveFilters, quota }) => {
   useEffect(() => {
     if (pollFilters) {
       const filters = setFilters()
-      console.log(filters);
       setAviableFilters(filters)
     } else {
       setAviableFilters({

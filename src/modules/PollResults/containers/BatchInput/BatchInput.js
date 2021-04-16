@@ -26,12 +26,10 @@ import BriefInfo from '../../components/BriefInfo'
 import BatchCharts from '../../components/BatchCharts'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
-import { parseOprFile } from '../../lib/utils'
+import { parseOprFile, similarity } from '../../lib/utils'
 
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
-
-import {GET_POLL_RESULTS} from '../../containers/OverallResults/queries'
 
 import { GET_FILTER_SELECTS, GET_POLL_DATA } from './queries'
 import { SAVE_BATCH_RESULT } from './mutaions'
@@ -63,7 +61,8 @@ const BatchInput = ({ id }) => {
       const results = rawInputData
       const newResult = results
         .filter(result => {
-          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
+          console.log(result.likelyCity);
+          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.likelyCity.id) : false : true
         })
         .filter(result => {
           return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : false : true
@@ -191,18 +190,10 @@ const BatchInput = ({ id }) => {
         type: 'success',
         text: 'Данные сохранены'
       })
-
       console.log(('saved'));
       // setUserBack(true)
-    },
-    refetchQueries: [{
-      query: GET_POLL_RESULTS,
-      variables: {
-        id: id
-      }
-    }],
+    }
   })
-
 
   const handleConfigFile = (filePath) => {
     fetch(url + filePath)
@@ -228,8 +219,60 @@ const BatchInput = ({ id }) => {
           const fileData = reader.result
           const correctData = parseOprFile(fileData)
           const updatedData = correctData.map(obj => ({ ...obj, id: uuid.v4() }))
-          setRawInputData(updatedData)
-          setActiveWorksheets(updatedData)
+          const pollCities = pollData.poll.cities
+          const limit = 0.6                                                            // порог вероятности совпадения
+          const upResults = updatedData.map(result => {
+            let needCity = {}
+            const resultCity = result.city
+            let max = 0
+            for (let j = 0; j < pollCities.length; j++) {
+              const pollCity = pollCities[j];
+              const p = similarity(resultCity, pollCity.title)
+              if (p > max) {
+                max = p
+                needCity = pollCity
+              }
+              if (max >= limit) {
+                return {
+                  ...result,
+                  likelyCity: needCity,
+                  pCity: max
+                }
+              }
+            }
+            return {
+              ...result,
+              likelyCity: needCity,
+              pCity: max
+            }
+          }).map(result => {
+            let needUser = {}
+            const resultsUser = result.user
+            let max = 0
+            for (let j = 0; j < filtersResults.intervievers.length; j++) {
+              const pollUser = filtersResults.intervievers[j];
+              const p = similarity(resultsUser, pollUser.username)
+              if (p > max) {
+                max = p
+                needUser = pollUser
+              }
+              if (max >= limit) {
+                return {
+                  ...result,
+                  likelyUser: needUser,
+                  pUser: max
+                }
+              }
+            }
+            return {
+              ...result,
+              likelyUser: needUser,
+              pUser: max
+            }
+          })
+          console.log(upResults);
+          setRawInputData(upResults)
+          setActiveWorksheets(upResults)
           setProcessing(false)
         }, 1500)
       }

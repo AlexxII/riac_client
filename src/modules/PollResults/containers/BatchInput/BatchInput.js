@@ -61,11 +61,10 @@ const BatchInput = ({ id }) => {
       const results = rawInputData
       const newResult = results
         .filter(result => {
-          console.log(result.likelyCity);
           return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.likelyCity.id) : false : true
         })
         .filter(result => {
-          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : false : true
+          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.likelyUser.id) : false : true
         })
         .filter(result => {
           return activeFilters.date ?

@@ -54,6 +54,7 @@ const BatchInput = ({ id }) => {
   const [activeFilters, setActiveFilters] = useState(null)
   const [briefOpen, setBrifOpen] = useState(false)
   const [batchGrOpen, setBatchGrOpen] = useState(false)
+  const [quota, setQuota] = useState(false)
 
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
@@ -146,6 +147,35 @@ const BatchInput = ({ id }) => {
     }
   }, [activeFilters])
 
+
+  // распределение ответов по людям
+  const handleUserQuotaData = (data) => {
+    return data.reduce((acum, item) => {
+      if (item.likelyUser) {
+        if (!acum[item.likelyUser.id]) {
+          acum[item.likelyUser.id] = 1
+        } else {
+          acum[item.likelyUser.id] = acum[item.likelyUser.id] + 1
+        }
+      }
+      return acum
+    }, {})
+  }
+
+  // распределение ответов по городам
+  const handleCityQuotaData = (data) => {
+    return data.reduce((acum, item) => {
+      if (item.likelyCity) {
+        if (!acum[item.likelyCity.id]) {
+          acum[item.likelyCity.id] = 1
+        } else {
+          acum[item.likelyCity.id] = acum[item.likelyCity.id] + 1
+        }
+      }
+      return acum
+    }, {})
+  }
+
   useEffect(() => {
     if (selectPool.length) {
       // const selectedData = activeWorksheets
@@ -221,12 +251,12 @@ const BatchInput = ({ id }) => {
           const pollCities = pollData.poll.cities
           const limit = 0.6                                                            // порог вероятности совпадения
           const upResults = updatedData.map(result => {
-            let needCity = {}
+            let needCity = null
             const resultCity = result.city
             let max = 0
             for (let j = 0; j < pollCities.length; j++) {
               const pollCity = pollCities[j];
-              const p = similarity(resultCity, pollCity.title)
+              const p = similarity(resultCity ?? '', pollCity.title ?? '')
               if (p > max) {
                 max = p
                 needCity = pollCity
@@ -245,12 +275,12 @@ const BatchInput = ({ id }) => {
               pCity: max
             }
           }).map(result => {
-            let needUser = {}
+            let needUser = null
             const resultsUser = result.user
             let max = 0
             for (let j = 0; j < filtersResults.intervievers.length; j++) {
               const pollUser = filtersResults.intervievers[j];
-              const p = similarity(resultsUser, pollUser.username)
+              const p = similarity(resultsUser ?? '', pollUser.username ?? '')
               if (p > max) {
                 max = p
                 needUser = pollUser
@@ -269,7 +299,19 @@ const BatchInput = ({ id }) => {
               pUser: max
             }
           })
-          console.log(upResults);
+          const cityToResultArray = upResults.reduce((acum, item) => {
+            const cityId = item.likelyCity ? item.likelyCity.id : 'empty'
+            if (!acum.hasOwnProperty(cityId)) {
+              acum[cityId] = []
+            }
+            acum[cityId].push(item)
+            return acum
+          }, {})
+          setQuota({
+            users: handleUserQuotaData(upResults),
+            cities: handleCityQuotaData(upResults)
+          })
+          showResultsOfImport(cityToResultArray)
           setRawInputData(upResults)
           setActiveWorksheets(upResults)
           setProcessing(false)
@@ -278,6 +320,26 @@ const BatchInput = ({ id }) => {
     }
     reader.readAsText(file, 'cp866');
     e.target.value = ""
+  }
+
+  const showResultsOfImport = (data) => {
+    let countNull = 0
+    let countNotNull = 0
+    for (let key in data) {
+      if (key) {
+        countNotNull++
+        const r = data[key]
+      } else {
+        countNull++
+        const r = data[key]
+      }
+    }
+    const p = {
+      countNull,
+      countNotNull,
+      
+    }
+    console.log();
   }
 
   if (!activeWorksheets || pollDataLoading || filtersResultsLoading) return (
@@ -522,7 +584,7 @@ const BatchInput = ({ id }) => {
 
           filters={filtersResults} cities={pollData.poll.cities} setActiveFilters={setActiveFilters}
           pollFilters={pollData.poll.filters}
-          quota={0} />
+          quota={quota} />
       </div>
       <div style={{ marginTop: '10px', marginLeft: '-5px' }}>
         <VirtMasonry

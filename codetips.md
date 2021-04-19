@@ -1,10 +1,10 @@
-Apollo client
+# Apollo client
 ============================
 ## обновление кэша
 Импорт зависимостей
 import { gql, useQuery, useLazyQuery, useApolloClient } from '@apollo/client'
 
-# получение клиента в компоненте
+### получение клиента в компоненте
 const client = useApolloClient();
 
 const [delay, setDelay] = uaeState(true)
@@ -49,7 +49,7 @@ const updateAndStoreInApolloCache = (data) => {
   console.log(mData);
 }
 
-# обновить скопом все вопросы опроса
+### обновить скопом все вопросы опроса
 client.writeFragment({
   id: `Poll:${poll.id}`,
   fragment: gql`
@@ -62,7 +62,7 @@ client.writeFragment({
   }
 })
 
-# обновить весь опрос в кэше со всеми зависимостями
+### обновить весь опрос в кэше со всеми зависимостями
 client.writeQuery({
   query: GET_POLL_DATA,
   data: {
@@ -70,7 +70,7 @@ client.writeQuery({
   }
 })
 
-# обновление после мутации
+### обновление после мутации
 const [
   postMessage,
   {loading: postMessageLoading, error: postMessageError}
@@ -94,7 +94,7 @@ async function handlrOnMessage(content: string) {
   }
 }
 
-# удаление из кэша
+### удаление из кэша
 const [
   deleteResult,
   { loading: loadOnDelete }
@@ -122,3 +122,36 @@ const [
     setSelectAll(false)
   }
 })
+
+
+# Работа с массивом
+## REDUCE
+### подсчет количества одного типа
+data.reduce((acum, item) => {
+  if (item.user) {
+    if (!acum[item.user.id]) {
+      acum[item.user.id] = 1
+    } else {
+      acum[item.user.id] = acum[item.user.id] + 1
+    }
+  }
+  return acum
+}, {})
+
+### сопоставления id: {} - каждый с каждым
+age.reduce((acum, item) => {
+  if (item.active) {
+    acum[item.id] = item.code
+  }
+  return acum
+}, {})
+
+### сопоставление id: [] - общий с массивом
+upResults.reduce((acum, item) => {
+  const cityId = item.likelyCity.id
+  if (!acum.hasOwnProperty(cityId)) {
+    acum[cityId] = []
+  }
+  acum[cityId].push(item)
+  return acum
+}, {})

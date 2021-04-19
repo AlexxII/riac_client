@@ -52,7 +52,6 @@ export const parseOprFile = (inputData) => {
   const buf = Buffer.from(inputData);
   const utf8Text = iconvlite.decode(buf, 'utf8')
   const bloсkExp = /((АО[\s\S]+?===\r?\n?)(.*$))/gm
-  const match = utf8Text.match(bloсkExp)
   const pollCodeExp = /00\/([\s\S]+?\n)/g
   const headerExp = /АО[\s\S]+?04\/[\D\d]+\n/gm
   const dateExp = /02\/(\d*)/g
@@ -63,6 +62,7 @@ export const parseOprFile = (inputData) => {
   const codeTextExp = /([0-9]{3})([\s\S]*)/m
 
   const zz = []
+  const match = utf8Text.match(bloсkExp)
 
   if (match) {
 
@@ -72,6 +72,7 @@ export const parseOprFile = (inputData) => {
       const endBlockSymbol = block.match(endBlockExp) ? block.match(endBlockExp) : null
 
       const header = block.match(headerExp) ? block.match(headerExp)[0] : null
+
       const pollCode = header.match(pollCodeExp) ? header.match(pollCodeExp)[0] : null
       const date = header.match(dateExp) ? header.match(dateExp)[0] : null
       const city = header.match(cityExp) ? header.match(cityExp)[0] : null

@@ -61,7 +61,7 @@ export const parseOprFile = (inputData) => {
   const endBlockExp = /===/mg
   const userExp = /===\r?\n?(.*$)/m
   const codeTextExp = /([0-9]{3})([\s\S]*)/m
-  const datePattern = /02\/(\d{2})(\d{2})(\d{2})/;
+  const datePattern = /(\d{2})(\d{2})(\d{2})/;
 
   const zz = []
   const match = utf8Text.match(bloсkExp)
@@ -77,11 +77,9 @@ export const parseOprFile = (inputData) => {
 
       const pollCode = header.match(pollCodeExp) ? header.match(pollCodeExp)[0] : null
       const parsedDate = header.match(dateExp) ? header.match(dateExp)[1] : null
-      console.log(parsedDate);
       let date = null
       if (parsedDate) {
         const fff = parsedDate.replace(datePattern, '20$3-$2-$1')
-        console.log(fff);
         date = new Date(fff)
       }
       const inputCity = header.match(cityExp) ? header.match(cityExp)[0] : null

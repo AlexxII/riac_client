@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import uuid from "uuid";
-import moment from 'moment'
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -14,19 +13,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SaveIcon from '@material-ui/icons/Save';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import EventBusyIcon from '@material-ui/icons/EventBusy';
-import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
-import DomainDisabledIcon from '@material-ui/icons/DomainDisabled';
 import Grid from '@material-ui/core/Grid';
 import Badge from '@material-ui/core/Badge';
 import Typography from '@material-ui/core/Typography';
-
-
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 
 import ResultView from '../../containers/ResultView'
 import LoadingState from '../../../../components/LoadingState'
@@ -39,7 +28,6 @@ import Filters from '../../components/Filters'
 import StyledBadge from '../../../../components/StyledBadge'
 import BriefInfo from '../../components/BriefInfo'
 import BatchCharts from '../../components/BatchCharts'
-import Alert from '../../../../components/Alert'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { parseOprFile, similarity } from '../../lib/utils'
@@ -204,12 +192,6 @@ const BatchInput = ({ id }) => {
 
   useEffect(() => {
     if (selectPool.length) {
-      // const selectedData = activeWorksheets
-      //   .filter(result => selectPool.includes(result.id))
-      // кол-во уникальных городов, которые были выбраны
-      // const uniqueCitites = selectedData.map(obj => obj.city ? obj.city.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
-      // setCitiesUpload(uniqueCitites)
-      // для отображения промежуточного положения checkbox-a 
       activeWorksheets.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
     }
   }, [selectPool])
@@ -246,7 +228,6 @@ const BatchInput = ({ id }) => {
         text: 'Данные сохранены'
       })
       console.log(('saved'));
-      // setUserBack(true)
     }
   })
 
@@ -338,6 +319,10 @@ const BatchInput = ({ id }) => {
             }
             if (!item.date) {
               delCount++
+              return false
+            }
+            // попадаются просто пустые результаты -> без ответов
+            if (!item.result.length) {
               return false
             }
             return true
@@ -508,7 +493,6 @@ const BatchInput = ({ id }) => {
     const selectedPool = activeWorksheets.filter(obj => selectPool.includes(obj.id))
     const questions = pollData.poll.questions
     const preparedData = prepareResultsToSave(selectedPool, questions)
-    return
     saveResult({
       variables: {
         poll: id,
@@ -538,9 +522,9 @@ const BatchInput = ({ id }) => {
       }))
       // TODO: проверить если id ответа или вопроса отсутствует
       return {
-        city: obj.city,
-        date: obj.date,
-        user: obj.user,
+        city: obj.city.id,
+        date: obj.trueDate + '',                            // приведение к строке
+        user: obj.user.id,
         result: modResults
       }
     })

@@ -21,13 +21,6 @@ import Grid from '@material-ui/core/Grid';
 import Badge from '@material-ui/core/Badge';
 import Typography from '@material-ui/core/Typography';
 
-
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-
 import ResultView from '../../containers/ResultView'
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -39,7 +32,6 @@ import Filters from '../../components/Filters'
 import StyledBadge from '../../../../components/StyledBadge'
 import BriefInfo from '../../components/BriefInfo'
 import BatchCharts from '../../components/BatchCharts'
-import Alert from '../../../../components/Alert'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { parseOprFile, similarity } from '../../lib/utils'
@@ -60,7 +52,6 @@ const BatchInput = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
   const [delOpen, setDelOpen] = useState(false)
-  const [importError, setImportError] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [calculating, setCalculating] = useState(false)                                 // анализ дублей
@@ -325,33 +316,21 @@ const BatchInput = ({ id }) => {
               pUser: max
             }
           })
-          // отбросить данные, которые имеют пустые поля
-          let delCount = 0
-          const trueData = upResults.filter(item => {
-            if (!item.city) {
-              delCount++
-              return false
-            }
-            if (!item.user) {
-              delCount++
-              return false
-            }
-            if (!item.date) {
-              delCount++
-              return false
-            }
-            return true
-          })
-          if (delCount) {
-            setImportError(delCount)
-          }
+          // const cityToResultArray = upResults.reduce((acum, item) => {
+          //   const cityId = item.city ? item.city.id : 'empty'
+          //   if (!acum.hasOwnProperty(cityId)) {
+          //     acum[cityId] = []
+          //   }
+          //   acum[cityId].push(item)
+          //   return acum
+          // }, {})
           setQuota({
-            users: handleUserQuotaData(trueData),
-            cities: handleCityQuotaData(trueData)
+            users: handleUserQuotaData(upResults),
+            cities: handleCityQuotaData(upResults)
           })
-          showResultsOfImport(trueData)
-          setRawInputData(trueData)
-          setActiveWorksheets(trueData)
+          showResultsOfImport(upResults)
+          setRawInputData(upResults)
+          setActiveWorksheets(upResults)
           setProcessing(false)
         }, 1500)
       }
@@ -720,21 +699,44 @@ const BatchInput = ({ id }) => {
                 </Typography>
             }
           </Box>
+          <Tooltip title="Отсутствие города">
+            <Badge badgeContent={cityNull ? `${cityNull.length}` : null} color="secondary" anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+              max={9999}>
+              <IconButton
+                color="secondary"
+                component="span"
+                onClick={() => { }}
+                disabled={!rawInputData.length && !cityNull.length}
+              >
+                <DomainDisabledIcon />
+              </IconButton>
+            </Badge>
+          </Tooltip>
+          <Tooltip title="Отсутствие пользователя">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={() => { }}
+              disabled={true}
+            >
+              <PersonAddDisabledIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Отсутствие даты">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={() => { }}
+              disabled={true}
+            >
+              <EventBusyIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
       </Grid>
-      <ConfirmDialog
-        open={importError}
-        close={() => setImportError(false)}
-        config={{
-          closeBtn: "Ок"
-        }}
-        data={
-          {
-            title: 'Внимание',
-            content: `Импортированные данные содержат ошибки и не могут быть добавлены. Отброшено ${importError} результатов.`
-          }
-        }
-      />
       <ConfirmDialog
         open={delOpen}
         confirm={deleteComplitely}

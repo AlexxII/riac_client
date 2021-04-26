@@ -55,7 +55,7 @@ export const parseOprFile = (inputData) => {
   const bloсkExp = /((АО[\s\S]+?===\r?\n?)(.*$))/gm
   const pollCodeExp = /00\/([\s\S]+?\n)/g
   const headerExp = /АО[\s\S]+?04\/[\D\d]+\n/gm
-  const dateExp = /02\/(\d*)/g
+  const dateExp = /02\/(\d{6})/m
   const cityExp = /04\/[\D\d].*$/gm
   const codesExp = /04\/[\D\d].*$([\s\S]+?)===/m
   const endBlockExp = /===/mg
@@ -76,10 +76,14 @@ export const parseOprFile = (inputData) => {
       const header = block.match(headerExp) ? block.match(headerExp)[0] : null
 
       const pollCode = header.match(pollCodeExp) ? header.match(pollCodeExp)[0] : null
-      const parsedDate = header.match(dateExp) ? header.match(dateExp)[0] : null
-      const fff = parsedDate.replace(datePattern, '20$3-$2-$1')
-      console.log(fff);
-      const date = new Date(fff)
+      const parsedDate = header.match(dateExp) ? header.match(dateExp)[1] : null
+      console.log(parsedDate);
+      let date = null
+      if (parsedDate) {
+        const fff = parsedDate.replace(datePattern, '20$3-$2-$1')
+        console.log(fff);
+        date = new Date(fff)
+      }
       const inputCity = header.match(cityExp) ? header.match(cityExp)[0] : null
       const blockOfCodes = header.match(codesExp) ? header.match(codesExp)[1] : null
 
@@ -111,7 +115,7 @@ export const parseOprFile = (inputData) => {
               pollCode,
               inputUser,
               trueDate: date,
-              date: moment(date).format('DD.MM.YYYY'),
+              date: date ? moment(date).format('DD.MM.YYYY') : null,
               result
             }
             zz.push(respondent)

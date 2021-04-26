@@ -10,8 +10,8 @@ import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Badge from '@material-ui/core/Badge';
 import Button from '@material-ui/core/Button';
+import Badge from '@material-ui/core/Badge';
 import Typography from '@material-ui/core/Typography';
 
 import LoadingState from '../../../../components/LoadingState'

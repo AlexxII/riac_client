@@ -1,4 +1,5 @@
 const iconvlite = require('iconv-lite')
+const moment = require('moment')
 
 export const rusToLatin = (str) => {
   var ru = {
@@ -60,6 +61,7 @@ export const parseOprFile = (inputData) => {
   const endBlockExp = /===/mg
   const userExp = /===\r?\n?(.*$)/m
   const codeTextExp = /([0-9]{3})([\s\S]*)/m
+  const datePattern = /02\/(\d{2})(\d{2})(\d{2})/;
 
   const zz = []
   const match = utf8Text.match(bloсkExp)
@@ -74,11 +76,14 @@ export const parseOprFile = (inputData) => {
       const header = block.match(headerExp) ? block.match(headerExp)[0] : null
 
       const pollCode = header.match(pollCodeExp) ? header.match(pollCodeExp)[0] : null
-      const date = header.match(dateExp) ? header.match(dateExp)[0] : null
-      const city = header.match(cityExp) ? header.match(cityExp)[0] : null
+      const parsedDate = header.match(dateExp) ? header.match(dateExp)[0] : null
+      const fff = parsedDate.replace(datePattern, '20$3-$2-$1')
+      console.log(fff);
+      const date = new Date(fff)
+      const inputCity = header.match(cityExp) ? header.match(cityExp)[0] : null
       const blockOfCodes = header.match(codesExp) ? header.match(codesExp)[1] : null
 
-      const user = block.match(userExp) ? block.match(userExp)[1] : null
+      const inputUser = block.match(userExp) ? block.match(userExp)[1] : null
       const linesOfCodes = blockOfCodes.split('999').filter(obj => obj !== '\n')
 
       // разделение на строки
@@ -102,10 +107,11 @@ export const parseOprFile = (inputData) => {
               }
             }
             respondent = {
-              city,
+              inputCity,
               pollCode,
-              user,
-              date,
+              inputUser,
+              trueDate: date,
+              date: moment(date).format('DD.MM.YYYY'),
               result
             }
             zz.push(respondent)
@@ -135,9 +141,9 @@ export const parseOprFile = (inputData) => {
             }
           }
           respondent = {
-            city: null,
+            inputCity: null,
             pollCode: null,
-            user: null,
+            inputUser: null,
             date: null,
             result
           }

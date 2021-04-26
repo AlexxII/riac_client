@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import uuid from "uuid";
+import moment from 'moment'
 
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -12,6 +13,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SaveIcon from '@material-ui/icons/Save';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import EventBusyIcon from '@material-ui/icons/EventBusy';
+import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
+import DomainDisabledIcon from '@material-ui/icons/DomainDisabled';
+import Grid from '@material-ui/core/Grid';
 
 import ResultView from '../../containers/ResultView'
 import LoadingState from '../../../../components/LoadingState'
@@ -62,10 +67,10 @@ const BatchInput = ({ id }) => {
       const results = rawInputData
       const newResult = results
         .filter(result => {
-          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.likelyCity.id) : false : true
+          return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
         })
         .filter(result => {
-          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.likelyUser.id) : false : true
+          return activeFilters.intervs ? result.user ? activeFilters.intervs.includes(result.user.id) : false : true
         })
         .filter(result => {
           return activeFilters.date ?
@@ -147,15 +152,14 @@ const BatchInput = ({ id }) => {
     }
   }, [activeFilters])
 
-
   // распределение ответов по людям
   const handleUserQuotaData = (data) => {
     return data.reduce((acum, item) => {
-      if (item.likelyUser) {
-        if (!acum[item.likelyUser.id]) {
-          acum[item.likelyUser.id] = 1
+      if (item.user) {
+        if (!acum[item.user.id]) {
+          acum[item.user.id] = 1
         } else {
-          acum[item.likelyUser.id] = acum[item.likelyUser.id] + 1
+          acum[item.user.id] = acum[item.user.id] + 1
         }
       }
       return acum
@@ -165,11 +169,11 @@ const BatchInput = ({ id }) => {
   // распределение ответов по городам
   const handleCityQuotaData = (data) => {
     return data.reduce((acum, item) => {
-      if (item.likelyCity) {
-        if (!acum[item.likelyCity.id]) {
-          acum[item.likelyCity.id] = 1
+      if (item.city) {
+        if (!acum[item.city.id]) {
+          acum[item.city.id] = 1
         } else {
-          acum[item.likelyCity.id] = acum[item.likelyCity.id] + 1
+          acum[item.city.id] = acum[item.city.id] + 1
         }
       }
       return acum
@@ -252,7 +256,7 @@ const BatchInput = ({ id }) => {
           const limit = 0.6                                                            // порог вероятности совпадения
           const upResults = updatedData.map(result => {
             let needCity = null
-            const resultCity = result.city
+            const resultCity = result.inputCity
             let max = 0
             for (let j = 0; j < pollCities.length; j++) {
               const pollCity = pollCities[j];
@@ -264,19 +268,19 @@ const BatchInput = ({ id }) => {
               if (max >= limit) {
                 return {
                   ...result,
-                  likelyCity: needCity,
-                  pCity: max
+                  city: needCity,
+                  pCity: max                                            // вероятность
                 }
               }
             }
             return {
               ...result,
-              likelyCity: needCity,
+              city: needCity,
               pCity: max
             }
           }).map(result => {
             let needUser = null
-            const resultsUser = result.user
+            const resultsUser = result.inputUser
             let max = 0
             for (let j = 0; j < filtersResults.intervievers.length; j++) {
               const pollUser = filtersResults.intervievers[j];
@@ -288,30 +292,30 @@ const BatchInput = ({ id }) => {
               if (max >= limit) {
                 return {
                   ...result,
-                  likelyUser: needUser,
-                  pUser: max
+                  user: needUser,
+                  pUser: max                                                  // вероятность
                 }
               }
             }
             return {
               ...result,
-              likelyUser: needUser,
+              user: needUser,
               pUser: max
             }
           })
-          const cityToResultArray = upResults.reduce((acum, item) => {
-            const cityId = item.likelyCity ? item.likelyCity.id : 'empty'
-            if (!acum.hasOwnProperty(cityId)) {
-              acum[cityId] = []
-            }
-            acum[cityId].push(item)
-            return acum
-          }, {})
+          // const cityToResultArray = upResults.reduce((acum, item) => {
+          //   const cityId = item.city ? item.city.id : 'empty'
+          //   if (!acum.hasOwnProperty(cityId)) {
+          //     acum[cityId] = []
+          //   }
+          //   acum[cityId].push(item)
+          //   return acum
+          // }, {})
           setQuota({
             users: handleUserQuotaData(upResults),
             cities: handleCityQuotaData(upResults)
           })
-          showResultsOfImport(cityToResultArray)
+          showResultsOfImport(upResults)
           setRawInputData(upResults)
           setActiveWorksheets(upResults)
           setProcessing(false)
@@ -323,23 +327,23 @@ const BatchInput = ({ id }) => {
   }
 
   const showResultsOfImport = (data) => {
-    let countNull = 0
-    let countNotNull = 0
-    for (let key in data) {
-      if (key) {
-        countNotNull++
-        const r = data[key]
-      } else {
-        countNull++
-        const r = data[key]
+    const uu = data.reduce((acum, item) => {
+      if (!item.city) {
+        acum['cityNull'].push(item)
       }
-    }
-    const p = {
-      countNull,
-      countNotNull,
-      
-    }
-    console.log();
+      if (!item.user) {
+        acum['userNull'].push(item)
+      }
+      if (!item.date) {
+        acum['dateNull'].push(item)
+      }
+      return acum
+    }, {
+      cityNull: [],
+      userNull: [],
+      dateNull: []
+    })
+    console.log(uu);
   }
 
   if (!activeWorksheets || pollDataLoading || filtersResultsLoading) return (
@@ -373,11 +377,15 @@ const BatchInput = ({ id }) => {
     setBatchOpen(true)
   }
 
+  const updateSingle = (respondent) => {
+    console.log(respondent);
+  }
+
   const saveResults = () => {
     const selectedPool = activeWorksheets.filter(obj => selectPool.includes(obj.id))
     const questions = pollData.poll.questions
     const preparedData = prepareResultsToSave(selectedPool, questions)
-    console.log(preparedData);
+    return
     saveResult({
       variables: {
         poll: id,
@@ -470,97 +478,132 @@ const BatchInput = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
-      <div className="bachinput-add-zone">
-        <input
-          accept="*.opr"
-          id="contained-button-file"
-          onInput={handleRawInput}
-          type="file"
-        />
-        <label htmlFor="contained-button-file">
-          <Button
-            variant="contained"
-            color="primary"
-            component="span"
-            size="small"
-          >
-            Выбрать
-          </Button>
-        </label>
-        <Tooltip title="Сохранить в БД">
-          <IconButton
-            color="primary"
-            component="span"
-            onClick={saveResults}
-            disabled={!selectPool.length}
-          >
-            <SaveIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Просмотр кодов">
-          <IconButton
-            color="primary"
-            component="span"
-            onClick={() => setBrifOpen(true)}
-            disabled={!selectPool.length}
-          >
-            <InfoOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Графики">
-          <IconButton
-            color="primary"
-            component="span"
-            onClick={() => setBatchGrOpen(true)}
-            disabled={!selectPool.length}
-          >
-            <EqualizerIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Проверить на дубли">
-          <IconButton
-            color="primary"
-            component="span"
-            onClick={() => { }}
-            disabled={selectPool.length < 2}
-          >
-            <FileCopyOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Удалить">
-          <IconButton
-            color="secondary"
-            component="span"
-            onClick={() => setDelOpen(true)}
-            disabled={!selectPool.length}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Очистить все">
-          <IconButton
-            color="secondary"
-            component="span"
-            onClick={clearAll}
-            disabled={!rawInputData.length}
-          >
-            <HighlightOffIcon />
-          </IconButton>
-        </Tooltip>
-        <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
-          <FormControlLabel id="selectall-checkbox"
-            control={
-              <Checkbox
-                checked={selectAll && selectPool.length === activeWorksheets.length}
-                onChange={selectAllActive}
-                color="primary"
-                indeterminate={Boolean(selectPool.length > 0 & !selectAll)}
-              />
-            }
-            label="Выделить все"
+      <Grid container justify="space-between" className="bachinput-add-zone">
+        <Grid>
+          <input
+            accept="*.opr"
+            id="contained-button-file"
+            onInput={handleRawInput}
+            type="file"
           />
-        </StyledBadge>
-      </div>
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              size="small"
+            >
+              Выбрать
+          </Button>
+          </label>
+          <Tooltip title="Сохранить в БД">
+            <IconButton
+              color="primary"
+              component="span"
+              onClick={saveResults}
+              disabled={!selectPool.length}
+            >
+              <SaveIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Просмотр кодов">
+            <IconButton
+              color="primary"
+              component="span"
+              onClick={() => setBrifOpen(true)}
+              disabled={!selectPool.length}
+            >
+              <InfoOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Графики">
+            <IconButton
+              color="primary"
+              component="span"
+              onClick={() => setBatchGrOpen(true)}
+              disabled={!selectPool.length}
+            >
+              <EqualizerIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Проверить на дубли">
+            <IconButton
+              color="primary"
+              component="span"
+              onClick={() => { }}
+              disabled={selectPool.length < 2}
+            >
+              <FileCopyOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Удалить">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={() => setDelOpen(true)}
+              disabled={!selectPool.length}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Очистить все">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={clearAll}
+              disabled={!rawInputData.length}
+            >
+              <HighlightOffIcon />
+            </IconButton>
+          </Tooltip>
+          <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
+            <FormControlLabel id="selectall-checkbox"
+              control={
+                <Checkbox
+                  checked={selectAll && selectPool.length === activeWorksheets.length}
+                  onChange={selectAllActive}
+                  color="primary"
+                  indeterminate={Boolean(selectPool.length > 0 & !selectAll)}
+                />
+              }
+              label="Выделить все"
+            />
+          </StyledBadge>
+        </Grid>
+
+        {/* <Grid item container xs={12} sm={6} md={3} lg={3} justify="flex-end">
+          <Tooltip title="Отсутствие города">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={() => { }}
+              disabled={!rawInputData.length}
+            >
+              <DomainDisabledIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Отсутствие пользователя">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={() => { }}
+              disabled={!rawInputData.length}
+            >
+              <PersonAddDisabledIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Отсутствие даты">
+            <IconButton
+              color="secondary"
+              component="span"
+              onClick={() => { }}
+              disabled={!rawInputData.length}
+            >
+              <EventBusyIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid> */}
+      </Grid>
       <ConfirmDialog
         open={delOpen}
         confirm={deleteComplitely}
@@ -592,7 +635,7 @@ const BatchInput = ({ id }) => {
           selectPool={selectPool}
           setSelectPool={setSelectPool}
           showDetails={showOneResultDetails}
-          updateSingle={() => { }}
+          updateSingle={updateSingle}
           element={<VirtCell />}
         />
       </div>

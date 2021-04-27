@@ -5,7 +5,7 @@ import AdaptiveTabs from '../../components/AdaptiveTabs'
 import Generation from './containers/Generation'
 import OverallResults from './containers/OverallResults'
 import LinearDistibution from './containers/LinearDistribution'
-import BatchInput from './containers/BatchInput'
+import Import from './containers/Import'
 import Analytics from './containers/Analytics'
 import Quota from './containers/Quota'
 
@@ -28,8 +28,8 @@ const PollResults = ({ id }) => {
       component: <LinearDistibution id={id} />
     },
     {
-      label: 'Пакетный',
-      component: <BatchInput id={id} />
+      label: 'Импорт',
+      component: <Import id={id} />
     },
     // {
     //   label: 'Тестирование',

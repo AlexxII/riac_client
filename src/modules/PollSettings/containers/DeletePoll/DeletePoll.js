@@ -10,19 +10,34 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 
+import SystemNoti from '../../../../components/SystemNoti'
+
 import { useHistory } from "react-router-dom";
 import { useMutation } from '@apollo/react-hooks'
 
-import { GET_ALL_ACTIVE_POLLS } from '../../../PollHome/queries'
 import { DELETE_POLL } from './mutations'
 
 const DeletePoll = ({ id, code }) => {
   const history = useHistory();
+  const [noti, setNoti] = useState(false)
   const [open, setOpen] = useState(false)
   const [incorrect, setIncorrect] = useState(true)
   const [delPoll, { poll }] = useMutation(DELETE_POLL, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Удалить не удалось. Смотрите консоль.'
+      })
+      console.log(e)
+      setOpen(false)
+    },
+    update: (cache, { data }) => {
+      const poll = data.deletePoll
+      cache.evict({ id: cache.identify(poll) })
+      cache.gc()
+    },
     onCompleted: () => {
-      history.push("/")
+      history.goBack()
     }
   })
 
@@ -34,8 +49,7 @@ const DeletePoll = ({ id, code }) => {
     delPoll({
       variables: {
         id
-      },
-      refetchQueries: [{ query: GET_ALL_ACTIVE_POLLS }]
+      }
     })
   }
 
@@ -59,6 +73,12 @@ const DeletePoll = ({ id, code }) => {
 
   return (
     <Fragment>
+      <SystemNoti
+        open={noti}
+        text={noti ? noti.text : ""}
+        type={noti ? noti.type : ""}
+        close={() => setNoti(false)}
+      />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Удаление</DialogTitle>
         <DialogContent>
@@ -89,7 +109,7 @@ const DeletePoll = ({ id, code }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <div style={{textAlign: 'left'}}>
+      <div style={{ textAlign: 'left' }}>
         <div className="category-service-zone">
           <Typography variant="h5" gutterBottom className="header">Удаление опроса</Typography>
         </div>

@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import uuid from "uuid";
-import moment from 'moment'
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -14,14 +13,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SaveIcon from '@material-ui/icons/Save';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import EventBusyIcon from '@material-ui/icons/EventBusy';
-import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
-import DomainDisabledIcon from '@material-ui/icons/DomainDisabled';
 import Grid from '@material-ui/core/Grid';
 import Badge from '@material-ui/core/Badge';
 import Typography from '@material-ui/core/Typography';
 
-import ResultView from '../../containers/ResultView'
+import ResultView from '../ResultView'
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
@@ -33,7 +29,7 @@ import StyledBadge from '../../../../components/StyledBadge'
 import BriefInfo from '../../components/BriefInfo'
 import BatchCharts from '../../components/BatchCharts'
 
-import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
+import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { parseOprFile, similarity } from '../../lib/utils'
 
 import { useQuery } from '@apollo/client'
@@ -48,10 +44,11 @@ const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
-const BatchInput = ({ id }) => {
+const Import = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
   const [delOpen, setDelOpen] = useState(false)
+  const [importError, setImportError] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
   const [calculating, setCalculating] = useState(false)                                 // анализ дублей
@@ -195,12 +192,6 @@ const BatchInput = ({ id }) => {
 
   useEffect(() => {
     if (selectPool.length) {
-      // const selectedData = activeWorksheets
-      //   .filter(result => selectPool.includes(result.id))
-      // кол-во уникальных городов, которые были выбраны
-      // const uniqueCitites = selectedData.map(obj => obj.city ? obj.city.id : '-').filter((v, i, a) => a.indexOf(v) === i).length
-      // setCitiesUpload(uniqueCitites)
-      // для отображения промежуточного положения checkbox-a 
       activeWorksheets.length === selectPool.length ? setSelectAll(true) : setSelectAll(false)
     }
   }, [selectPool])
@@ -228,7 +219,32 @@ const BatchInput = ({ id }) => {
     onError: (e) => {
       setNoti({
         type: 'error',
-        text: 'Сохранить не удалось. Смотрите консоль.'
+        text: 'Импорт не удался. Смотрите консоль.'
+      })
+    },
+    update: (cache, { data }) => {
+      const poll = pollData.poll
+      const pollIdentifier = cache.identify(poll)
+      const respondents = data.saveBatchResults
+      const rLength = respondents.length
+      for (let i = 0; i < rLength; i++) {
+        const respondent = respondents[i];
+        cache.modify({
+          id: pollIdentifier,
+          fields: {
+            results(previous, { toReference }) {
+              return [...previous, toReference(respondent)]
+            }
+          }
+        })
+      }
+      cache.modify({
+        id: pollIdentifier,
+        fields: {
+          resultsCount(currentValue) {
+            return currentValue + rLength
+          }
+        }
       })
     },
     onCompleted: () => {
@@ -237,7 +253,6 @@ const BatchInput = ({ id }) => {
         text: 'Данные сохранены'
       })
       console.log(('saved'));
-      // setUserBack(true)
     }
   })
 
@@ -316,21 +331,37 @@ const BatchInput = ({ id }) => {
               pUser: max
             }
           })
-          // const cityToResultArray = upResults.reduce((acum, item) => {
-          //   const cityId = item.city ? item.city.id : 'empty'
-          //   if (!acum.hasOwnProperty(cityId)) {
-          //     acum[cityId] = []
-          //   }
-          //   acum[cityId].push(item)
-          //   return acum
-          // }, {})
-          setQuota({
-            users: handleUserQuotaData(upResults),
-            cities: handleCityQuotaData(upResults)
+          // отбросить данные, которые имеют пустые поля
+          let delCount = 0
+          const trueData = upResults.filter(item => {
+            if (!item.city) {
+              delCount++
+              return false
+            }
+            if (!item.user) {
+              delCount++
+              return false
+            }
+            if (!item.date) {
+              delCount++
+              return false
+            }
+            // попадаются просто пустые результаты -> без ответов
+            if (!item.result.length) {
+              return false
+            }
+            return true
           })
-          showResultsOfImport(upResults)
-          setRawInputData(upResults)
-          setActiveWorksheets(upResults)
+          if (delCount) {
+            setImportError(delCount)
+          }
+          setQuota({
+            users: handleUserQuotaData(trueData),
+            cities: handleCityQuotaData(trueData)
+          })
+          showResultsOfImport(trueData)
+          setRawInputData(trueData)
+          setActiveWorksheets(trueData)
           setProcessing(false)
         }, 1500)
       }
@@ -487,7 +518,6 @@ const BatchInput = ({ id }) => {
     const selectedPool = activeWorksheets.filter(obj => selectPool.includes(obj.id))
     const questions = pollData.poll.questions
     const preparedData = prepareResultsToSave(selectedPool, questions)
-    return
     saveResult({
       variables: {
         poll: id,
@@ -517,9 +547,9 @@ const BatchInput = ({ id }) => {
       }))
       // TODO: проверить если id ответа или вопроса отсутствует
       return {
-        city: obj.city,
-        date: obj.date,
-        user: obj.user,
+        city: obj.city.id,
+        date: obj.trueDate + '',                            // приведение к строке
+        user: obj.user.id,
         result: modResults
       }
     })
@@ -699,44 +729,21 @@ const BatchInput = ({ id }) => {
                 </Typography>
             }
           </Box>
-          <Tooltip title="Отсутствие города">
-            <Badge badgeContent={cityNull ? `${cityNull.length}` : null} color="secondary" anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'left',
-            }}
-              max={9999}>
-              <IconButton
-                color="secondary"
-                component="span"
-                onClick={() => { }}
-                disabled={!rawInputData.length && !cityNull.length}
-              >
-                <DomainDisabledIcon />
-              </IconButton>
-            </Badge>
-          </Tooltip>
-          <Tooltip title="Отсутствие пользователя">
-            <IconButton
-              color="secondary"
-              component="span"
-              onClick={() => { }}
-              disabled={true}
-            >
-              <PersonAddDisabledIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Отсутствие даты">
-            <IconButton
-              color="secondary"
-              component="span"
-              onClick={() => { }}
-              disabled={true}
-            >
-              <EventBusyIcon />
-            </IconButton>
-          </Tooltip>
         </Grid>
       </Grid>
+      <ConfirmDialog
+        open={importError}
+        close={() => setImportError(false)}
+        config={{
+          closeBtn: "Ок"
+        }}
+        data={
+          {
+            title: 'Внимание',
+            content: `Импортированные данные содержат ошибки и не могут быть добавлены. Отброшено ${importError} результатов.`
+          }
+        }
+      />
       <ConfirmDialog
         open={delOpen}
         confirm={deleteComplitely}
@@ -772,4 +779,4 @@ const BatchInput = ({ id }) => {
   )
 }
 
-export default BatchInput
+export default Import

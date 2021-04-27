@@ -94,6 +94,27 @@ async function handlrOnMessage(content: string) {
   }
 }
 
+### обновление поля кэша после удаления каких-то полей
+...
+update: (cache, { data }) => {
+  const deletedIdPool = data.deleteResults.map(del => del.id)
+  setActiveWorksheets(activeWorksheets.filter(result => !deletedIdPool.includes(result.id)))
+  const deletedPoolOfObj = data.deleteResults
+  for (let i = 0; i < deletedPoolOfObj.length; i++) {
+    cache.evict({ id: cache.identify(deletedPoolOfObj[i]) })
+    cache.gc()
+  }
+  cache.modify({
+    id: cache.identify(pollResults.poll),
+    fields: {
+      resultsCount(currentValue) {
+        return currentValue - deletedPoolOfObj.length
+      }
+    }
+  })
+}
+...
+
 ### удаление из кэша
 const [
   deleteResult,
@@ -122,6 +143,26 @@ const [
     setSelectAll(false)
   }
 })
+
+#### еще способ удаления
+  const [delPoll, { poll }] = useMutation(DELETE_POLL, {
+    onError: (e) => {
+      setNoti({
+        type: 'error',
+        text: 'Удалить не удалось. Смотрите консоль.'
+      })
+      console.log(e)
+    },
+    update: (cache, { data }) => {
+      const poll = data.deletePoll                                    
+      cache.evict({ id: cache.identify(poll) })                         // удаляем весь объект
+      cache.gc()                                                        // подчищаем недосигаемые объекты
+    },
+    onCompleted: () => {
+      history.goBack()
+    }
+  })
+
 
 
 # Работа с массивом

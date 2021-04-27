@@ -150,12 +150,18 @@ const OverallResults = ({ id }) => {
       console.log(e);
     },
     update: (cache, { data }) => {
-      const deletedPool = data.deleteResults.map(del => del.id)
-      setActiveWorksheets(activeWorksheets.filter(result => !deletedPool.includes(result.id)))
+      const deletedIdPool = data.deleteResults.map(del => del.id)
+      setActiveWorksheets(activeWorksheets.filter(result => !deletedIdPool.includes(result.id)))
+      const deletedPoolOfObj = data.deleteResults
+      for (let i = 0; i < deletedPoolOfObj.length; i++) {
+        cache.evict({ id: cache.identify(deletedPoolOfObj[i]) })
+        cache.gc()
+      }
       cache.modify({
+        id: cache.identify(pollResults.poll),
         fields: {
-          pollResults(existingRefs, { readField }) {
-            return existingRefs.filter(respRef => !deletedPool.includes(readField('id', respRef)))
+          resultsCount(currentValue) {
+            return currentValue - deletedPoolOfObj.length
           }
         }
       })

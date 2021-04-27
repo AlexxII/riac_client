@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SettingBar = ({ title, prevPage }) => {
   const classes = useStyles();
-  let history = useHistory();
+  const history = useHistory();
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const isAppMenuOpen = Boolean(appAnchorEl);
 

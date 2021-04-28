@@ -53,18 +53,7 @@ const LinearDistribution = ({ id }) => {
       </div>
       <Grid item container className="linear-distribution">
         {pollResults.poll.questions.map((question, index) => (
-          <Fragment>
-            <Grid xs={12}>
-              <p className="question-title">{index + 1}. {question.title}</p>
-            </Grid>
-            <Grid xs={12} md={6}>
-              <LinearTable index={index} key={question.id} question={question} />
-            </Grid>
-            <Grid xs={12} md={6}>
-              <BarChart key={question.id} question={question} />
-            </Grid>
-            <p></p>
-          </Fragment>
+          index
         ))}
       </Grid>
 

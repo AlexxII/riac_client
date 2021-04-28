@@ -169,6 +169,7 @@ const OverallResults = ({ id }) => {
     onCompleted: () => {
       setSelectPool([])
       setSelectAll(false)
+      setDuplicateResults(null)
     }
   })
 

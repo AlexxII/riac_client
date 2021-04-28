@@ -23,10 +23,10 @@ const PollResults = ({ id }) => {
     //   label: 'Квота',
     //   component: <Quota id={id} />
     // },
-    {
-      label: 'Линейка',
-      component: <LinearDistibution id={id} />
-    },
+    // {
+    //   label: 'Линейка',
+    //   component: <LinearDistibution id={id} />
+    // },
     {
       label: 'Импорт',
       component: <Import id={id} />

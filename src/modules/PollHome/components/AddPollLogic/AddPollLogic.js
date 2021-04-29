@@ -5,7 +5,6 @@ import CalendarTodayRoundedIcon from '@material-ui/icons/CalendarTodayRounded';
 
 import { useHistory } from "react-router-dom";
 
-
 import AddPollForm from '../AddPollForm'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import SpeedDialFab from '../../../../components/SpeedDealFab'
@@ -70,9 +69,9 @@ const AddPollLogic = ({ addPoll }) => {
       reader.onloadend = () => {
         const xmlText = reader.result
 
+        // перекодирование с исходной кодировки (cp1251) в utf8 
         const buf = Buffer.from(xmlText);
         const utf8Text = iconvlite.decode(buf, 'utf8')
-        // const utf8Text = xmlText
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(utf8Text, 'text/xml');
@@ -127,7 +126,6 @@ const AddPollLogic = ({ addPoll }) => {
         }
         resolve(result)
       }
-      // reader.readAsText(file);
       reader.readAsText(file, 'cp1251');
     })
   }

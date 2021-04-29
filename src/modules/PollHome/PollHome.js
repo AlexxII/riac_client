@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import Container from '@material-ui/core/Container'
 
 import PollCard from './components/PollCard'
@@ -24,15 +24,36 @@ const PollHome = () => {
     data: pollsData
   } = useQuery(GET_ALL_ACTIVE_POLLS)
 
+  useEffect(() => {
+    if (pollsData && !pollsLoading) {
+      console.log('ssssssssssssssssssss');
+    }
+  }, [pollsData])
+
   const [addPoll, {
     loading: addLoading
   }] = useMutation(ADD_NEW_POLL, {
-    onError: (e) => {
-      setNoti({
-        type: 'error',
-        text: 'Добавить не удалось. Смотрите консоль.'
-      })
-      console.log(e);
+    onError: ({ graphQLErrors }) => {
+      let message = {}
+      for (let err of graphQLErrors) {
+        switch (err.extensions.code) {
+          case 'BAD_USER_INPUT':
+            if (err.extensions.type === '00013') {
+              message = {
+                type: 'error',
+                text: 'Опрос с таким кодом уже существует'
+              }
+            }
+            break
+          default:
+            message = {
+              type: 'error',
+              text: 'Добавить не удалось. Смотрите консоль.'
+            }
+        }
+      }
+      setNoti(message)
+      console.log(graphQLErrors);
     },
     update: (cache, { data }) => {
       const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
@@ -68,9 +89,10 @@ const PollHome = () => {
       />
       <Loading />
       <Container maxWidth="md">
-        {pollsData.polls.map((poll, i) => (
-          <PollCard key={i} data={poll} />
-        ))}
+        {pollsData.polls
+          .map((poll, i) => (
+            <PollCard key={i} data={poll} />
+          ))}
       </Container>
       <AddPollLogic addPoll={addPoll} />
     </Fragment>

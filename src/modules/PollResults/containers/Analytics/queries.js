@@ -29,6 +29,10 @@ export const GET_POLL_DATA = gql`
         title
         limit
         order
+        topic {
+          id
+          title
+        }
         answers {
           id
           title
@@ -38,6 +42,22 @@ export const GET_POLL_DATA = gql`
       }
       logic {
         path
+      }
+    }
+  }
+`
+
+export const GET_QUESTIONS_WITH_SAME_TOPICS = gql`
+  query($id: String!, $poll: String!) {
+    sameQuestions(id: $id, poll: $poll) {
+      id
+      title
+      topic {
+        id
+        title
+      }
+      poll {
+        code
       }
     }
   }

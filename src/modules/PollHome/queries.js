@@ -10,6 +10,7 @@ export const GET_ALL_ACTIVE_POLLS = gql`
       color
       startDate
       endDate
+      dateOrder
       sample
       way
       type

@@ -64,7 +64,7 @@ const ActiveAvatar = ({ data }) => {
   return (
     <div className={classes.root}>
       <Avatar className={classes.avatar}>
-        {data.liter}
+        <span className="poll-liter-title">{data.liter}</span>
       </Avatar>
     </div>
   )

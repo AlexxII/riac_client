@@ -15,10 +15,10 @@ const PollResults = ({ id }) => {
       label: 'Общие',
       component: <OverallResults id={id} />
     },
-    // {
-    //   label: 'Аналитика',
-    //   component: <Analytics id={id} />
-    // },
+    {
+      label: 'Аналитика',
+      component: <Analytics id={id} />
+    },
     // {
     //   label: 'Квота',
     //   component: <Quota id={id} />

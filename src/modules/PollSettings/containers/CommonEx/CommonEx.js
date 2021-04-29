@@ -94,12 +94,45 @@ const CommonEx = ({ id }) => {
         text: 'Новый статус сохранен!'
       })
     },
-    // refetchQueries: () => [{
-    //   query: GET_POLL_DATA,
-    //   variables: {
-    //     id
-    //   }
-    // }]
+    update: (cache, { data }) => {
+      const cacheId = cache.identify(data.savePollStatus)
+      const bool = data.savePollStatus.active
+      cache.modify({
+        id: cacheId,
+        fields: {
+          active(currentValue) {
+            return bool
+          }
+        }
+      })
+      if (bool) {
+        cache.modify({
+          fields: {
+            archivePolls: (existingRefs, { readField }) => {
+              return existingRefs.filter(respRef => readField('id', respRef) !== data.savePollStatus.id)
+            },
+            polls: (existingFieldsData, { readField, toReference }) => {
+              const apdatedPool = [...existingFieldsData, toReference(cacheId)]
+              const sortedPool = apdatedPool.slice().sort((a, b) => (readField('dateOrder', a) > readField('dateOrder', b)) ? 1 : -1)
+              return sortedPool
+            }
+          }
+        })
+      } else {
+        cache.modify({
+          fields: {
+            polls: (existingRefs, { readField }) => {
+              return existingRefs.filter(respRef => readField('id', respRef) !== data.savePollStatus.id)
+            },
+            archivePolls: (existingFieldsData, { readField, toReference }) => {
+              const apdatedPool = [...existingFieldsData, toReference(cacheId)]
+              const sortedPool = apdatedPool.slice().sort((a, b) => (readField('dateOrder', a) > readField('dateOrder', b)) ? 1 : -1)
+              return sortedPool
+            }
+          }
+        })
+      }
+    }
   })
 
   const changePollStatus = (event) => {

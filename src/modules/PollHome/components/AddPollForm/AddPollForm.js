@@ -63,14 +63,12 @@ const SelectInputComponent = ({ field, ...props }) => {
   );
 }
 
-
 const AddPollForm = ({ save, close, formRef }) => {
   const FILE_SIZE = 1024 * 1024;                              // 1 mb
   const codeRegExp = /^[A-Za-z]{3}[0-9]{2}-[0-9]{2}?$/
   const SUPPORTED_FORMATS = [
     "text/xml"
   ];
-
 
   const validationSchema = yup.object().shape({
     title: yup.string().required("Обязательное поле"),
@@ -82,17 +80,17 @@ const AddPollForm = ({ save, close, formRef }) => {
     way: yup.string().ensure().required('Обязательное поле'),
     xmlfile: yup
       .mixed()
-      .required("Обязательное поле формы")
-      .test(
-        "fileSize",
-        "Слишком большой файл",
-        value => value && value.size <= FILE_SIZE
-      )
       .test(
         "fileFormat",
         "Неподдерживаемый формат",
         value => value && SUPPORTED_FORMATS.includes(value.type)
       )
+      .test(
+        "fileSize",
+        "Слишком большой файл",
+        value => value && value.size <= FILE_SIZE
+      )
+      .required('Обязательное поле')
   });
 
   const submitHandling = (values, { setSubmitting }) => {
@@ -131,12 +129,12 @@ const AddPollForm = ({ save, close, formRef }) => {
         }) => (
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
-              <Grid item xs={6} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <Field
                   name="xmlfile"
                   component={XmlInput}
                   setFieldValue={setFieldValue}
-                  errorMessage={errors["xmlfile"] ? errors["xmlfile"] : undefined}
+                  errorMessage={errors["xmlfile"] ?? undefined}
                   touched={touched["xmlfile"]}
                   onBlur={handleBlur}
                 />
@@ -245,7 +243,6 @@ const AddPollForm = ({ save, close, formRef }) => {
       }
     </Formik>
   )
-
 }
 
 export default AddPollForm

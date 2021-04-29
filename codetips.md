@@ -94,6 +94,21 @@ async function handlrOnMessage(content: string) {
   }
 }
 
+### обновление с переупорядочиванием
+cache.modify({
+  fields: {
+    archivePolls: (existingRыefs, { readField }) => {
+      return existingRefs.filter(respRef => readField('id', respRef) !== data.savePollStatus.id)
+    },
+    polls: (existingFieldsData, { readField, toReference }) => {
+      const apdatedPool = [...existingFieldsData, toReference(cacheId)]
+      const sortedPool = apdatedPool.slice().sort((a, b) => (readField('dateOrder', a) > readField('dateOrder', b)) ? 1 : -1)
+      return sortedPool
+    }
+  }
+})
+
+
 ### обновление поля кэша после удаления каких-то полей
 ...
 update: (cache, { data }) => {
@@ -196,3 +211,44 @@ upResults.reduce((acum, item) => {
   acum[cityId].push(item)
   return acum
 }, {})
+
+### сортировка
+const upQuestions = questions.map((question, index) => (
+  {
+    ...question,
+    p: similarity(mainTitle, question.title)
+  }
+)).slice().sort((a, b) => (a.p < b.p) ? 1 : -1)                                     // сортировка от большего к меньшему
+
+
+### Apollo client - обработка ошибок
+const [addPoll, {
+  loading: addLoading
+}] = useMutation(ADD_NEW_POLL, {
+  onError: ({ graphQLErrors }) => {
+    let message = {}
+    for (let err of graphQLErrors) {
+      switch (err.extensions.code) {
+        case 'BAD_USER_INPUT':
+          if (err.extensions.type === '00013') {
+            message = {
+              type: 'error',
+              text: 'Опрос с таким кодом уже существует'
+            }
+          }
+          break
+        default:
+          message = {
+            type: 'error',
+            text: 'Добавить не удалось. Смотрите консоль.'
+          }
+      }
+    }
+    setNoti(message)
+    console.log(graphQLErrors);
+  },
+  update: (cache, { data }) => {
+    const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+    cache.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: [...polls, data.addPoll] } })
+  }
+})

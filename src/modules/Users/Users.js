@@ -50,12 +50,33 @@ const Users = () => {
   )
   const [addUser, { loading: addLoading }] = useMutation(ADD_NEW_USER,
     {
-      onError: (e) => {
+      onError: ({ graphQLErrors }) => {
+        let message = {}
+        for (let err of graphQLErrors) {
+          switch (err.extensions.code) {
+            case 'BAD_USER_INPUT':
+              if (err.extensions.type === '00011') {
+                message = {
+                  type: 'error',
+                  text: 'Пользователь уже существует'
+                }
+              }
+              break
+            default:
+              message = {
+                type: 'error',
+                text: 'Добавить не удалось. Смотрите консоль.'
+              }
+          }
+        }
+        setNoti(message)
+        console.log(graphQLErrors);
+      },
+      onCompleted: () => {
         setNoti({
-          type: 'error',
-          text: 'Добавить не удалось. Смотрите консоль.'
+          type: 'success',
+          text: 'Пользователь добавлен'
         })
-        console.log(e);
       },
       update: (cache, { data: { addNewUser } }) => cache.writeQuery({
         query: GET_ALL_USERS,

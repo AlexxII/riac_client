@@ -4,7 +4,10 @@ import sample from 'alias-sampling'
 import walker from 'walker-sample'
 
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import Pagination from '@material-ui/lab/Pagination';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -34,24 +37,33 @@ const Analytics = ({ id }) => {
   const [batchOpen, setBatchOpen] = useState(false)
   const [test, setTest] = useState(false)
 
-  const [simQuestions, setSimQuestions] = useState(null)
+  const [resultCount, setResultCount] = useState(1)
+
+  const [previousTopicId, setPreviousTopicId] = useState(null)
+  const [prevSimQuestions, setPrevSimQuestions] = useState(null)
+  const [simQuestions, setSimQuestions] = useState(false)
 
   const [getSameQuestions, { loading: ll, data: dd }] = useLazyQuery(GET_QUESTIONS_WITH_SAME_TOPICS);
 
   useEffect(() => {
     if (dd && !ll) {
       const questions = dd.sameQuestions
-      const mainTitle = pollData.poll.questions[33].title
-      const upQuestions = questions.map(question => (
-        {
-          ...question,
-          p: similarity(mainTitle, question.title)
-        }
-      )).slice().sort((a, b) => (a.p < b.p) ? 1 : -1)
+      const mainTitle = pollData.poll.questions[resultCount - 1].title
+      const upQuestions = sortQuestionsBySimilarity(questions, mainTitle)
+      setPrevSimQuestions(upQuestions)
       setSimQuestions(upQuestions)
       console.log(upQuestions);
     }
   }, [dd, ll])
+
+  const sortQuestionsBySimilarity = (questions, mainTitle) => {
+    return questions.map(question => (
+      {
+        ...question,
+        p: similarity(mainTitle, question.title)
+      }
+    )).slice().sort((a, b) => (a.p < b.p) ? 1 : -1)
+  }
 
   const {
     data: pollData,
@@ -97,12 +109,24 @@ const Analytics = ({ id }) => {
   }
 
   const handleClick = (topicId) => {
-    getSameQuestions({
-      variables: {
-        id: topicId,
-        poll: id
-      }
-    })
+    if (previousTopicId && previousTopicId === topicId) {
+      const mainText = pollData.poll.questions[resultCount - 1].title
+      const sortedQuestions = sortQuestionsBySimilarity(prevSimQuestions, mainText)
+      setSimQuestions(sortedQuestions)
+    } else {
+      setPreviousTopicId(topicId)
+      getSameQuestions({
+        variables: {
+          id: topicId,
+          poll: id
+        }
+      })
+    }
+  }
+
+  const handleResultChange = (e, value) => {
+    setResultCount(value)
+    setSimQuestions(false)
   }
 
   return (
@@ -114,25 +138,41 @@ const Analytics = ({ id }) => {
         close={() => setNoti(false)}
       />
       <Loading />
+      <div className="category-service-zone">
+        <Typography variant="h5" gutterBottom className="header">Аналитический модуль</Typography>
+      </div>
+      <Divider />
+      <div className="info-zone">
+        <Typography variant="body2" gutterBottom>
+          Позволяет проанализирвать и задать распределение на основе аналогичных опросов.
+        </Typography>
+      </div>
+      <br></br>
       <Grid>
         {pollData &&
           <Fragment>
-            <p>
-              {pollData.poll.code}
-            </p>
+            <Pagination
+              count={pollData.poll.questions.length}
+              page={resultCount}
+              variant="outlined"
+              color="primary"
+              shape="rounded"
+              onChange={handleResultChange}
+              boundaryCount={10}
+            />
             <p>
               {
-                pollData.poll.questions[33].title
+                pollData.poll.questions[resultCount - 1].title
               }
             </p>
             <p>{
-              pollData.poll.questions[33].topic.title
+              pollData.poll.questions[resultCount - 1].topic.title
             }</p>
-            <Button onClick={() => handleClick(pollData.poll.questions[33].topic.id)}>Забрать</Button>
+            <Button onClick={() => handleClick(pollData.poll.questions[resultCount].topic.id)}>Забрать</Button>
             <p>
               {simQuestions &&
-                simQuestions.map((question, index) => (
-                  <p key={uuid()}>{question.title}  - {question.topic.title} - {question.poll.code}</p>
+                simQuestions.map((question) => (
+                  <p onClick={() => console.log(question)} key={uuid()}>{question.title}  - {question.topic.title} - {question.poll.code}</p>
                 ))
               }
             </p>

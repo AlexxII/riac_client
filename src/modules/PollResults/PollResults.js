@@ -12,12 +12,12 @@ import Quota from './containers/Quota'
 const PollResults = ({ id }) => {
   const data = [
     {
-      label: 'Общие',
-      component: <OverallResults id={id} />
-    },
-    {
       label: 'Аналитика',
       component: <Analytics id={id} />
+    },
+    {
+      label: 'Общие',
+      component: <OverallResults id={id} />
     },
     // {
     //   label: 'Квота',

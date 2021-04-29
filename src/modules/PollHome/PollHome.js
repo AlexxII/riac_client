@@ -24,12 +24,6 @@ const PollHome = () => {
     data: pollsData
   } = useQuery(GET_ALL_ACTIVE_POLLS)
 
-  useEffect(() => {
-    if (pollsData && !pollsLoading) {
-      console.log('ssssssssssssssssssss');
-    }
-  }, [pollsData])
-
   const [addPoll, {
     loading: addLoading
   }] = useMutation(ADD_NEW_POLL, {

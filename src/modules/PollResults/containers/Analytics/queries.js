@@ -48,8 +48,8 @@ export const GET_POLL_DATA = gql`
 `
 
 export const GET_QUESTIONS_WITH_SAME_TOPICS = gql`
-  query($id: String!, $poll: String!) {
-    sameQuestions(id: $id, poll: $poll) {
+  query($topics: [String!], $poll: String!) {
+    sameQuestions(topics: $topics, poll: $poll) {
       id
       title
       topic {

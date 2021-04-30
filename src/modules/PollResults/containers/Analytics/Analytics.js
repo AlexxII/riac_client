@@ -55,35 +55,6 @@ const Analytics = ({ id }) => {
   const [prevSimQuestions, setPrevSimQuestions] = useState(null)
   const [simQuestions, setSimQuestions] = useState(false)
 
-  const [getSameQuestions, { loading: ll, data: dd }] = useLazyQuery(GET_QUESTIONS_WITH_SAME_TOPICS, {
-    onError: ({ graphQLErrors }) => {
-      setNoti(errorHandler(graphQLErrors))
-      console.log(graphQLErrors);
-      setProcessing(false)
-    }
-  });
-
-  useEffect(() => {
-    if (dd && !ll) {
-      const questions = dd.sameQuestions
-      const mainTitle = pollData.poll.questions[resultCount - 1].title
-      const upQuestions = sortQuestionsBySimilarity(questions, mainTitle)
-      setPrevSimQuestions(upQuestions)
-      setSimQuestions(upQuestions)
-      setProcessing(false)
-      console.log(upQuestions);
-    }
-  }, [dd, ll])
-
-  const sortQuestionsBySimilarity = (questions, mainTitle) => {
-    return questions.map(question => (
-      {
-        ...question,
-        p: similarity(mainTitle, question.title)
-      }
-    )).slice().sort((a, b) => (a.p < b.p) ? 1 : -1)
-  }
-
   const {
     data: pollData,
     loading: pollDataLoading,
@@ -94,8 +65,52 @@ const Analytics = ({ id }) => {
     },
     onCompleted: () => {
       handleConfigFile(pollData.poll.logic.path)
+      gettingSimilarQuestions(pollData)
     }
   });
+
+  const gettingSimilarQuestions = (pollData) => {
+    const uniqueTopics = [...new Set(pollData.poll.questions.map(questions => questions.topic.id))]
+    getSameQuestions({
+      variables: {
+        topics: uniqueTopics,
+        poll: id
+      }
+    })
+  }
+
+  const [getSameQuestions, { loading: sameQuestionsLoading, data: sameQuestionsData }] = useLazyQuery(GET_QUESTIONS_WITH_SAME_TOPICS, {
+    onError: ({ graphQLErrors }) => {
+      setNoti(errorHandler(graphQLErrors))
+      console.log(graphQLErrors);
+      setProcessing(false)
+    }
+  });
+
+  useEffect(() => {
+    if (sameQuestionsData && !sameQuestionsLoading) {
+      const questions = sameQuestionsData.sameQuestions
+
+      
+
+      const mainTitle = pollData.poll.questions[resultCount - 1].title
+      const upQuestions = sortQuestionsBySimilarity(questions, mainTitle)
+      setPrevSimQuestions(upQuestions)
+      setSimQuestions(upQuestions)
+      setProcessing(false)
+      console.log(upQuestions);
+    }
+  }, [sameQuestionsData, sameQuestionsLoading])
+
+  const sortQuestionsBySimilarity = (questions, mainTitle) => {
+    return questions.map(question => (
+      {
+        ...question,
+        p: similarity(mainTitle, question.title)
+      }
+    )).slice().sort((a, b) => (a.p < b.p) ? 1 : -1)
+  }
+
 
   const handleConfigFile = (filePath) => {
     fetch(url + filePath)

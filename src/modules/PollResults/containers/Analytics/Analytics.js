@@ -24,6 +24,8 @@ import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
+import errorHandler from '../../../../lib/errorHandler'
+
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { similarity } from '../../../PollResults/lib/utils'
 
@@ -55,29 +57,11 @@ const Analytics = ({ id }) => {
 
   const [getSameQuestions, { loading: ll, data: dd }] = useLazyQuery(GET_QUESTIONS_WITH_SAME_TOPICS, {
     onError: ({ graphQLErrors }) => {
-      let message = {}
-      for (let err of graphQLErrors) {
-        switch (err.extensions.code) {
-          case 'BAD_USER_INPUT':
-            if (err.extensions.type === '00043') {
-              message = {
-                type: 'error',
-                text: 'Опрос с таким кодом уже существует'
-              }
-            }
-            break
-          default:
-            message = {
-              type: 'error',
-              text: 'Добавить не удалось. Смотрите консоль.'
-            }
-        }
-      }
-      setNoti(message)
+      setNoti(errorHandler(graphQLErrors))
       console.log(graphQLErrors);
       setProcessing(false)
     }
-    });
+  });
 
   useEffect(() => {
     if (dd && !ll) {
@@ -87,6 +71,7 @@ const Analytics = ({ id }) => {
       setPrevSimQuestions(upQuestions)
       setSimQuestions(upQuestions)
       setProcessing(false)
+      console.log(upQuestions);
     }
   }, [dd, ll])
 
@@ -146,8 +131,11 @@ const Analytics = ({ id }) => {
     setProcessing(true)
     if (previousTopicId && previousTopicId === topicId) {
       const mainText = pollData.poll.questions[resultCount - 1].title
-      const sortedQuestions = sortQuestionsBySimilarity(prevSimQuestions, mainText)
-      setSimQuestions(sortedQuestions)
+      if (prevSimQuestions) {
+        const sortedQuestions = sortQuestionsBySimilarity(prevSimQuestions, mainText)
+        setSimQuestions(sortedQuestions)
+      }
+      setProcessing(false)
     } else {
       setPreviousTopicId(topicId)
       getSameQuestions({
@@ -206,7 +194,7 @@ const Analytics = ({ id }) => {
                   <ListItemText
                     primary={
                       <Fragment>
-                        <strong>Вопрос: </strong>
+                        <strong onClick={() => console.log(pollData.poll.questions[resultCount - 1])}>Вопрос: </strong>
                         {pollData.poll.questions[resultCount - 1].title}
                       </Fragment>
                     }
@@ -232,39 +220,42 @@ const Analytics = ({ id }) => {
                   {simQuestions &&
                     simQuestions.map((question) => (
                       <Fragment>
-                      <ListItem>
-                        <ListItemIcon>
-                          <Checkbox
-                            edge="start"
-                            checked={true}
-                            tabIndex={-1}
-                            disableRipple
-                          />
+                        <ListItem>
+                          <ListItemIcon>
+                            <Checkbox
+                              edge="start"
+                              checked={true}
+                              tabIndex={-1}
+                              disableRipple
+                            />
                           </ListItemIcon>
-                        <ListItemText
+                          <ListItemText
                             primary={
-                            <Fragment>
-                              <strong>Вопрос: </strong>
-                              {question.title}
-                            </Fragment>
-                          }
-                          secondary={
-                            <Fragment>
-                              <strong>Тема: </strong>
-                              {`ID: ${question.topic.id} - ${question.topic.title}`}
-                            </Fragment>
-                          }
-                        />
-                        <ListItemSecondaryAction>
-                          <Tooltip title="Просмотреть ответы">
-                            <IconButton edge="end" onClick={() => console.log('1111111111')}>
-                              <AccountTreeIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </ListItemSecondaryAction>
+                              <Fragment>
+                                <strong>Вопрос: </strong>
+                                {question.title}
+                              </Fragment>
+                            }
+                            secondary={
+                              <Fragment>
+                                <strong>Тема: </strong>
+                                {`ID: ${question.topic.id} - ${question.topic.title}`}
+                                <br></br>
+                                <strong>Опрос: </strong>
+                                {`${question.poll.code}`}
+                              </Fragment>
+                            }
+                          />
+                          <ListItemSecondaryAction>
+                            <Tooltip title="Просмотреть ответы">
+                              <IconButton edge="end" onClick={() => console.log(question)}>
+                                <AccountTreeIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </ListItemSecondaryAction>
 
-                      </ListItem>
-                        <Divider variant="inset"/>
+                        </ListItem>
+                        <Divider variant="inset" />
                       </Fragment>
                     ))}
                 </List>

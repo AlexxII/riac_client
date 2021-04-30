@@ -7,6 +7,8 @@ import ErrorState from '../../components/ErrorState'
 import SystemNoti from '../../components/SystemNoti'
 import LoadingStatus from '../../components/LoadingStatus'
 
+import errorHandler from '../../lib/errorHandler';
+
 import { useQuery } from '@apollo/client'
 import { useMutation } from '@apollo/react-hooks'
 
@@ -51,25 +53,7 @@ const Users = () => {
   const [addUser, { loading: addLoading }] = useMutation(ADD_NEW_USER,
     {
       onError: ({ graphQLErrors }) => {
-        let message = {}
-        for (let err of graphQLErrors) {
-          switch (err.extensions.code) {
-            case 'BAD_USER_INPUT':
-              if (err.extensions.type === '00011') {
-                message = {
-                  type: 'error',
-                  text: 'Пользователь уже существует'
-                }
-              }
-              break
-            default:
-              message = {
-                type: 'error',
-                text: 'Добавить не удалось. Смотрите консоль.'
-              }
-          }
-        }
-        setNoti(message)
+        setNoti(errorHandler(graphQLErrors))
         console.log(graphQLErrors);
       },
       onCompleted: () => {

@@ -29,3 +29,10 @@ body,
   text-align: left;
   color: grey;
 }
+.pagination-wrap {
+  margin: auto;
+  display: flex;
+  outline: 0;
+  position: relative;
+  justify-content: center;
+}

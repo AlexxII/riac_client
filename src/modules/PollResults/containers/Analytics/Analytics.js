@@ -5,20 +5,15 @@ import walker from 'walker-sample'
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Pagination from '@material-ui/lab/Pagination';
-import Tooltip from '@material-ui/core/Tooltip';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import Checkbox from '@material-ui/core/Checkbox';
-
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Box from '@material-ui/core/Box';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
@@ -26,6 +21,8 @@ import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
+
+import ListItemEx from './ListItemEx/ListItemEx'
 
 import errorHandler from '../../../../lib/errorHandler'
 
@@ -39,20 +36,21 @@ const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
+const MAX_VIEW = 5
+
 const Analytics = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
-  const [dataPool, setDataPool] = useState(false)
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
-  const [displayData, setDisplayData] = useState(false)
   const [selectPool, setSelectPool] = useState([])
   const [selectAll, setSelectAll] = useState(false)
-  const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
   const [batchOpen, setBatchOpen] = useState(false)
 
   const [resultCount, setResultCount] = useState(1)
 
+  const [questions, setQuestions] = useState(null)
+  const [allSimilar, setAllSimilar] = useState(false)
   const [topicsToQuestionsPool, setTopicsToQuestionsPool] = useState(null)
   const [previousTopicId, setPreviousTopicId] = useState(null)
   const [prevSimQuestions, setPrevSimQuestions] = useState(null)
@@ -73,6 +71,13 @@ const Analytics = ({ id }) => {
     }
   });
 
+  const [getSameQuestions, { loading: sameQuestionsLoading, data: sameQuestionsData }] = useLazyQuery(GET_QUESTIONS_WITH_SAME_TOPICS, {
+    onError: ({ graphQLErrors }) => {
+      setNoti(errorHandler(graphQLErrors))
+      console.log(graphQLErrors);
+    }
+  });
+
   const gettingSimilarQuestions = (pollData) => {
     const uniqueTopics = [...new Set(pollData.poll.questions.map(questions => questions.topic.id))]
     getSameQuestions({
@@ -83,20 +88,9 @@ const Analytics = ({ id }) => {
     })
   }
 
-  const [getSameQuestions, { loading: sameQuestionsLoading, data: sameQuestionsData }] = useLazyQuery(GET_QUESTIONS_WITH_SAME_TOPICS, {
-    onError: ({ graphQLErrors }) => {
-      setNoti(errorHandler(graphQLErrors))
-      console.log(graphQLErrors);
-      setProcessing(false)
-    }
-  });
-
   useEffect(() => {
     if (sameQuestionsData && !sameQuestionsLoading) {
-      const currentQuestion = pollData.poll.questions[resultCount - 1]
-
-      const questions = sameQuestionsData.sameQuestions
-      const topicToQuestions = questions.reduce((acum, item) => {
+      const topicToQuestions = sameQuestionsData.sameQuestions.reduce((acum, item) => {
         const topicId = item.topic.id
         if (!acum.hasOwnProperty(topicId)) {
           acum[topicId] = []
@@ -105,32 +99,33 @@ const Analytics = ({ id }) => {
         return acum
       }, {})
       setTopicsToQuestionsPool(topicToQuestions)
-      if (topicToQuestions[currentQuestion?.topic?.id]) {
-        const similatQuestions = topicToQuestions[currentQuestion.topic.id]
-        const upQuestions = sortQuestionsBySimilarity(similatQuestions, currentQuestion.title)
-        setPrevSimQuestions(upQuestions)
-        setSimQuestions(upQuestions)
-      } else {
-        console.log('У вопроса нет темы или что-то типа того');
-      }
+      const uQuestions = pollData.poll.questions.map(question => {
+        if (topicToQuestions[question?.topic?.id]) {
+          const similatQuestions = topicToQuestions[question.topic.id]
+          return {
+            ...question,
+            similar: sortQuestionsBySimilarity(similatQuestions, question.title)
+          }
+        } else {
+          return {
+            ...question,
+            similar: null
+          }
+        }
+      })
+      setQuestions(uQuestions)
+      // отобразим первый вопрос
+      const currentQuestion = uQuestions[resultCount - 1]
+      setSimQuestions(currentQuestion.similar ?? [])
       setProcessing(false)
     }
   }, [sameQuestionsData, sameQuestionsLoading])
 
   useEffect(() => {
-    if (resultCount && topicsToQuestionsPool) {
-      setProcessing(true)
-      const currentQuestion = pollData.poll.questions[resultCount - 1]
-      if (topicsToQuestionsPool[currentQuestion?.topic?.id]) {
-        const similatQuestions = topicsToQuestionsPool[currentQuestion.topic.id]
-        const upQuestions = sortQuestionsBySimilarity(similatQuestions, currentQuestion.title)
-        setPrevSimQuestions(upQuestions)
-        setSimQuestions(upQuestions)
-      } else {
-        console.log('У вопроса нет темы или что-то типа того');
-      }
-      setProcessing(false)
-
+    if (resultCount && questions) {
+      const currentQuestion = questions[resultCount - 1]
+      setSimQuestions(currentQuestion.similar ?? [])
+      console.log(currentQuestion.similar);
     }
   }, [resultCount])
 
@@ -175,29 +170,13 @@ const Analytics = ({ id }) => {
   }
 
   const handleClick = (topicId) => {
-    setProcessing(true)
-    if (previousTopicId && previousTopicId === topicId) {
-      const mainText = pollData.poll.questions[resultCount - 1].title
-      if (prevSimQuestions) {
-        const sortedQuestions = sortQuestionsBySimilarity(prevSimQuestions, mainText)
-        setSimQuestions(sortedQuestions)
-      }
-      setProcessing(false)
-    } else {
-      setPreviousTopicId(topicId)
-      getSameQuestions({
-        variables: {
-          id: topicId,
-          poll: id
-        }
-      })
-    }
+
   }
 
   // переключатель между вопросами
-  const handleResultChange = (e, value) => {
+  const handleResultChange = (_, value) => {
     setResultCount(value)
-    setSimQuestions(false)
+    setAllSimilar(false)
   }
 
   return (
@@ -255,7 +234,7 @@ const Analytics = ({ id }) => {
                   />
                   <ListItemSecondaryAction>
                     <Tooltip title="Запросить аналоги из БД">
-                      <IconButton edge="end" onClick={() => handleClick(pollData.poll.questions[resultCount - 1].topic.id)}>
+                      <IconButton edge="end" onClick={() => console.log(pollData.poll.questions[resultCount - 1])}>
                         <AccountTreeIcon />
                       </IconButton>
                     </Tooltip>
@@ -266,59 +245,36 @@ const Analytics = ({ id }) => {
               <p>
                 <List dense={true} className="analitics-sim-question">
                   {simQuestions &&
-                    simQuestions.map((question) => (
-                      <Fragment>
-                        <ListItem>
-                          <ListItemIcon>
-                            <Checkbox
-                              edge="start"
-                              checked={true}
-                              tabIndex={-1}
-                              disableRipple
-                            />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={
-                              <Fragment>
-                                <strong>Вопрос: </strong>
-                                {question.title}
-                              </Fragment>
-                            }
-                            secondary={
-                              <Fragment>
-                                <strong>Тема: </strong>
-                                {`ID: ${question.topic.id} - ${question.topic.title}`}
-                                <br></br>
-                                <strong>Опрос: </strong>
-                                {`${question.poll.code}`}
+                    simQuestions.map((question, index) => {
+                      if (index < MAX_VIEW) {
+                        return (
+                          <ListItemEx key={index} question={question} />
+                        )
+                      }
+                    })
+                  }
+                  <div style={{ "marginTop": "10px" }}>
+                    {simQuestions.length > 5
+                      ?
+                      <Button
+                        onClick={() => { setAllSimilar(true) }}
+                        variant="outlined">
+                        Еще {simQuestions ? ` + ${(simQuestions.length - MAX_VIEW)}` : null}
+                      </Button>
+                      :
+                      "В базе данных отсутствуют вопросы с аналогичной категорией"
+                    }
+                  </div>
+                  {simQuestions && allSimilar &&
+                    simQuestions.map((question, index) => {
+                      if (index >= MAX_VIEW) {
+                        return (
+                          <ListItemEx key={index} question={question} />
+                        )
+                      }
+                    })
+                  }
 
-                                <Box display="flex" alignItems="center">
-                                  <Box width="100%" mr={1}>
-                                    <LinearProgress
-                                      color={question.p * 100 > 65 ? 'primary' : 'secondary'}
-                                      variant="determinate" value={question.p * 100} />
-                                  </Box>
-                                  <Box minWidth={35}>
-                                    <Typography variant="body2" color="textSecondary">{`${Math.round(question.p * 100)}%`}</Typography>
-                                  </Box>
-                                </Box>
-
-                              </Fragment>
-                            }
-
-                          />
-                          <ListItemSecondaryAction>
-                            <Tooltip title="Просмотреть ответы">
-                              <IconButton edge="end" onClick={() => console.log(question)}>
-                                <AccountTreeIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </ListItemSecondaryAction>
-
-                        </ListItem>
-                        <Divider variant="inset" />
-                      </Fragment>
-                    ))}
                 </List>
               </p>
             </div>

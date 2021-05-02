@@ -12,6 +12,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import Checkbox from '@material-ui/core/Checkbox';
 
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Box from '@material-ui/core/Box';
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -47,10 +50,10 @@ const Analytics = ({ id }) => {
   const [selectAll, setSelectAll] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                          // отображаемые анкеты
   const [batchOpen, setBatchOpen] = useState(false)
-  const [test, setTest] = useState(false)
 
   const [resultCount, setResultCount] = useState(1)
 
+  const [topicsToQuestionsPool, setTopicsToQuestionsPool] = useState(null)
   const [previousTopicId, setPreviousTopicId] = useState(null)
   const [prevSimQuestions, setPrevSimQuestions] = useState(null)
   const [simQuestions, setSimQuestions] = useState(false)
@@ -64,6 +67,7 @@ const Analytics = ({ id }) => {
       id
     },
     onCompleted: () => {
+      setProcessing(true)
       handleConfigFile(pollData.poll.logic.path)
       gettingSimilarQuestions(pollData)
     }
@@ -89,18 +93,46 @@ const Analytics = ({ id }) => {
 
   useEffect(() => {
     if (sameQuestionsData && !sameQuestionsLoading) {
+      const currentQuestion = pollData.poll.questions[resultCount - 1]
+
       const questions = sameQuestionsData.sameQuestions
-
-      
-
-      const mainTitle = pollData.poll.questions[resultCount - 1].title
-      const upQuestions = sortQuestionsBySimilarity(questions, mainTitle)
-      setPrevSimQuestions(upQuestions)
-      setSimQuestions(upQuestions)
+      const topicToQuestions = questions.reduce((acum, item) => {
+        const topicId = item.topic.id
+        if (!acum.hasOwnProperty(topicId)) {
+          acum[topicId] = []
+        }
+        acum[topicId].push(item)
+        return acum
+      }, {})
+      setTopicsToQuestionsPool(topicToQuestions)
+      if (topicToQuestions[currentQuestion?.topic?.id]) {
+        const similatQuestions = topicToQuestions[currentQuestion.topic.id]
+        const upQuestions = sortQuestionsBySimilarity(similatQuestions, currentQuestion.title)
+        setPrevSimQuestions(upQuestions)
+        setSimQuestions(upQuestions)
+      } else {
+        console.log('У вопроса нет темы или что-то типа того');
+      }
       setProcessing(false)
-      console.log(upQuestions);
     }
   }, [sameQuestionsData, sameQuestionsLoading])
+
+  useEffect(() => {
+    if (resultCount && topicsToQuestionsPool) {
+      setProcessing(true)
+      const currentQuestion = pollData.poll.questions[resultCount - 1]
+      if (topicsToQuestionsPool[currentQuestion?.topic?.id]) {
+        const similatQuestions = topicsToQuestionsPool[currentQuestion.topic.id]
+        const upQuestions = sortQuestionsBySimilarity(similatQuestions, currentQuestion.title)
+        setPrevSimQuestions(upQuestions)
+        setSimQuestions(upQuestions)
+      } else {
+        console.log('У вопроса нет темы или что-то типа того');
+      }
+      setProcessing(false)
+
+    }
+  }, [resultCount])
 
   const sortQuestionsBySimilarity = (questions, mainTitle) => {
     return questions.map(question => (
@@ -162,6 +194,7 @@ const Analytics = ({ id }) => {
     }
   }
 
+  // переключатель между вопросами
   const handleResultChange = (e, value) => {
     setResultCount(value)
     setSimQuestions(false)
@@ -258,8 +291,21 @@ const Analytics = ({ id }) => {
                                 <br></br>
                                 <strong>Опрос: </strong>
                                 {`${question.poll.code}`}
+
+                                <Box display="flex" alignItems="center">
+                                  <Box width="100%" mr={1}>
+                                    <LinearProgress
+                                      color={question.p * 100 > 65 ? 'primary' : 'secondary'}
+                                      variant="determinate" value={question.p * 100} />
+                                  </Box>
+                                  <Box minWidth={35}>
+                                    <Typography variant="body2" color="textSecondary">{`${Math.round(question.p * 100)}%`}</Typography>
+                                  </Box>
+                                </Box>
+
                               </Fragment>
                             }
+
                           />
                           <ListItemSecondaryAction>
                             <Tooltip title="Просмотреть ответы">

@@ -21,7 +21,7 @@ import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
-
+import Alert from '../../../../components/Alert'
 import ListItemEx from './ListItemEx/ListItemEx'
 
 import errorHandler from '../../../../lib/errorHandler'
@@ -48,7 +48,7 @@ const Analytics = ({ id }) => {
   const [batchOpen, setBatchOpen] = useState(false)
 
   const [resultCount, setResultCount] = useState(1)
-
+  const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [allSimilar, setAllSimilar] = useState(false)
   const [topicsToQuestionsPool, setTopicsToQuestionsPool] = useState(null)
@@ -117,6 +117,7 @@ const Analytics = ({ id }) => {
       // отобразим первый вопрос
       const currentQuestion = uQuestions[resultCount - 1]
       setSimQuestions(currentQuestion.similar ?? [])
+      checkNotEmpty(currentQuestion)
       setProcessing(false)
     }
   }, [sameQuestionsData, sameQuestionsLoading])
@@ -125,7 +126,7 @@ const Analytics = ({ id }) => {
     if (resultCount && questions) {
       const currentQuestion = questions[resultCount - 1]
       setSimQuestions(currentQuestion.similar ?? [])
-      console.log(currentQuestion.similar);
+      checkNotEmpty(currentQuestion)
     }
   }, [resultCount])
 
@@ -138,6 +139,14 @@ const Analytics = ({ id }) => {
     )).slice().sort((a, b) => (a.p < b.p) ? 1 : -1)
   }
 
+  // для отрисовки сообщения, что похожих компонентов нет в БД
+  const checkNotEmpty = (currentQuestion) => {
+    if (!currentQuestion.similar) {
+      setEmptyMessage(true)
+    } else {
+      setEmptyMessage(false)
+    }
+  }
 
   const handleConfigFile = (filePath) => {
     fetch(url + filePath)
@@ -167,6 +176,15 @@ const Analytics = ({ id }) => {
   const Loading = () => {
     if (processing) return <LoadingStatus />
     return null
+  }
+
+  const EmptyState = () => {
+    if (emptyMessage) {
+      const message = 'В базе данных отсутствуют вопросы с аналогичной категорией'
+      return <Alert text={message} />
+    } else {
+      return null
+    }
   }
 
   const handleClick = (topicId) => {
@@ -262,7 +280,7 @@ const Analytics = ({ id }) => {
                         Еще {simQuestions ? ` + ${(simQuestions.length - MAX_VIEW)}` : null}
                       </Button>
                       :
-                      "В базе данных отсутствуют вопросы с аналогичной категорией"
+                      <EmptyState />
                     }
                   </div>
                   {simQuestions && allSimilar &&
@@ -274,7 +292,6 @@ const Analytics = ({ id }) => {
                       }
                     })
                   }
-
                 </List>
               </p>
             </div>

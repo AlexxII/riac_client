@@ -16,7 +16,7 @@ const AlertComponent = (props) => {
 
   return (
     <div className={classes.root}>
-      <Alert onClose={() => {}} severity={props.type}>
+      <Alert severity={props.type}>
         <AlertTitle>{props.header}</AlertTitle>
         {props.text}
       </Alert>

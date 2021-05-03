@@ -10,6 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Pagination from '@material-ui/lab/Pagination';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import SaveIcon from '@material-ui/icons/Save';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -187,9 +188,11 @@ const Analytics = ({ id }) => {
     }
   }
 
-  const handleClick = (topicId) => {
-
+  const handleSaveClick = () => {
+    const currentQuestion = questions[resultCount - 1]
+    console.log(currentQuestion);
   }
+
 
   // переключатель между вопросами
   const handleResultChange = (_, value) => {
@@ -251,9 +254,9 @@ const Analytics = ({ id }) => {
                     }
                   />
                   <ListItemSecondaryAction>
-                    <Tooltip title="Запросить аналоги из БД">
-                      <IconButton edge="end" onClick={() => console.log(pollData.poll.questions[resultCount - 1])}>
-                        <AccountTreeIcon />
+                    <Tooltip title="Сохранить распределение">
+                      <IconButton edge="end" onClick={handleSaveClick}>
+                        <SaveIcon />
                       </IconButton>
                     </Tooltip>
                   </ListItemSecondaryAction>

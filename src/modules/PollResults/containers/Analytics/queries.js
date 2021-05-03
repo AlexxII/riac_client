@@ -58,6 +58,7 @@ export const GET_QUESTIONS_WITH_SAME_TOPICS = gql`
       }
       poll {
         code
+        title
       }
       answers {
         id

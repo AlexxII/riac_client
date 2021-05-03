@@ -14,14 +14,17 @@ import Divider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Box from '@material-ui/core/Box';
 
-const ListItemEx = ({ question }) => {
+const ListItemEx = ({ question, select }) => {
   return (
     <Fragment>
       <ListItem>
         <ListItemIcon>
           <Checkbox
             edge="start"
-            checked={false}
+            checked={question.selected}
+            onChange={select({
+              id: question.id
+            })}
             tabIndex={-1}
             disableRipple
           />
@@ -39,7 +42,7 @@ const ListItemEx = ({ question }) => {
               {`ID: ${question.topic.id} - ${question.topic.title}`}
               <br></br>
               <strong>Опрос: </strong>
-              {`${question.poll.code}`}
+              {`${question.poll.code} - ${question.poll.title}`}
 
               <Box display="flex" alignItems="center">
                 <Box width="100%" mr={1}>

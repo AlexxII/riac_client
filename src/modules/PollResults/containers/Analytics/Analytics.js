@@ -23,8 +23,8 @@ import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import Alert from '../../../../components/Alert'
-import ListItemEx from './ListItemEx/ListItemEx'
-
+import ListItemEx from './components/ListItemEx/ListItemEx'
+import Accordion from './components/Accordition'
 import errorHandler from '../../../../lib/errorHandler'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
@@ -237,39 +237,14 @@ const Analytics = ({ id }) => {
               />
             </div>
             <div className="analitics-main-content">
-              <List dense={true} className="analitics-main-question">
-                <ListItem>
-                  <ListItemText
-                    primary={
-                      <Fragment>
-                        <strong onClick={() => console.log(pollData.poll.questions[resultCount - 1])}>Вопрос: </strong>
-                        {pollData.poll.questions[resultCount - 1].title}
-                      </Fragment>
-                    }
-                    secondary={
-                      <Fragment>
-                        <strong>Тема: </strong>
-                        {`ID: ${pollData.poll.questions[resultCount - 1].topic.id} - ${pollData.poll.questions[resultCount - 1].topic.title}`}
-                      </Fragment>
-                    }
-                  />
-                  <ListItemSecondaryAction>
-                    <Tooltip title="Сохранить распределение">
-                      <IconButton edge="end" onClick={handleSaveClick}>
-                        <SaveIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </ListItemSecondaryAction>
-
-                </ListItem>
-              </List>
+              <Accordion question={pollData.poll.questions[resultCount - 1]} />
               <p>
                 <List dense={true} className="analitics-sim-question">
                   {simQuestions &&
                     simQuestions.map((question, index) => {
                       if (index < MAX_VIEW) {
                         return (
-                          <ListItemEx key={index} question={question} />
+                          <ListItemEx key={index} question={question} select={() => { }} />
                         )
                       }
                     })
@@ -290,7 +265,7 @@ const Analytics = ({ id }) => {
                     simQuestions.map((question, index) => {
                       if (index >= MAX_VIEW) {
                         return (
-                          <ListItemEx key={index} question={question} />
+                          <ListItemEx key={index} question={question} select={() => { }} />
                         )
                       }
                     })

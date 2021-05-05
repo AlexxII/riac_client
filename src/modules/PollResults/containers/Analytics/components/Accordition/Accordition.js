@@ -1,20 +1,16 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionActions from '@material-ui/core/AccordionActions';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: 'aliceblue'
-  },
   header: {
     display: 'block'
   },
@@ -42,21 +38,56 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const AnswerDistr = ({ answer, index }) => {
+  const [distibVal, setDistibVal] = useState({
+    '0': {
+      int: '23',
+      code: ''
+    },
+    '1': '',
+    '2': '',
+    '3': '',
+    '4': '',
+    '5': '',
+    '6': '',
+  })
   const classes = useStyles();
+
+  const handleInput = (e) => {
+    e.preventDefault()
+    const value = e.currentTarget.value
+    const i = e.currentTarget.dataset.index
+    setDistibVal({
+      ...distibVal,
+      [i]: value
+    })
+  }
+
+  const inputs = []
+
+  for (let i = 0; i < 6; i++) {
+    inputs.push(
+      <input
+        key={i}
+        type="number"
+        step="0.01"
+        max="100"
+        className="distr-input"
+        value={distibVal[i].int}
+        data-index={i}
+        onChange={handleInput}
+        tabIndex={(i + 1) * 1000 + index}
+      />
+    )
+  }
+
   return (
     <Fragment>
       <div className={index % 2 == 0 ? "accordition-answer even" : "accordition-answer"}>
         <div className={classes.column1}>
-          {index + 1}. {answer.title}
+          {index + 1}. {answer?.code} - {answer.title}
         </div>
         <div className={classes.column2}>
-          <input tabIndex={1 * 1000 + index} className="distr-input"></input>
-          <input tabIndex={2 * 1000 + index} className="distr-input"></input>
-          <input tabIndex={3 * 1000 + index} className="distr-input"></input>
-          <input tabIndex={4 * 1000 + index} className="distr-input"></input>
-          <input tabIndex={5 * 1000 + index} className="distr-input"></input>
-          <input tabIndex={6 * 1000 + index} className="distr-input"></input>
-          <input tabIndex={7 * 1000 + index} className="distr-input"></input>
+          {inputs}
         </div>
       </div>
     </Fragment>
@@ -73,7 +104,11 @@ const AccordionEx = ({ question }) => {
   };
 
   return (
-    <Accordion expanded={expanded} onChange={handleChange} className={classes.root}>
+    <Accordion
+      className="primary"
+      expanded={expanded}
+      onChange={handleChange}
+    >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
       >
@@ -109,14 +144,14 @@ const AccordionEx = ({ question }) => {
         <div style={{ display: 'block' }}>
           {question.answers &&
             question.answers.map((answer, index) => (
-              <AnswerDistr answer={answer} index={index} />
+              <AnswerDistr key={answer.id} answer={answer} index={index} />
             ))
           }
         </div>
       </AccordionDetails>
       <Divider />
       <AccordionActions>
-        <Button size="small">Отмена</Button>
+        <Button size="small">Сбросить</Button>
         <Button size="small" color="primary">
           Сохранить
         </Button>

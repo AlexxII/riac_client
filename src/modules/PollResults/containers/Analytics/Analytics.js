@@ -9,22 +9,14 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import Pagination from '@material-ui/lab/Pagination';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import SaveIcon from '@material-ui/icons/Save';
-
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import Alert from '../../../../components/Alert'
-import ListItemEx from './components/ListItemEx/ListItemEx'
 import Accordion from './components/Accordition'
+import AccorditionLite from './containers/AccorditionLite'
 import errorHandler from '../../../../lib/errorHandler'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
@@ -239,38 +231,36 @@ const Analytics = ({ id }) => {
             <div className="analitics-main-content">
               <Accordion question={pollData.poll.questions[resultCount - 1]} />
               <p>
-                <List dense={true} className="analitics-sim-question">
-                  {simQuestions &&
-                    simQuestions.map((question, index) => {
-                      if (index < MAX_VIEW) {
-                        return (
-                          <ListItemEx key={index} question={question} select={() => { }} />
-                        )
-                      }
-                    })
-                  }
-                  <div style={{ "marginTop": "10px" }}>
-                    {simQuestions.length > 5
-                      ?
-                      <Button
-                        onClick={() => { setAllSimilar(true) }}
-                        variant="outlined">
-                        Еще {simQuestions ? ` + ${(simQuestions.length - MAX_VIEW)}` : null}
-                      </Button>
-                      :
-                      <EmptyState />
+                {simQuestions &&
+                  simQuestions.map((question, index) => {
+                    if (index < MAX_VIEW) {
+                      return (
+                        <AccorditionLite key={question.id} question={question} />
+                      )
                     }
-                  </div>
-                  {simQuestions && allSimilar &&
-                    simQuestions.map((question, index) => {
-                      if (index >= MAX_VIEW) {
-                        return (
-                          <ListItemEx key={index} question={question} select={() => { }} />
-                        )
-                      }
-                    })
+                  })
+                }
+                <div style={{ "margin": "10px 0 10px 0" }}>
+                  {simQuestions.length > 5
+                    ?
+                    <Button
+                      onClick={() => { setAllSimilar(true) }}
+                      variant="outlined">
+                      Еще {simQuestions ? ` + ${(simQuestions.length - MAX_VIEW)}` : null}
+                    </Button>
+                    :
+                    <EmptyState />
                   }
-                </List>
+                </div>
+                {simQuestions && allSimilar &&
+                  simQuestions.map((question, index) => {
+                    if (index >= MAX_VIEW) {
+                      return (
+                        <AccorditionLite key={question.id} question={question} />
+                      )
+                    }
+                  })
+                }
               </p>
             </div>
           </Fragment>

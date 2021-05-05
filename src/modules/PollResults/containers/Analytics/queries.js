@@ -52,6 +52,7 @@ export const GET_QUESTIONS_WITH_SAME_TOPICS = gql`
     sameQuestions(topics: $topics, poll: $poll) {
       id
       title
+      type
       topic {
         id
         title
@@ -59,12 +60,6 @@ export const GET_QUESTIONS_WITH_SAME_TOPICS = gql`
       poll {
         code
         title
-      }
-      answers {
-        id
-        title
-        code
-        order
       }
     }
   }

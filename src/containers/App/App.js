@@ -1,24 +1,28 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useReducer, createContext } from 'react';
 
 import './App.scss';
 import Router from '../Router'
 
 import SignInForm from '../../components/SignInForm'
-
 import ErrorState from '../../components/ErrorState'
 import LoadingSate from '../../components/LoadingState'
 import LoadingStatus from '../../components/LoadingStatus'
+
+import SystemNoti from '../../components/SystemNoti'
 
 import { useQuery } from '@apollo/react-hooks';
 import { useMutation } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';
 import { SIGNIN_MUTATION } from './mutations';
 
+const SysnotyDispatch = createContext(null)
 
 const App = () => {
-  const { loading, error, data } = useQuery(CURRENT_USER_QUERY);
+  const [noti, setNoti] = useState(false)
   const [passwordError, setPasswordError] = useState(null)
   const [userError, setUserError] = useState(null)
+
+  const { loading, error, data } = useQuery(CURRENT_USER_QUERY);
 
   const [signin, { loading: signinLoading }] = useMutation(
     SIGNIN_MUTATION,
@@ -34,7 +38,7 @@ const App = () => {
     }
   )
 
-  if (loading) return <LoadingSate description="Запрос данных пользователя"/>
+  if (loading) return <LoadingSate description="Запрос данных пользователя" />
 
   if (error) {
     console.log(JSON.stringify(error));
@@ -55,11 +59,16 @@ const App = () => {
     return null
   }
 
-
   if (!!data.currentUser) {
     return (
       <Fragment>
         <div className="App">
+          <SystemNoti
+            open={noti}
+            text={noti ? noti.text : ""}
+            type={noti ? noti.type : ""}
+            close={() => setNoti(false)}
+          />
           <Loading />
           <Router />
         </div>

@@ -15,9 +15,9 @@ import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import Alert from '../../../../components/Alert'
-import Accordion from './components/Accordition'
-import AccorditionLite from './containers/AccorditionLite'
 import errorHandler from '../../../../lib/errorHandler'
+
+import QuestionAnalytic from './components/QuestionAnalytic'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { similarity } from '../../../PollResults/lib/utils'
@@ -28,8 +28,6 @@ import { GET_POLL_DATA, GET_QUESTIONS_WITH_SAME_TOPICS } from './queries.js'
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
-
-const MAX_VIEW = 5
 
 const Analytics = ({ id }) => {
   const [noti, setNoti] = useState(false)
@@ -171,15 +169,6 @@ const Analytics = ({ id }) => {
     return null
   }
 
-  const EmptyState = () => {
-    if (emptyMessage) {
-      const message = 'В базе данных отсутствуют вопросы с аналогичной категорией'
-      return <Alert text={message} />
-    } else {
-      return null
-    }
-  }
-
   const handleSaveClick = () => {
     const currentQuestion = questions[resultCount - 1]
     console.log(currentQuestion);
@@ -229,39 +218,7 @@ const Analytics = ({ id }) => {
               />
             </div>
             <div className="analitics-main-content">
-              <Accordion question={pollData.poll.questions[resultCount - 1]} />
-              <p>
-                {simQuestions &&
-                  simQuestions.map((question, index) => {
-                    if (index < MAX_VIEW) {
-                      return (
-                        <AccorditionLite key={question.id} question={question} />
-                      )
-                    }
-                  })
-                }
-                <div style={{ "margin": "10px 0 10px 0" }}>
-                  {simQuestions.length > 5
-                    ?
-                    <Button
-                      onClick={() => { setAllSimilar(true) }}
-                      variant="outlined">
-                      Еще {simQuestions ? ` + ${(simQuestions.length - MAX_VIEW)}` : null}
-                    </Button>
-                    :
-                    <EmptyState />
-                  }
-                </div>
-                {simQuestions && allSimilar &&
-                  simQuestions.map((question, index) => {
-                    if (index >= MAX_VIEW) {
-                      return (
-                        <AccorditionLite key={question.id} question={question} />
-                      )
-                    }
-                  })
-                }
-              </p>
+              <QuestionAnalytic question={pollData.poll.questions[resultCount - 1]} simQuestions={simQuestions} />
             </div>
           </Fragment>
         }

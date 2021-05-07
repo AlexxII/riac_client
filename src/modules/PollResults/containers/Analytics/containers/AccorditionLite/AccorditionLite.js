@@ -15,7 +15,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import errorHandler from '../../../../../../lib/errorHandler'
 
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { GET_QUESTION_RESULTS } from './queries'
 
 
@@ -76,7 +76,6 @@ const AccordionLite = ({ question }) => {
   const [noti, setNoti] = useState(false)
   const [answers, setAnswers] = useState(null)
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false)
 
   const [getAnswersResults, { loading: answersResultsLoading, data: answersResultsData }] = useLazyQuery(GET_QUESTION_RESULTS, {
     onError: ({ graphQLErrors }) => {
@@ -124,11 +123,21 @@ const AccordionLite = ({ question }) => {
       }
     })
     setExpanded(isExpanded);
-    setTimeout(rr, 700)
   };
 
-  const rr = () => {
-    setLoading(false)
+  const handleLoadKey = () => {
+    // информация об опросе данного вопроса
+    const qPoll = question.poll
+    const rAnswers = answers.reduce((acum, item, index) => {
+      acum[index] = {
+        distribution: item.distrib,
+        answerId : item.id,
+        poll: qPoll
+      }
+      return acum
+    }, {})
+    console.log(rAnswers);
+    // console.log(question, answers);
   }
 
   return (
@@ -207,7 +216,7 @@ const AccordionLite = ({ question }) => {
       </AccordionDetails>
       <Divider />
       <AccordionActions>
-        <Button size="small" color="primary">Загрузить</Button>
+        <Button size="small" color="primary" onClick={handleLoadKey}>Загрузить</Button>
       </AccordionActions>
     </Accordion>
   )

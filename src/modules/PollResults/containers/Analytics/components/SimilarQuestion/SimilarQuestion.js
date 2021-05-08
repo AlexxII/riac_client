@@ -10,14 +10,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import errorHandler from '../../../../../../lib/errorHandler'
-
-import { useLazyQuery } from '@apollo/client'
-import { GET_QUESTION_RESULTS } from './queries'
-
+import AnswerDistribution from '../../components/AnswerDitribution'
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -29,116 +25,37 @@ const useStyles = makeStyles((theme) => ({
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
-  },
-  details: {
-    alignItems: 'center',
-    display: 'flex'
-  },
-  detFlex: {
-    display: 'block'
-  },
-  column1: {
-    flexBasis: '80%'
-  },
-  column2: {
-    textAlign: 'center',
-    flexBasis: '10%',
-    minWidth: '40px'
-  },
-  column3: {
-    textAlign: 'center',
-    flexBasis: '10%',
-    minWidth: '40px'
-  },
+  }
 }))
 
-const AnswerDistr = ({ answer, index }) => {
+const SimilarQuestion = ({ question, loadAnswers }) => {
   const classes = useStyles();
-  return (
-    <Fragment>
-      <div className={index % 2 == 0 ? "accordition-answer even" : "accordition-answer"}>
-        <div className={classes.column1} onClick={() => console.log(answer)}>
-          {index + 1}. {answer?.code} - {answer?.title}
-        </div>
-        <div className={classes.column2}>
-          {answer.results.length}
-        </div>
-        <div className={classes.column3}>
-          {answer.distrib}
-        </div>
-      </div>
-    </Fragment>
-  )
-}
-
-const AccordionLite = ({ question }) => {
-  const classes = useStyles();
-  const [noti, setNoti] = useState(false)
-  const [answers, setAnswers] = useState(null)
   const [expanded, setExpanded] = useState(false);
 
-  const [getAnswersResults, { loading: answersResultsLoading, data: answersResultsData }] = useLazyQuery(GET_QUESTION_RESULTS, {
-    onError: ({ graphQLErrors }) => {
-      setNoti(errorHandler(graphQLErrors))
-      console.log(graphQLErrors);
-    }
-  });
-
-  useEffect(() => {
-    if (answersResultsData && !answersResultsLoading) {
-      const answers = answersResultsData.answersWithResults.answers
-      // всего ответов
-      const allResultsCount = answers.reduce((acum, item) => {
-        acum += item.results.length
-        return acum
-      }, 0)
-      // тип вопроса: 1 - один ответ, 2 - несколько ответов, 3 - только ввод ответа (один свободный ответ на вопрос)
-      const qType = question.type
-      let uAnswers = []
-      //
-      console.log(typeof qType);
-      switch (qType) {
-        case 1:
-          uAnswers = answers.map(answer =>
-          ({
-            ...answer,
-            distrib: (answer.results.length / allResultsCount * 100).toFixed(1)
-          }))
-          break
-        case 2:
-
-        case 3:
-        default:
-          setNoti()
-      }
-      console.log(uAnswers);
-      setAnswers(uAnswers)
-    }
-  }, [answersResultsData])
-
   const handleChange = (_, isExpanded) => {
-    getAnswersResults({
-      variables: {
-        id: question.id
-      }
-    })
+    if (isExpanded) {
+      loadAnswers(question.id)
+    }
     setExpanded(isExpanded);
   };
 
   const handleLoadKey = () => {
     // информация об опросе данного вопроса
     const qPoll = question.poll
-    const rAnswers = answers.reduce((acum, item, index) => {
-      acum[index] = {
-        distribution: item.distrib,
-        answerId : item.id,
-        poll: qPoll
-      }
-      return acum
-    }, {})
-    console.log(rAnswers);
+    // const rAnswers = answers.reduce((acum, item, index) => {
+    //   acum[index] = {
+    //     distribution: item.distrib,
+    //     answerId: item.id,
+    //     poll: qPoll
+    //   }
+    //   return acum
+    // }, {})
+    // console.log(rAnswers);
     // console.log(question, answers);
   }
+  useEffect(() => {
+    console.log(question);
+  }, [question])
 
   return (
     <Accordion
@@ -187,29 +104,28 @@ const AccordionLite = ({ question }) => {
         </div>
       </AccordionSummary>
       <Divider variant="middle" />
-      <AccordionDetails style={{ display: 'block', wordWrap: 'break-word' }} >
-        <div style={{ display: 'flex' }}>
-          <Typography variant="subtitle2" gutterBottom className={classes.column1}>
-            <strong>Ответы:</strong>
+      <AccordionDetails className="similar-details" >
+        <div className="display-flex">
+          <Typography variant="subtitle2" gutterBottom className="column-one">
           </Typography>
-          <Typography variant="subtitle2" gutterBottom className={classes.column2}>
+          <Typography variant="subtitle2" gutterBottom className="column-two">
             <strong>Ответов:</strong>
           </Typography>
-          <Typography variant="subtitle2" gutterBottom className={classes.column2}>
+          <Typography variant="subtitle2" gutterBottom className="column-three">
             <strong>Процентов:</strong>
           </Typography>
         </div>
         <div style={{ display: 'block' }}>
-          {answersResultsLoading ?
+          {!question.answers ?
             <Fragment>
               <div style={{ textAlign: 'center' }}>
                 <CircularProgress />
               </div>
             </Fragment>
             :
-            answers &&
-            answers.map((answer, index) => (
-              <AnswerDistr key={answer.id} answer={answer} index={index} />
+            question.answers.length &&
+            question.answers.map((answer, index) => (
+              <AnswerDistribution key={answer.id} answer={answer} index={index} />
             ))
           }
         </div>
@@ -220,7 +136,6 @@ const AccordionLite = ({ question }) => {
       </AccordionActions>
     </Accordion>
   )
-
 }
 
-export default AccordionLite
+export default SimilarQuestion

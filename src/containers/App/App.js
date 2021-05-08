@@ -1,7 +1,9 @@
-import React, { Fragment, useState, useReducer, createContext } from 'react';
+import React, { Fragment, useState, useReducer } from 'react';
 
 import './App.scss';
 import Router from '../Router'
+
+import { SysnotyContext } from './notycontext'
 
 import SignInForm from '../../components/SignInForm'
 import ErrorState from '../../components/ErrorState'
@@ -15,10 +17,9 @@ import { useMutation } from '@apollo/react-hooks';
 import { CURRENT_USER_QUERY } from './queries';
 import { SIGNIN_MUTATION } from './mutations';
 
-const SysnotyDispatch = createContext(null)
-
 const App = () => {
   const [noti, setNoti] = useState(false)
+
   const [passwordError, setPasswordError] = useState(null)
   const [userError, setUserError] = useState(null)
 
@@ -61,7 +62,7 @@ const App = () => {
 
   if (!!data.currentUser) {
     return (
-      <Fragment>
+      <SysnotyContext.Provider value={[setNoti]}>
         <div className="App">
           <SystemNoti
             open={noti}
@@ -72,7 +73,7 @@ const App = () => {
           <Loading />
           <Router />
         </div>
-      </Fragment>
+      </SysnotyContext.Provider>
     );
   }
   return <div>

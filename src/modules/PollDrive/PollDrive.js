@@ -1,20 +1,22 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useContext } from 'react'
+import { Prompt } from 'react-router-dom'
+import { useHistory } from "react-router-dom";
 
 import Container from '@material-ui/core/Container'
 import DriveLogic from "./components/DriveLogic";
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+
+import { SysnotyContext } from '../../containers/App/notycontext'
 
 import DialogWithSelect from '../../components/DialogWithSelect';
 import LoadingStatus from '../../components/LoadingStatus'
 import ErrorState from '../../components/ErrorState'
 import LoadingState from '../../components/LoadingState'
-import SystemNoti from '../../components/SystemNoti'
-
 import FinishDialog from './components/FinishDialog';
 
-import { Prompt } from 'react-router-dom'
-import { useHistory } from "react-router-dom";
+import errorHandler from '../../lib/errorHandler'
+import { parseIni, normalizeLogic } from './lib/utils'
+
 import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_DATA } from "./queries"
@@ -22,28 +24,15 @@ import { GET_ALL_ACTIVE_POLLS } from '../PollHome/queries'
 import { GET_POLL_RESULTS } from '../PollResults/containers/OverallResults/queries'
 
 import { SAVE_NEW_RESULT } from './mutaions'
-import { parseIni, normalizeLogic } from './lib/utils'
 
 const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
-const useStyles = makeStyles((theme) => ({
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
-  },
-}));
-
 const PollDrive = ({ pollId }) => {
-  const [noti, setNoti] = useState(false)
+  const [setNoti] = useContext(SysnotyContext);
+
   const client = useApolloClient();
-  const [message, setMessage] = useState({
-    show: false,
-    type: 'error',
-    message: '',
-    duration: 6000
-  })
   const { currentUser } = client.readQuery({
     query: gql`
     query {
@@ -93,14 +82,16 @@ const PollDrive = ({ pollId }) => {
         setPollLogic(normLogic)
       })
   }
-  const [saveResult, { loading: saveLoading }] = useMutation(SAVE_NEW_RESULT, {
-    onError: (e) => {
-      setNoti({
-        type: 'error',
-        text: 'Сохранить не удалось. Смотрите консоль.'
-      })
+  const [saveResult, { loading: saveLoading, data: saveResultData }] = useMutation(SAVE_NEW_RESULT, {
+    onError: ({ graphQLErrors }) => {
+      if (graphQLErrors.length) {
+        setNoti(errorHandler(graphQLErrors))
+        console.log(graphQLErrors);
+      }
     },
     update: (cache, { data }) => {
+      // возвращаемся
+      setUserBack(true)
       const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
       const currentPoll = polls.filter(obj => obj.id === pollId)
       cache.modify({
@@ -125,9 +116,6 @@ const PollDrive = ({ pollId }) => {
           }
         }
       })
-    },
-    onCompleted: () => {
-      setUserBack(true)
     }
   })
 
@@ -295,12 +283,6 @@ const PollDrive = ({ pollId }) => {
         }}
       />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
-      <SystemNoti
-        open={noti}
-        text={noti ? noti.text : ""}
-        type={noti ? noti.type : ""}
-        close={() => setNoti(false)}
-      />
       <Loading />
       <Container maxWidth="md">
         <DialogWithSelect

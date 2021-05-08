@@ -1,0 +1,21 @@
+.accordition-answer {
+  display: flex;
+  padding: 5px;
+  .column-one {
+    flex-basis: 80%;
+  }
+  .column-two {
+    text-align: center;
+    flex-basis: 10%;
+    min-width: 40px;
+  }
+  .column-three {
+    text-align: center;
+    flex-basis: 10%;
+    min-width: 40px;
+  }
+}
+.even {
+  background-color: rgb(216, 230, 230);
+  border-radius: 2px;
+}

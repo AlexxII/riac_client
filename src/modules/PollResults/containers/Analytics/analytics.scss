@@ -1,5 +1,7 @@
-@import "./components/Accordition/accordition.scss";
-@import "./containers/AccorditionLite/accorditionlite.scss";
+@import "./components/AnalyzedQuestion/analyzedquestion.scss";
+@import "./components/AnswerDitribution/answerditribution.scss";
+@import "./components/AnswerDitributionEx/answerditributionex.scss";
+@import "./components/SimilarQuestion/similarquestion.scss";
 
 .pagination-wrap-title {
   padding: 5px 10px 0 0;
@@ -11,4 +13,10 @@
 .analitics-main-question {
   margin-top: 10px;
   background-color: aliceblue;
+}
+.question-analytics {
+  margin: 10px 0 0 0 ;
+  .button-wrap {
+    margin: 10px 0 10px 0;
+  }
 }

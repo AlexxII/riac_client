@@ -1,23 +1,21 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import React, { Fragment, useCallback, useEffect, useState, useContext } from 'react'
 import uuid from "uuid";
 import sample from 'alias-sampling'
 import walker from 'walker-sample'
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 import Pagination from '@material-ui/lab/Pagination';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
-import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
-import Alert from '../../../../components/Alert'
 import errorHandler from '../../../../lib/errorHandler'
 
-import QuestionAnalytic from './components/QuestionAnalytic'
+import QuestionAnalytic from './containers/QuestionAnalytic'
+
+import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
 import { similarity } from '../../../PollResults/lib/utils'
@@ -30,21 +28,15 @@ const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const Analytics = ({ id }) => {
-  const [noti, setNoti] = useState(false)
-  const [loadingMsg, setLoadingMsg] = useState()
+  const [setNoti] = useState(SysnotyContext)
+
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
-  const [selectPool, setSelectPool] = useState([])
-  const [selectAll, setSelectAll] = useState(false)
-  const [batchOpen, setBatchOpen] = useState(false)
 
   const [resultCount, setResultCount] = useState(1)
   const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [allSimilar, setAllSimilar] = useState(false)
-  const [topicsToQuestionsPool, setTopicsToQuestionsPool] = useState(null)
-  const [previousTopicId, setPreviousTopicId] = useState(null)
-  const [prevSimQuestions, setPrevSimQuestions] = useState(null)
   const [simQuestions, setSimQuestions] = useState(false)
 
   const {
@@ -89,13 +81,12 @@ const Analytics = ({ id }) => {
         acum[topicId].push(item)
         return acum
       }, {})
-      setTopicsToQuestionsPool(topicToQuestions)
       const uQuestions = pollData.poll.questions.map(question => {
         if (topicToQuestions[question?.topic?.id]) {
-          const similatQuestions = topicToQuestions[question.topic.id]
+          const similarQuestions = topicToQuestions[question.topic.id]
           return {
             ...question,
-            similar: sortQuestionsBySimilarity(similatQuestions, question.title)
+            similar: sortQuestionsBySimilarity(similarQuestions, question.title)
           }
         } else {
           return {
@@ -169,12 +160,6 @@ const Analytics = ({ id }) => {
     return null
   }
 
-  const handleSaveClick = () => {
-    const currentQuestion = questions[resultCount - 1]
-    console.log(currentQuestion);
-  }
-
-
   // переключатель между вопросами
   const handleResultChange = (_, value) => {
     setResultCount(value)
@@ -183,12 +168,6 @@ const Analytics = ({ id }) => {
 
   return (
     <Fragment>
-      <SystemNoti
-        open={noti}
-        text={noti ? noti.text : ""}
-        type={noti ? noti.type : ""}
-        close={() => setNoti(false)}
-      />
       <Loading />
       <div className="category-service-zone">
         <Typography variant="h5" gutterBottom className="header">Аналитический модуль</Typography>
@@ -201,7 +180,7 @@ const Analytics = ({ id }) => {
       </div>
       <br></br>
       <Grid>
-        {pollData &&
+        {questions &&
           <Fragment>
             <div className="pagination-wrap">
               <span className="pagination-wrap-title">
@@ -218,7 +197,14 @@ const Analytics = ({ id }) => {
               />
             </div>
             <div className="analitics-main-content">
-              <QuestionAnalytic question={pollData.poll.questions[resultCount - 1]} simQuestions={simQuestions} />
+              <QuestionAnalytic
+                setAllSimilar={setAllSimilar}
+                allSimilar={allSimilar}
+                question={questions[resultCount - 1]}
+                setQuestions={setQuestions}
+                simQuestions={simQuestions}
+                emptyMessage={emptyMessage}
+              />
             </div>
           </Fragment>
         }

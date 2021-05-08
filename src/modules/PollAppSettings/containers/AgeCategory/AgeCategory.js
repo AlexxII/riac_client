@@ -1,8 +1,10 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useContext } from 'react'
 
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
+
+import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -23,7 +25,7 @@ import {
 } from './mutations'
 
 const AgeCategory = () => {
-  const [noti, setNoti] = useState(false)
+  const [setNoti] = useContext(SysnotyContext);
   const [loadingMsg, setLoadingMsg] = useState()
   const [delId, setDelId] = useState(false)
   const [newOrder, setNewOrder] = useState([])
@@ -194,12 +196,6 @@ const AgeCategory = () => {
 
   return (
     <Fragment>
-      <SystemNoti
-        open={noti}
-        text={noti ? noti.text : ""}
-        type={noti ? noti.type : ""}
-        close={() => setNoti(false)}
-      />
       <Loading />
       <div className="age-service-zone">
         <Typography variant="h5" gutterBottom className="header">Категории возраста</Typography>

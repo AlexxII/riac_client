@@ -1,0 +1,13 @@
+.analyzed-question {
+  background-color: aliceblue !important;
+  .details {
+    display: block;
+    .column-one {
+      flex-basis: 60%;
+    }
+    .column-two {
+      flex-basis: 40%;
+      min-width: 140px;
+    }
+  }
+}

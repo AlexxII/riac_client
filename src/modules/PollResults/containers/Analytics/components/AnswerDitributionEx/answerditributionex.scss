@@ -1,0 +1,19 @@
+.accordition-answer-ex {
+  display: flex;
+  padding: 5px;
+  .column-one {
+    flex-basis: 60%;
+  }
+  .column-two {
+    flex-basis: 40%;
+    min-width: 140px;
+    .distr-input {
+      width: 40px;
+      margin: 0 5px 0 5px;
+    }
+  }
+}
+.even {
+  background-color: rgb(216, 230, 230);
+  border-radius: 2px;
+}

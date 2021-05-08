@@ -1,12 +1,13 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState, useContext } from 'react'
 import Container from '@material-ui/core/Container'
 
 import PollCard from './components/PollCard'
 import AddPollLogic from './components/AddPollLogic'
 
+import { SysnotyContext } from '../../containers/App/notycontext'
+
 import LoadingState from '../../components/LoadingState'
 import LoadingStatus from '../../components/LoadingStatus'
-import SystemNoti from '../../components/SystemNoti'
 import ErrorState from '../../components/ErrorState'
 
 import errorHandler from '../../lib/errorHandler'
@@ -18,7 +19,7 @@ import { GET_ALL_ACTIVE_POLLS } from "./queries"
 import { ADD_NEW_POLL } from './mutations'
 
 const PollHome = () => {
-  const [noti, setNoti] = useState(false)
+  const [setNoti] = useContext(SysnotyContext);
 
   const {
     loading: pollsLoading,
@@ -56,15 +57,8 @@ const PollHome = () => {
     return null
   }
 
-
   return (
     <Fragment>
-      <SystemNoti
-        open={noti}
-        text={noti ? noti.text : ""}
-        type={noti ? noti.type : ""}
-        close={() => setNoti(false)}
-      />
       <Loading />
       <Container maxWidth="md">
         {pollsData.polls

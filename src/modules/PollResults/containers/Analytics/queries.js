@@ -29,6 +29,7 @@ export const GET_POLL_DATA = gql`
         title
         limit
         order
+        type
         topic {
           id
           title

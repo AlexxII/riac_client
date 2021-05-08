@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -10,6 +10,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 
+import AanswerDistributionEx from '../../components/AnswerDitributionEx'
+
 const useStyles = makeStyles((theme) => ({
   header: {
     display: 'block'
@@ -20,82 +22,10 @@ const useStyles = makeStyles((theme) => ({
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary,
-  },
-  details: {
-    alignItems: 'center',
-    display: 'flex'
-  },
-  detFlex: {
-    display: 'block'
-  },
-  column1: {
-    flexBasis: '60%'
-  },
-  column2: {
-    flexBasis: '40%',
-    minWidth: '140px'
-  },
+  }
 }))
 
-const AnswerDistr = ({ answer, index }) => {
-  const [distibVal, setDistibVal] = useState({
-    '0': {
-      int: '23',
-      code: ''
-    },
-    '1': '',
-    '2': '',
-    '3': '',
-    '4': '',
-    '5': '',
-    '6': '',
-  })
-  const classes = useStyles();
-
-  const handleInput = (e) => {
-    e.preventDefault()
-    const value = e.currentTarget.value
-    const i = e.currentTarget.dataset.index
-    setDistibVal({
-      ...distibVal,
-      [i]: value
-    })
-  }
-
-  const inputs = []
-
-  for (let i = 0; i < 6; i++) {
-    inputs.push(
-      <input
-        key={i}
-        type="number"
-        step="0.01"
-        max="100"
-        className="distr-input"
-        value={distibVal[i].int}
-        data-index={i}
-        onChange={handleInput}
-        tabIndex={(i + 1) * 1000 + index}
-      />
-    )
-  }
-
-  return (
-    <Fragment>
-      <div className={index % 2 == 0 ? "accordition-answer even" : "accordition-answer"}>
-        <div className={classes.column1}>
-          {index + 1}. {answer?.code} - {answer.title}
-        </div>
-        <div className={classes.column2}>
-          {inputs}
-        </div>
-      </div>
-    </Fragment>
-
-  )
-}
-
-const AccordionEx = ({ question }) => {
+const AnalyzedQuestion = ({ question }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -105,7 +35,7 @@ const AccordionEx = ({ question }) => {
 
   return (
     <Accordion
-      className="primary"
+      className="analyzed-question"
       expanded={expanded}
       onChange={handleChange}
     >
@@ -132,19 +62,19 @@ const AccordionEx = ({ question }) => {
         </div>
       </AccordionSummary>
       <Divider variant="middle" />
-      <AccordionDetails style={{ display: 'block' }} >
+      <AccordionDetails className="details" >
         <div style={{ display: 'flex' }}>
-          <Typography variant="subtitle2" gutterBottom className={classes.column1}>
+          <Typography variant="subtitle2" gutterBottom className="column-one">
             <strong>Ответы:</strong>
           </Typography>
-          <Typography variant="subtitle2" gutterBottom className={classes.column2}>
+          <Typography variant="subtitle2" gutterBottom className="column-two">
             <strong>Распределение:</strong>
           </Typography>
         </div>
         <div style={{ display: 'block' }}>
           {question.answers &&
             question.answers.map((answer, index) => (
-              <AnswerDistr key={answer.id} answer={answer} index={index} />
+              <AanswerDistributionEx key={answer.id} answer={answer} index={index} />
             ))
           }
         </div>
@@ -161,4 +91,4 @@ const AccordionEx = ({ question }) => {
 
 }
 
-export default AccordionEx
+export default React.memo(AnalyzedQuestion)

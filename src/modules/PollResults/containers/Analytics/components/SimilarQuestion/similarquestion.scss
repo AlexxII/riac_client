@@ -1,0 +1,25 @@
+.accordition-lite {
+  .similar-details {
+    display: block !important;
+    word-wrap: break-word;
+    .display-flex {
+      display: flex;
+      .column-one {
+        flex-basis: 80%;
+      }
+      .column-two {
+        text-align: center;
+        flex-basis: 10%;
+        min-width: 40px;
+      }
+      .column-three {
+        text-align: center;
+        flex-basis: 10%;
+        min-width: 40px;
+      }
+    }
+  }
+  .MuiAccordionSummary-content {
+    display: block !important;
+  }
+}

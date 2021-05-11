@@ -37,7 +37,6 @@ const Analytics = ({ id }) => {
   const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [allSimilar, setAllSimilar] = useState(false)
-  const [simQuestions, setSimQuestions] = useState(false)
 
   const {
     data: pollData,
@@ -86,6 +85,19 @@ const Analytics = ({ id }) => {
           const similarQuestions = topicToQuestions[question.topic.id]
           return {
             ...question,
+            answers: question.answers.map(answer => (
+              {
+                ...answer,
+                distribution: {
+                  '0': null,
+                  '1': null,
+                  '2': null,
+                  '3': null,
+                  '4': null,
+                  '5': null
+                }
+              }
+            )),
             similar: sortQuestionsBySimilarity(similarQuestions, question.title)
           }
         } else {
@@ -95,10 +107,10 @@ const Analytics = ({ id }) => {
           }
         }
       })
+      console.log(uQuestions)
       setQuestions(uQuestions)
       // отобразим первый вопрос
       const currentQuestion = uQuestions[resultCount - 1]
-      setSimQuestions(currentQuestion.similar ?? [])
       checkNotEmpty(currentQuestion)
       setProcessing(false)
     }
@@ -107,7 +119,6 @@ const Analytics = ({ id }) => {
   useEffect(() => {
     if (resultCount && questions) {
       const currentQuestion = questions[resultCount - 1]
-      setSimQuestions(currentQuestion.similar ?? [])
       checkNotEmpty(currentQuestion)
     }
   }, [resultCount])
@@ -202,7 +213,6 @@ const Analytics = ({ id }) => {
                 allSimilar={allSimilar}
                 question={questions[resultCount - 1]}
                 setQuestions={setQuestions}
-                simQuestions={simQuestions}
                 emptyMessage={emptyMessage}
               />
             </div>

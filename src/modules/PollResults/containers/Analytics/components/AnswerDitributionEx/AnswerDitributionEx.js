@@ -1,24 +1,15 @@
 import React, { Fragment, useState } from 'react'
 
-const AnswerDistributionEx = ({ answer, index }) => {
-  const [distibVal, setDistibVal] = useState({
-    '0': '',
-    '1': '',
-    '2': '',
-    '3': '',
-    '4': '',
-    '5': '',
-    '6': '',
-  })
-
+const AnswerDistributionEx = ({ answer, index, handleManualInput }) => {
   const handleInput = (e) => {
     e.preventDefault()
-    const value = e.currentTarget.value
     const i = e.currentTarget.dataset.index
-    setDistibVal({
-      ...distibVal,
-      [i]: value
-    })
+    let value = e.currentTarget.value
+    if (value > 100) {
+      e.currentTarget.value = 100.00
+      value = 100.00
+    }
+    handleManualInput(value, index)
   }
 
   const inputs = []
@@ -31,7 +22,7 @@ const AnswerDistributionEx = ({ answer, index }) => {
         step="0.01"
         max="100"
         className="distr-input"
-        value={distibVal[i].int}
+        defaultValue={answer?.distribution[i]?.data}
         data-index={i}
         onChange={handleInput}
         tabIndex={(i + 1) * 1000 + index}

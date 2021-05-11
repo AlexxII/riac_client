@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const SimilarQuestion = ({ question, loadAnswers }) => {
+const SimilarQuestion = ({ question, loadAnswers, setDistibution }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
 
@@ -42,20 +42,17 @@ const SimilarQuestion = ({ question, loadAnswers }) => {
   const handleLoadKey = () => {
     // информация об опросе данного вопроса
     const qPoll = question.poll
-    // const rAnswers = answers.reduce((acum, item, index) => {
-    //   acum[index] = {
-    //     distribution: item.distrib,
-    //     answerId: item.id,
-    //     poll: qPoll
-    //   }
-    //   return acum
-    // }, {})
-    // console.log(rAnswers);
-    // console.log(question, answers);
+    const rAnswers = question.answers.reduce((acum, item, index) => {
+      acum[index] = {
+        distribution: item.distrib,
+        answerId: item.id,
+        poll: qPoll
+      }
+      acum.count += 1
+      return acum
+    }, { count: 0 })
+    setDistibution(rAnswers)
   }
-  useEffect(() => {
-    console.log(question);
-  }, [question])
 
   return (
     <Accordion
@@ -138,4 +135,4 @@ const SimilarQuestion = ({ question, loadAnswers }) => {
   )
 }
 
-export default SimilarQuestion
+export default React.memo(SimilarQuestion)

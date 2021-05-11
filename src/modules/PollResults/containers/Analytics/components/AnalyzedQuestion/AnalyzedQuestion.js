@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const AnalyzedQuestion = ({ question }) => {
+const AnalyzedQuestion = ({ question, handleReset, handleManualInput }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
 
@@ -74,14 +74,14 @@ const AnalyzedQuestion = ({ question }) => {
         <div style={{ display: 'block' }}>
           {question.answers &&
             question.answers.map((answer, index) => (
-              <AanswerDistributionEx key={answer.id} answer={answer} index={index} />
+              <AanswerDistributionEx key={answer.id} answer={answer} index={index} handleManualInput={handleManualInput} />
             ))
           }
         </div>
       </AccordionDetails>
       <Divider />
       <AccordionActions>
-        <Button size="small">Сбросить</Button>
+        <Button size="small" onClick={handleReset}>Сбросить</Button>
         <Button size="small" color="primary">
           Сохранить
         </Button>

@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Pagination from '@material-ui/lab/Pagination';
+import PaginationItem from '@material-ui/lab/PaginationItem';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
@@ -27,6 +28,8 @@ const productionUrl = process.env.REACT_APP_GQL_SERVER
 const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
+const KEY_TYPE = 'keyup'
+
 const Analytics = ({ id }) => {
   const [setNoti] = useState(SysnotyContext)
 
@@ -37,6 +40,13 @@ const Analytics = ({ id }) => {
   const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
   const [allSimilar, setAllSimilar] = useState(false)
+
+  useEffect(() => {
+    window.addEventListener(KEY_TYPE, keyUpHandler)
+    return () => {
+      window.removeEventListener(KEY_TYPE, keyUpHandler)
+    };
+  })
 
   const {
     data: pollData,
@@ -81,33 +91,37 @@ const Analytics = ({ id }) => {
         return acum
       }, {})
       const uQuestions = pollData.poll.questions.map(question => {
+        const answers = question.answers.map(answer => (
+          {
+            ...answer,
+            distribution: {
+              '0': null,
+              '1': null,
+              '2': null,
+              '3': null,
+              '4': null,
+              '5': null
+            }
+          }
+        ))
         if (topicToQuestions[question?.topic?.id]) {
           const similarQuestions = topicToQuestions[question.topic.id]
           return {
             ...question,
-            answers: question.answers.map(answer => (
-              {
-                ...answer,
-                distribution: {
-                  '0': null,
-                  '1': null,
-                  '2': null,
-                  '3': null,
-                  '4': null,
-                  '5': null
-                }
-              }
-            )),
+            answers,
+            saved: false,                                                                     // сохранено ли распределение
             similar: sortQuestionsBySimilarity(similarQuestions, question.title)
           }
         } else {
           return {
             ...question,
+            answers,
+            saved: false,
             similar: null
           }
         }
       })
-      console.log(uQuestions)
+      // console.log(uQuestions)
       setQuestions(uQuestions)
       // отобразим первый вопрос
       const currentQuestion = uQuestions[resultCount - 1]
@@ -122,6 +136,25 @@ const Analytics = ({ id }) => {
       checkNotEmpty(currentQuestion)
     }
   }, [resultCount])
+
+  const keyUpHandler = ({ keyCode }) => {
+    switch (keyCode) {
+      case 39:
+        if (resultCount >= questions.length) {
+          return
+        }
+        setResultCount(resultCount + 1)
+        break
+      case 37:
+        if (resultCount <= 1) {
+          return
+        }
+        setResultCount(resultCount - 1)
+        break
+      default:
+        return
+    }
+  }
 
   const sortQuestionsBySimilarity = (questions, mainTitle) => {
     return questions.map(question => (
@@ -205,6 +238,14 @@ const Analytics = ({ id }) => {
                 shape="rounded"
                 onChange={handleResultChange}
                 boundaryCount={10}
+                renderItem={(item) => (
+                  <PaginationItem {...item}
+                    className={
+                      item.type === 'page' &&
+                        questions[item.page - 1].saved ? 'pagination-item-saved' : null
+                    }
+                  />
+                )}
               />
             </div>
             <div className="analitics-main-content">

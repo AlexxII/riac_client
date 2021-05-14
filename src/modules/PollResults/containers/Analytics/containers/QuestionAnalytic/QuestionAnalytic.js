@@ -13,6 +13,7 @@ import { useLazyQuery } from '@apollo/client'
 import { GET_QUESTION_RESULTS } from './queries'
 
 const MAX_VIEW = 5
+const DISTRIBUTION_INPUT = 6
 
 const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
   const [setNoti] = useContext(SysnotyContext)
@@ -41,28 +42,42 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
           uAnswers = answers.map(answer =>
           ({
             ...answer,
-            distrib: (answer.results.length / allResultsCount * 100).toFixed(1)
+            distrib: answer.results.length ? (answer.results.length / allResultsCount * 100).toFixed(1) : 0
           }))
           break
         case 2:
           uAnswers = answers.map(answer =>
           ({
             ...answer,
-            distrib: (answer.results.length / allResultsCount * 100).toFixed(1)
+            distrib: answer.results.length ? (answer.results.length / allResultsCount * 100).toFixed(1) : 0
           }))
           break
         case 3:
+          uAnswers = answers.map(answer =>
+          ({
+            ...answer,
+            distrib: answer.results.length ? (answer.results.length / allResultsCount * 100).toFixed(1) : 0
+          }))
+          break
         default:
         // setNoti()
       }
-      const openedQuestionId = answersResultsData.answersWithResults.id
+
+      // const distribCount = uAnswers.reduce((acum, item) => {
+      //   acum += +item.distrib
+      //   return acum
+      // }, 0)
+      // console.log(distribCount);
+
+      const similarQuestionId = answersResultsData.answersWithResults.id
       setQuestions(prevState => {
         const uQuestions = prevState.map(item => {
           if (item.id === question.id) {
             return {
               ...item,
               similar: item.similar.map(item => {
-                if (item.id === openedQuestionId) {
+                // обновляем тот самый похожий вопрос
+                if (item.id === similarQuestionId) {
                   return {
                     ...item,
                     answers: uAnswers
@@ -89,10 +104,7 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
   }
 
   const setDistibution = (distrib) => {
-    console.log(distrib)
-    console.log(question)
-    let freeIndex = null
-
+    // если кол-во ответов не совпадает -> ручной ввод распределения
     if (distrib.count !== question.answers.length) {
       setNoti({
         type: 'error',
@@ -100,17 +112,27 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       })
       return
     }
-
-    for (let i = 0; i < question.answers.length; i++) {
-      const answer = question.answers[i];
-
-      for (let key in answer.distribution) {
-        if (!answer.distribution[key]) {
-          freeIndex = key
+    // получение индекса свободной колонки
+    let freeIndex = null
+    let exit = true
+    for (let j = 0; j < DISTRIBUTION_INPUT; j++) {
+      for (let i = 0; i < question.answers.length; i++) {
+        if (question.answers[i].distribution[j]) {
+          exit = false
+          freeIndex = null
           break
+        } else {
+          freeIndex = j
+          exit = true
         }
       }
+      if (exit) break
     }
+    if (freeIndex === null) setNoti({
+      type: 'error',
+      text: 'Нет свободых полей распределения.'
+    })
+
     setQuestions(prevState => {
       const uQuestions = prevState.map(item => {
         if (item.id === question.id) {
@@ -135,12 +157,89 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       })
       return uQuestions
     })
+  }
+
+  const handleManualInput = (value, column, row) => {
+    setQuestions(prevState => {
+      const uQuestions = prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            answers: item.answers.map((answer, j) => {
+              if (j === +row) {
+                return {
+                  ...answer,
+                  distribution: {
+                    ...answer.distribution,
+                    [column]: value !== ''
+                      ?
+                      {
+                        data: value,
+                        poll: null,
+                        answer: null
+                      }
+                      :
+                      null
+                  }
+                }
+              }
+              return answer
+            })
+          }
+        }
+        return item
+      })
+      return uQuestions
+    })
+  }
+
+  const handleSave = () => {
+    const answers = question.answers
+    setQuestions(prevState => (
+      prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            saved: true
+          }
+        }
+        return item
+      })
+    ))
+    console.log(answers);
+    for (let i = 0; i < answers.length; i++) {
+      const distribution = answers[i].distribution
+      for (let index in distribution) {
+        const distrib = distribution[index]
+
+
+      }
+    }
+
 
   }
 
-  const handleManualInput = (value, index) => {
-    console.log(value);
-    console.log(index);
+  const handleSingleDel = (index) => {
+    setQuestions(prevState => {
+      const uQuestions = prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            answers: item.answers.map((answer, i) => (
+              {
+                ...answer,
+                distribution: {
+                  ...answer.distribution,
+                  [index]: null
+                }
+              }
+            ))
+          }
+        }
+        return item
+      })
+      return uQuestions
+    })
   }
 
   const handleReset = () => {
@@ -166,14 +265,19 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
         }
         return item
       })
-      console.log(uQuestions);
       return uQuestions
     })
   }
 
   return (
     <Fragment>
-      <AnalyzedQuestion question={question} handleReset={handleReset} handleManualInput={handleManualInput} />
+      <AnalyzedQuestion
+        question={question}
+        handleReset={handleReset}
+        handleManualInput={handleManualInput}
+        handleSingleDel={handleSingleDel}
+        handleSave={handleSave}
+      />
       <div className="question-analytics">
         {question.similar &&
           question.similar.map((question, index) => {
@@ -185,7 +289,7 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
           })
         }
         <div className="button-wrap">
-          {question.similar.length > 5
+          {question.similar?.length > 5
             ?
             <Button
               onClick={() => { allSimilar ? setAllSimilar(false) : setAllSimilar(true) }}

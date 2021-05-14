@@ -1,15 +1,15 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 
 const AnswerDistributionEx = ({ answer, index, handleManualInput }) => {
   const handleInput = (e) => {
     e.preventDefault()
-    const i = e.currentTarget.dataset.index
+    const column = e.currentTarget.dataset.column
+    const row = index
     let value = e.currentTarget.value
     if (value > 100) {
-      e.currentTarget.value = 100.00
       value = 100.00
     }
-    handleManualInput(value, index)
+    handleManualInput(value, column, row)
   }
 
   const inputs = []
@@ -19,11 +19,13 @@ const AnswerDistributionEx = ({ answer, index, handleManualInput }) => {
       <input
         key={i}
         type="number"
-        step="0.01"
+        step="0.1"
         max="100"
+        min="0.1"
         className="distr-input"
-        defaultValue={answer?.distribution[i]?.data}
-        data-index={i}
+        value={answer?.distribution[i] ? answer?.distribution[i]?.data : ''}
+        defaultValue={answer?.distribution[i] ? answer?.distribution[i]?.data : ''}
+        data-column={i}
         onChange={handleInput}
         tabIndex={(i + 1) * 1000 + index}
       />

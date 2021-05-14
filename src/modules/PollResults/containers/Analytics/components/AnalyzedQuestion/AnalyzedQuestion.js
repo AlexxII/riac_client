@@ -8,9 +8,12 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AanswerDistributionEx from '../../components/AnswerDitributionEx'
+import { Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -25,13 +28,43 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const AnalyzedQuestion = ({ question, handleReset, handleManualInput }) => {
+const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSingleDel, handleSave }) => {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [total, setTotal] = useState(false)
+
+  useEffect(() => {
+    const qDistribCount = question.answers.reduce((acum, item) => {
+      for (let key in acum) {
+        acum[key] += item.distribution[key] ? +item.distribution[key].data : +0
+      }
+      return acum
+    }, {
+      '0': 0,
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0,
+      '5': 0,
+    })
+    setTotal(qDistribCount)
+  }, [question])
+
 
   const handleChange = (_, isExpanded) => {
     setExpanded(isExpanded);
   };
+
+  const inputCount = []
+
+  for (let i = 0; i < 6; i++) {
+    inputCount.push(
+      <div>
+        {total[i]}
+      </div>
+    )
+
+  }
 
   return (
     <Accordion
@@ -74,21 +107,45 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput }) => {
         <div style={{ display: 'block' }}>
           {question.answers &&
             question.answers.map((answer, index) => (
-              <AanswerDistributionEx key={answer.id} answer={answer} index={index} handleManualInput={handleManualInput} />
+              <AanswerDistributionEx key={answer.id}
+                answer={answer}
+                index={index}
+                handleManualInput={handleManualInput}
+              />
             ))
           }
+          <div className="service-area">
+            <div className="column-one">
+            </div>
+            <div className="column-two">
+              {
+                [0, 1, 2, 3, 4, 5].map((_, index) => (
+                  <Fragment>
+                    <div className="distr-reset">
+                      <div className="count-wrap">
+                        <div className={total[index] > 100.0001 ? "count-warning" : null} >
+                          {total[index] > 0 ? total[index].toFixed(1) : null}
+                        </div>
+                      </div>
+                      <IconButton aria-label="delete" onClick={() => handleSingleDel(index)} size="small">
+                        <HighlightOffIcon />
+                      </IconButton>
+                    </div>
+                  </Fragment>
+                ))
+              }
+            </div>
+          </div>
         </div>
       </AccordionDetails>
       <Divider />
       <AccordionActions>
         <Button size="small" onClick={handleReset}>Сбросить</Button>
-        <Button size="small" color="primary">
-          Сохранить
-        </Button>
+        <Button size="small" color="primary" onClick={handleSave}>Сохранить</Button>
       </AccordionActions>
     </Accordion>
   )
 
 }
 
-export default React.memo(AnalyzedQuestion)
+export default AnalyzedQuestion

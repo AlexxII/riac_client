@@ -67,7 +67,7 @@ const DriveLogic = React.memo(props => {
   }, [count])
 
   const keyUpHandler = ({ target, keyCode }) => {
-    if (target.nodeName === 'BODY') {
+    // if (target.nodeName === 'BODY') {
       const nextStep = defineSelectedAnswer(keyCode)
       switch (nextStep.do) {
         case VALID_CODE: {
@@ -123,8 +123,8 @@ const DriveLogic = React.memo(props => {
           return
         }
       }
-    }
-    return
+    // }
+    // return
   }
 
   const confirmResults = () => {

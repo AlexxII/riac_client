@@ -60,15 +60,11 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
           }))
           break
         default:
-        // setNoti()
+          setNoti({
+            text: "Неизвестный тип вопроса. Смотрите консоль"
+          })
+          console.log(`${qType} - этот тип вопроса указан в XML файле -> элемент <vopros> -> атрибут type_id. `)
       }
-
-      // const distribCount = uAnswers.reduce((acum, item) => {
-      //   acum += +item.distrib
-      //   return acum
-      // }, 0)
-      // console.log(distribCount);
-
       const similarQuestionId = answersResultsData.answersWithResults.id
       setQuestions(prevState => {
         const uQuestions = prevState.map(item => {

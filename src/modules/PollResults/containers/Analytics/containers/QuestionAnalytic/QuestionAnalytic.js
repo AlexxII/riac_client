@@ -16,11 +16,11 @@ const MAX_VIEW = 5
 const DISTRIBUTION_INPUT = 6
 
 const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
-  const [setNoti] = useContext(SysnotyContext)
+  const [setNoty] = useContext(SysnotyContext)
 
   const [getAnswersResults, { loading: answersResultsLoading, data: answersResultsData }] = useLazyQuery(GET_QUESTION_RESULTS, {
     onError: ({ graphQLErrors }) => {
-      setNoti(errorHandler(graphQLErrors))
+      setNoty(errorHandler(graphQLErrors))
       console.log(graphQLErrors);
     }
   });
@@ -60,7 +60,7 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
           }))
           break
         default:
-          setNoti({
+          setNoty({
             text: "Неизвестный тип вопроса. Смотрите консоль"
           })
           console.log(`${qType} - этот тип вопроса указан в XML файле -> элемент <vopros> -> атрибут type_id. `)
@@ -102,7 +102,7 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
   const setDistibution = (distrib) => {
     // если кол-во ответов не совпадает -> ручной ввод распределения
     if (distrib.count !== question.answers.length) {
-      setNoti({
+      setNoty({
         type: 'error',
         text: 'Не совпадает кол-во ответов'
       })
@@ -124,7 +124,7 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       }
       if (exit) break
     }
-    if (freeIndex === null) setNoti({
+    if (freeIndex === null) setNoty({
       type: 'error',
       text: 'Нет свободых полей распределения.'
     })

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useContext } from 'react'
 
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -10,7 +10,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 
-import SystemNoti from '../../../../components/SystemNoti'
+import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import { useHistory } from "react-router-dom";
 import { useMutation } from '@apollo/react-hooks'
@@ -19,7 +19,7 @@ import { DELETE_POLL } from './mutations'
 
 const DeletePoll = ({ id, code }) => {
   const history = useHistory();
-  const [noti, setNoti] = useState(false)
+  const [setNoti] = useContext(SysnotyContext);
   const [open, setOpen] = useState(false)
   const [incorrect, setIncorrect] = useState(true)
   const [delPoll, { poll }] = useMutation(DELETE_POLL, {
@@ -38,6 +38,10 @@ const DeletePoll = ({ id, code }) => {
     },
     onCompleted: () => {
       history.goBack()
+      setNoti({
+        type: 'success',
+        text: 'Успех. Опрос удален.'
+      })
     }
   })
 
@@ -73,12 +77,6 @@ const DeletePoll = ({ id, code }) => {
 
   return (
     <Fragment>
-      <SystemNoti
-        open={noti}
-        text={noti ? noti.text : ""}
-        type={noti ? noti.type : ""}
-        close={() => setNoti(false)}
-      />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Удаление</DialogTitle>
         <DialogContent>

@@ -10,7 +10,10 @@ import { SysnotyContext } from '../../../../../../containers/App/notycontext'
 import errorHandler from '../../../../../../lib/errorHandler'
 
 import { useLazyQuery } from '@apollo/client'
+import { useMutation } from '@apollo/react-hooks'
+
 import { GET_QUESTION_RESULTS } from './queries'
+import { SAVE_DISTRIBUTION } from './mutaions'
 
 const MAX_VIEW = 5
 const DISTRIBUTION_INPUT = 6
@@ -24,6 +27,26 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       console.log(graphQLErrors);
     }
   });
+
+  const [saveQuestionDistribution, {
+    loading: saveDistributionLoading
+  }] = useMutation(SAVE_DISTRIBUTION, {
+    onError: ({ graphQLErrors }) => {
+      setNoty(errorHandler(graphQLErrors))
+      console.log(graphQLErrors);
+    },
+    
+    // update: (cache, { data }) => {
+    //   if (data.addPoll) {
+    //     // const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+    //     // cache.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: [...polls, data.addPoll] } })
+    //     setNoty({
+    //       type: 'success',
+    //       text: 'Распределение сохранено'
+    //     })
+    //   }
+    // }
+  })
 
   useEffect(() => {
     if (answersResultsData && !answersResultsLoading) {
@@ -141,7 +164,7 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
                   ...answer.distribution,
                   [freeIndex]: {
                     data: distrib[index].distribution,
-                    poll: distrib[index].poll.code,
+                    poll: distrib[index].poll.id,
                     answer: distrib[index].answerId
                   }
                 }
@@ -203,14 +226,49 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       })
     ))
     console.log(answers);
+
+    const resultsAnswers = answers.map(answer => {
+      const distribution = answer.distribution
+      const distrib = []
+      for (let index in distribution) {
+        if (Object.hasOwnProperty.call(distribution, index) && distribution[index]) {
+          distrib.push({
+            data: distribution[index].data,
+            refPoll: distribution[index].poll,
+            refAnswer: distribution[index].answer,
+            order: index
+          })
+        }
+      }
+      return {
+        id: answer.id,
+        distribution: distrib
+      }
+    })
+    console.log(resultsAnswers);
+
+    /*
     for (let i = 0; i < answers.length; i++) {
       const distribution = answers[i].distribution
+
       for (let index in distribution) {
-        const distrib = distribution[index]
-
-
+        if (Object.hasOwnProperty.call(item, index)) {
+          distrib.push({
+            data: item[index].data,
+            refPoll: item[index].poll,
+            refAnswer: item[index].answer
+          })
+        }
       }
     }
+    */
+    // [{
+    //   pollId: id,
+    //   parent: answerId,
+    //   refAnswer: similarAnswerId,
+    //   refPoll: 
+    //   order
+    // }]
 
 
   }

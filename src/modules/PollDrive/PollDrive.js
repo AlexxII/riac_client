@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 
 import { SysnotyContext } from '../../containers/App/notycontext'
 
+import DriveSettingsDialog from './components/DriveSettingsDialog'
 import DialogWithSelect from '../../components/DialogWithSelect';
 import LoadingStatus from '../../components/LoadingStatus'
 import ErrorState from '../../components/ErrorState'
@@ -64,6 +65,7 @@ const PollDrive = ({ pollId }) => {
     }
   )
   const [currentCity, setCurrentCity] = useState(null)
+  const [user, setUser] = useState(null)                                                        // пользователь, который проводил опрос
   const [cityCode, setCityCode] = useState(null)
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id: pollId },
@@ -172,7 +174,8 @@ const PollDrive = ({ pollId }) => {
     )
   }
 
-  const saveCity = (city) => {
+  const saveCity = ({ city, user }) => {
+    console.log(city, user);
     setCurrentCity(city)
     const configCities = logic.cities ? logic.cities : []
     let cityCode = ''
@@ -187,6 +190,7 @@ const PollDrive = ({ pollId }) => {
         }
       }
     }
+    setUser(user)
     setCityCode(cityCode)
     setOpenCityDialog(false)
   }
@@ -220,8 +224,9 @@ const PollDrive = ({ pollId }) => {
     saveResult({
       variables: {
         poll: poll.id,
-        city: currentCity.id,
-        user: currentUser.id,
+        city: currentCity,
+        user: user,
+        driveinUser: currentUser.id,
         data: result
       }
     }).then(res => {
@@ -234,8 +239,9 @@ const PollDrive = ({ pollId }) => {
     saveResult({
       variables: {
         poll: poll.id,
-        city: currentCity.id,
-        user: currentUser.id,
+        city: currentCity,
+        user: user,
+        driveinUser: currentUser.id,
         pool: data.pool,
         data: result
       }
@@ -285,14 +291,23 @@ const PollDrive = ({ pollId }) => {
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Loading />
       <Container maxWidth="md">
-        <DialogWithSelect
+        <DriveSettingsDialog
+          open={openCityDialog}
+          cities={poolOfCities}
+          users={data.users}
+          currentUser={currentUser}
+          save={saveCity}
+          handleClose={closeDialog}
+        />
+
+        {/* <DialogWithSelect
           open={openCityDialog}
           options={poolOfCities}
           header="Город"
           text="Выберите город в котором проводился опрос"
           save={saveCity}
           handleClose={closeDialog}
-        />
+        /> */}
         <DriveLogic
           poll={poll}
           logic={logic}

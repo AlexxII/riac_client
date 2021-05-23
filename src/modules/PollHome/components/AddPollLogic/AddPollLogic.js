@@ -79,6 +79,7 @@ const AddPollLogic = ({ addPoll }) => {
         const questionsLen = questions.length
         for (let i = 0; i < questionsLen; i++) {
           let questionData = {
+            importId: questions[i].getAttribute('id').slice(1, -1),
             title: questions[i].getAttribute('text'),
             topic: +questions[i].getAttribute('tema_id'),
             limit: questions[i].getAttribute('limit') ? +questions[i].getAttribute('limit') : 1,
@@ -90,6 +91,7 @@ const AddPollLogic = ({ addPoll }) => {
           const answersLen = questionAnswers.length
           for (let i = 0; i < answersLen; i++) {
             const answerData = {
+              importId: questionAnswers[i].getAttribute('id').slice(1, -1),
               title: questionAnswers[i].getAttribute('otvet_text'),
               code: questionAnswers[i].getAttribute('otvet_cod').padStart(3, "0"),
               type: +questionAnswers[i].getAttribute('otvet_type'),

@@ -67,64 +67,63 @@ const DriveLogic = React.memo(props => {
   }, [count])
 
   const keyUpHandler = ({ target, keyCode }) => {
-    // if (target.nodeName === 'BODY') {
-      const nextStep = defineSelectedAnswer(keyCode)
-      switch (nextStep.do) {
-        case VALID_CODE: {
-          const decideStep = whatDoNext(+nextStep.trueCode)
-          switch (decideStep) {
-            case TRUE_ANSWER: {
-              const selectedAnswer = question.answers.filter(answer => answer.keyCode === +nextStep.trueCode)[0]
-              const mainAction = checkSetOrUnset(selectedAnswer)
-              switch (mainAction) {
-                case SET_ANSWER: {
-                  setAnswer(selectedAnswer)
-                  return
-                }
-                case UNSET_ANSWER: {
-                  unsetAnswer(selectedAnswer)
-                  return
-                }
-                case SET_RADIO_ANSWER: {
-                  setRadioAnswer(selectedAnswer)
-                  return
-                }
-                default: {
-                  return
-                }
+    // для свободных ответов пропускаем логику
+    if (target.nodeName === 'INPUT') return
+    const nextStep = defineSelectedAnswer(keyCode)
+    switch (nextStep.do) {
+      case VALID_CODE: {
+        const decideStep = whatDoNext(+nextStep.trueCode)
+        switch (decideStep) {
+          case TRUE_ANSWER: {
+            const selectedAnswer = question.answers.filter(answer => answer.keyCode === +nextStep.trueCode)[0]
+            const mainAction = checkSetOrUnset(selectedAnswer)
+            switch (mainAction) {
+              case SET_ANSWER: {
+                setAnswer(selectedAnswer)
+                return
+              }
+              case UNSET_ANSWER: {
+                unsetAnswer(selectedAnswer)
+                return
+              }
+              case SET_RADIO_ANSWER: {
+                setRadioAnswer(selectedAnswer)
+                return
+              }
+              default: {
+                return
               }
             }
-            case MOVE_FORWARD: {
-              goToNext()
-              return
-            }
-            case MOVE_BACK: {
-              goToPrevious()
-              return
-            }
-            default: {
-              beep()
-              return
-            }
+          }
+          case MOVE_FORWARD: {
+            goToNext()
+            return
+          }
+          case MOVE_BACK: {
+            goToPrevious()
+            return
+          }
+          default: {
+            beep()
+            return
           }
         }
-        case CONFIRM_QUESTION: {
-          confirmResults()
-          return
-        }
-        case RESET_RESULTS: {
-          resetAnswers()
-          return
-        }
-        case SKIP: {
-          return                                                    // нажата системная клавиша, не относящаяся к опросу
-        }
-        default: {
-          return
-        }
       }
-    // }
-    // return
+      case CONFIRM_QUESTION: {
+        confirmResults()
+        return
+      }
+      case RESET_RESULTS: {
+        resetAnswers()
+        return
+      }
+      case SKIP: {
+        return                                                    // нажата системная клавиша, не относящаяся к опросу
+      }
+      default: {
+        return
+      }
+    }
   }
 
   const confirmResults = () => {

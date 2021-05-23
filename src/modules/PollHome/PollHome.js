@@ -19,7 +19,7 @@ import { GET_ALL_ACTIVE_POLLS } from "./queries"
 import { ADD_NEW_POLL } from './mutations'
 
 const PollHome = () => {
-  const [setNoti] = useContext(SysnotyContext);
+  const [setNoty] = useContext(SysnotyContext);
 
   const {
     loading: pollsLoading,
@@ -31,12 +31,18 @@ const PollHome = () => {
     loading: addLoading
   }] = useMutation(ADD_NEW_POLL, {
     onError: ({ graphQLErrors }) => {
-      setNoti(errorHandler(graphQLErrors))
+      setNoty(errorHandler(graphQLErrors))
       console.log(graphQLErrors);
     },
     update: (cache, { data }) => {
-      const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
-      cache.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: [...polls, data.addPoll] } })
+      if (data.addPoll) {
+        const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
+        cache.writeQuery({ query: GET_ALL_ACTIVE_POLLS, data: { polls: [...polls, data.addPoll] } })
+        setNoty({
+          type: 'success',
+          text: 'Опрос успешно добавлен'
+        })
+      }
     }
   })
 

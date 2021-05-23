@@ -400,7 +400,7 @@ const OverallResults = ({ id }) => {
       'населенный пункт': 'нп',
       'поселок': 'нп',
       'ж.д. станция': 'ж/д ст',
-      'село': 'c'
+      'село': 'с'
     }
     const needCityCategory = city.replace(/город|населенный пункт|поселок|ж.д. станция|село/gi, function (matched) {
       return cityObj[matched]

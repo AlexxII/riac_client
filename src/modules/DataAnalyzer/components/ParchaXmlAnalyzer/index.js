@@ -28,6 +28,7 @@ const ParchaXmlAnalyzer = () => {
         const xml = xmlparser(xmlText)
         if (xml) {
           setParchaData(xml)
+          console.log(`Количество ответов - ${xml.length}`);
           setProcessing(false)
           return
         } else {
@@ -41,11 +42,10 @@ const ParchaXmlAnalyzer = () => {
   }
 
   const UnitInfo = ({ data }) => {
-    console.log(data);
-    if (data.lan !== '' || data.lon !== '') {
+    if (data.lan !== '' && data.lon !== '') {
       return data.answers.toString() + ',999'
     } else {
-      return data.answers.toString() + ',999' + '-'
+      return data.answers.toString() + `,999 - нет координат`
     }
   }
 

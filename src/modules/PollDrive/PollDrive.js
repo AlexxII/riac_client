@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import { SysnotyContext } from '../../containers/App/notycontext'
 
 import DriveSettingsDialog from './components/DriveSettingsDialog'
-import DialogWithSelect from '../../components/DialogWithSelect';
 import LoadingStatus from '../../components/LoadingStatus'
 import ErrorState from '../../components/ErrorState'
 import LoadingState from '../../components/LoadingState'
@@ -299,15 +298,6 @@ const PollDrive = ({ pollId }) => {
           save={saveCity}
           handleClose={closeDialog}
         />
-
-        {/* <DialogWithSelect
-          open={openCityDialog}
-          options={poolOfCities}
-          header="Город"
-          text="Выберите город в котором проводился опрос"
-          save={saveCity}
-          handleClose={closeDialog}
-        /> */}
         <DriveLogic
           poll={poll}
           logic={logic}

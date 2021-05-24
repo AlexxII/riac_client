@@ -30,5 +30,9 @@ export const GET_POLL_DATA = gql`
     cityCategories {
       id
     }
+    users {
+      id
+      username
+    }
   }
 `

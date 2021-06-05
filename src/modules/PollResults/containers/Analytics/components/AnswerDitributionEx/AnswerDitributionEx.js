@@ -24,7 +24,7 @@ const AnswerDistributionEx = ({ answer, index, handleManualInput }) => {
         min="0.1"
         className="distr-input"
         value={answer?.distribution[i] ? answer?.distribution[i]?.data : ''}
-        defaultValue={answer?.distribution[i] ? answer?.distribution[i]?.data : ''}
+        data-id={answer?.distribution[i] ? answer?.distribution[i]?.id : null}
         data-column={i}
         onChange={handleInput}
         tabIndex={(i + 1) * 1000 + index}

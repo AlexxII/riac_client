@@ -8,14 +8,16 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import IconButton from '@material-ui/core/IconButton';
 
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import errorHandler from '../../../../lib/errorHandler'
+import FilterDialog from './components/FilterDialog'
 
 import QuestionAnalytic from './containers/QuestionAnalytic'
-
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
@@ -36,6 +38,9 @@ const Analytics = ({ id }) => {
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
 
+  const [filter, setFilter] = useState(false)                                             // фильтрация по кодам опросов
+  const [filterOptions, setFilterOptions] = useState(false)
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false)
   const [resultCount, setResultCount] = useState(1)
   const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
@@ -90,17 +95,31 @@ const Analytics = ({ id }) => {
         acum[topicId].push(item)
         return acum
       }, {})
+      // получение уникальных опросов
+      const uniqPollsPool = sameQuestionsData.sameQuestions.reduce((acum, item) => {
+        if (acum.trash.indexOf(item.poll.code) === -1) {
+          acum.trash.push(item.poll.code)
+          acum.polls.push(item.poll)
+        }
+        return acum
+      }, {
+        trash: [],
+        polls: []
+      }).polls.map(item => ({ value: item.code, title: item.title }))
+      console.log(uniqPollsPool);
+      setFilterOptions(uniqPollsPool)
+
       const uQuestions = pollData.poll.questions.map(question => {
         const answers = question.answers.map(answer => (
           {
             ...answer,
             distribution: {
-              '0': null,
-              '1': null,
-              '2': null,
-              '3': null,
-              '4': null,
-              '5': null
+              '0': answer?.distribution[0] ? answer?.distribution[0] : null,
+              '1': answer?.distribution[1] ? answer?.distribution[1] : null,
+              '2': answer?.distribution[2] ? answer?.distribution[2] : null,
+              '3': answer?.distribution[3] ? answer?.distribution[3] : null,
+              '4': answer?.distribution[4] ? answer?.distribution[4] : null,
+              '5': answer?.distribution[5] ? answer?.distribution[5] : null,
             }
           }
         ))
@@ -121,7 +140,6 @@ const Analytics = ({ id }) => {
           }
         }
       })
-      // console.log(uQuestions)
       setQuestions(uQuestions)
       // отобразим первый вопрос
       const currentQuestion = uQuestions[resultCount - 1]
@@ -200,7 +218,7 @@ const Analytics = ({ id }) => {
   }
 
   const Loading = () => {
-    if (processing) return <LoadingStatus />
+    if (processing || !filterOptions) return <LoadingStatus />
     return null
   }
 
@@ -226,11 +244,19 @@ const Analytics = ({ id }) => {
       <Grid>
         {questions &&
           <Fragment>
+            <FilterDialog
+              open={true}
+              options={filterOptions}
+              onClose={() => setFilterDialogOpen(false)} />
             <div className="pagination-wrap">
+              <IconButton aria-label="filter">
+                <FilterListIcon fontSize="small" onClick={() => setFilterDialogOpen(true)} />
+              </IconButton>
               <span className="pagination-wrap-title">
                 <strong>Вопросы:</strong>
               </span>
               <Pagination
+                className="pagination-bar"
                 count={pollData.poll.questions.length}
                 page={resultCount}
                 variant="outlined"
@@ -250,6 +276,7 @@ const Analytics = ({ id }) => {
             </div>
             <div className="analitics-main-content">
               <QuestionAnalytic
+                poll={id}
                 setAllSimilar={setAllSimilar}
                 allSimilar={allSimilar}
                 question={questions[resultCount - 1]}

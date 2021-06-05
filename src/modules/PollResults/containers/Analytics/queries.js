@@ -39,6 +39,11 @@ export const GET_POLL_DATA = gql`
           title
           order
           code
+          distribution {
+            id,
+            data
+            order
+          }
         }
       }
       logic {

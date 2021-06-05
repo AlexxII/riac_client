@@ -18,7 +18,7 @@ import { SAVE_DISTRIBUTION } from './mutaions'
 const MAX_VIEW = 5
 const DISTRIBUTION_INPUT = 6
 
-const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
+const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
   const [setNoty] = useContext(SysnotyContext)
 
   const [getAnswersResults, { loading: answersResultsLoading, data: answersResultsData }] = useLazyQuery(GET_QUESTION_RESULTS, {
@@ -35,7 +35,6 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       setNoty(errorHandler(graphQLErrors))
       console.log(graphQLErrors);
     },
-    
     // update: (cache, { data }) => {
     //   if (data.addPoll) {
     //     // const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
@@ -165,7 +164,8 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
                   [freeIndex]: {
                     data: distrib[index].distribution,
                     poll: distrib[index].poll.id,
-                    answer: distrib[index].answerId
+                    answer: distrib[index].answerId,
+                    type: 'new'
                   }
                 }
               }
@@ -225,18 +225,18 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
         return item
       })
     ))
-    console.log(answers);
-
     const resultsAnswers = answers.map(answer => {
       const distribution = answer.distribution
       const distrib = []
       for (let index in distribution) {
         if (Object.hasOwnProperty.call(distribution, index) && distribution[index]) {
           distrib.push({
-            data: distribution[index].data,
+            id: distribution[index].id,
+            data: distribution[index].data + '',
             refPoll: distribution[index].poll,
             refAnswer: distribution[index].answer,
-            order: index
+            order: +index,
+            type: distribution[index].type
           })
         }
       }
@@ -245,7 +245,14 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
         distribution: distrib
       }
     })
-    console.log(resultsAnswers);
+
+    saveQuestionDistribution({
+      variables: {
+        poll,
+        answers: resultsAnswers
+      }
+    })
+    // console.log(resultsAnswers);
 
     /*
     for (let i = 0; i < answers.length; i++) {
@@ -269,8 +276,6 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
     //   refPoll: 
     //   order
     // }]
-
-
   }
 
   const handleSingleDel = (index) => {

@@ -13,7 +13,6 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AanswerDistributionEx from '../../components/AnswerDitributionEx'
-import { Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -63,7 +62,6 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
         {total[i]}
       </div>
     )
-
   }
 
   return (
@@ -107,7 +105,8 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
         <div style={{ display: 'block' }}>
           {question.answers &&
             question.answers.map((answer, index) => (
-              <AanswerDistributionEx key={answer.id}
+              <AanswerDistributionEx
+                key={answer.id}
                 answer={answer}
                 index={index}
                 handleManualInput={handleManualInput}
@@ -120,7 +119,7 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
             <div className="column-two">
               {
                 [0, 1, 2, 3, 4, 5].map((_, index) => (
-                  <Fragment>
+                  <Fragment key={index}>
                     <div className="distr-reset">
                       <div className="count-wrap">
                         <div className={total[index] > 100.0001 ? "count-warning" : null} >

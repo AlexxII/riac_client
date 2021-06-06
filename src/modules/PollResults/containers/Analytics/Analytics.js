@@ -10,12 +10,13 @@ import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import IconButton from '@material-ui/core/IconButton';
-
+import Badge from '@material-ui/core/Badge';
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import errorHandler from '../../../../lib/errorHandler'
 import FilterDialog from './components/FilterDialog'
+import Tooltip from '@material-ui/core/Tooltip';
 
 import QuestionAnalytic from './containers/QuestionAnalytic'
 import { SysnotyContext } from '../../../../containers/App/notycontext'
@@ -38,9 +39,10 @@ const Analytics = ({ id }) => {
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
 
-  const [filter, setFilter] = useState(false)                                             // фильтрация по кодам опросов
+  const [filter, setFilter] = useState([])                                             // фильтрация по кодам опросов
   const [filterOptions, setFilterOptions] = useState(false)
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
+  const [initState, setInitState] = useState(false)
   const [resultCount, setResultCount] = useState(1)
   const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
@@ -106,7 +108,6 @@ const Analytics = ({ id }) => {
         trash: [],
         polls: []
       }).polls.map(item => ({ value: item.code, title: item.title }))
-      console.log(uniqPollsPool);
       setFilterOptions(uniqPollsPool)
 
       const uQuestions = pollData.poll.questions.map(question => {
@@ -141,6 +142,7 @@ const Analytics = ({ id }) => {
         }
       })
       setQuestions(uQuestions)
+      setInitState(uQuestions)
       // отобразим первый вопрос
       const currentQuestion = uQuestions[resultCount - 1]
       checkNotEmpty(currentQuestion)
@@ -228,6 +230,24 @@ const Analytics = ({ id }) => {
     setAllSimilar(false)
   }
 
+  const saveFilterChanges = (filters) => {
+    setProcessing(true)
+    setFilter(filters)
+    setFilterDialogOpen(false)
+    if (filters.length) {
+      setQuestions(
+        initState.map(question => ({
+          ...question,
+          similar: question.similar.filter(item => filters.includes(item.poll.code))
+        }))
+      )
+    } else {
+      // восстанавливаем все вопросы снимая тем самым фильтрацию
+      setQuestions(initState)
+    }
+    setProcessing(false)
+  }
+
   return (
     <Fragment>
       <Loading />
@@ -245,13 +265,27 @@ const Analytics = ({ id }) => {
         {questions &&
           <Fragment>
             <FilterDialog
-              open={true}
+              open={filterDialogOpen}
               options={filterOptions}
-              onClose={() => setFilterDialogOpen(false)} />
+              onClose={() => setFilterDialogOpen(false)}
+              mainFilter={filter}
+              saveChanges={saveFilterChanges}
+            />
             <div className="pagination-wrap">
-              <IconButton aria-label="filter">
-                <FilterListIcon fontSize="small" onClick={() => setFilterDialogOpen(true)} />
-              </IconButton>
+              <Badge
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                color="primary"
+                badgeContent={filter.length}
+              >
+                <Tooltip title="Фильтрация">
+                  <IconButton aria-label="filter" onClick={() => setFilterDialogOpen(true)} >
+                    <FilterListIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Badge>
               <span className="pagination-wrap-title">
                 <strong>Вопросы:</strong>
               </span>

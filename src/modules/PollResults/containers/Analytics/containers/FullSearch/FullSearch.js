@@ -95,10 +95,10 @@ const FullSearch = (props) => {
       disableBackdropClick
       disableEscapeKeyDown
       maxWidth="md"
-      minWidth="md"
       onEntering={handleEntering}
       aria-labelledby="confirmation-dialog-title"
       open={open}
+      fullWidth
       {...other}
     >
       <DialogTitle id="confirmation-dialog-title">

@@ -50,6 +50,15 @@ export const GET_POLL_DATA = gql`
         path
       }
     }
+    questions {
+      id
+      title
+      poll {
+        id
+        title
+        code
+      }
+    }
   }
 `
 

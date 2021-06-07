@@ -17,7 +17,9 @@ import LoadingStatus from '../../../../components/LoadingStatus'
 import errorHandler from '../../../../lib/errorHandler'
 import FilterDialog from './components/FilterDialog'
 import Tooltip from '@material-ui/core/Tooltip';
+import SearchIcon from '@material-ui/icons/Search';
 
+import FullSearch from './containers/FullSearch'
 import QuestionAnalytic from './containers/QuestionAnalytic'
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
@@ -42,6 +44,9 @@ const Analytics = ({ id }) => {
   const [filter, setFilter] = useState([])                                             // фильтрация по кодам опросов
   const [filterOptions, setFilterOptions] = useState(false)
   const [filterDialogOpen, setFilterDialogOpen] = useState(false)
+
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false)
+
   const [initState, setInitState] = useState(false)
   const [resultCount, setResultCount] = useState(1)
   const [emptyMessage, setEmptyMessage] = useState(null)
@@ -272,6 +277,14 @@ const Analytics = ({ id }) => {
               mainFilter={filter}
               saveChanges={saveFilterChanges}
             />
+            <FullSearch
+              open={searchDialogOpen}
+              options={filterOptions}
+              onClose={() => setSearchDialogOpen(false)}
+              mainFilter={pollData.questions}
+              saveChanges={() => { }}
+              question={questions[resultCount - 1]}
+            />
             <div className="pagination-wrap">
               <Badge
                 anchorOrigin={{
@@ -308,6 +321,21 @@ const Analytics = ({ id }) => {
                   />
                 )}
               />
+              <Badge
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                color="primary"
+                badgeContent={filter.length}
+              >
+                <Tooltip title="Сплошной поиск">
+                  <IconButton aria-label="filter" onClick={() => setSearchDialogOpen(true)} >
+                    <SearchIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Badge>
+
             </div>
             <div className="analitics-main-content">
               <QuestionAnalytic

@@ -1,4 +1,7 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
+
+import Fuse from 'fuse.js'
+
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -11,10 +14,19 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Link from '@material-ui/core/Link';
+import TextField from '@material-ui/core/TextField';
+import DialogContentText from '@material-ui/core/DialogContentText';
 
-const FilterDialog = (props) => {
-  const { onClose, options, mainFilter, saveChanges, open, ...other } = props;
+
+const FullSearch = (props) => {
+  const { onClose, options, mainFilter, saveChanges, question, open, ...other } = props;
   const [filter, setFilter] = useState([])
+
+  const fuseOptions = {
+    includeScore: true,
+    keys: ['title']
+  }
+  const fuse = new Fuse(mainFilter, fuseOptions)
 
   const handleCancel = () => {
     onClose();
@@ -48,17 +60,23 @@ const FilterDialog = (props) => {
   }
 
   const handleEntering = () => {
-    setFilter(mainFilter)
+    console.log(mainFilter);
   };
 
-  const OptionTitle = ({ title, code }) => {
+  const handleInputSearch = (e) => {
+    if (e.currentTarget.value.length > 4) {
+      setFilter(fuse.search(e.currentTarget.value))
+    }
+  }
+
+  const OptionTitle = ({ title, poll }) => {
     return (
       <Fragment>
         <Typography variant="subtitle1" gutterBottom>
-          {code}
+          {title}
         </Typography>
         <Typography variant="caption" display="block" gutterBottom>
-          {title}
+          {poll.code} - {poll.title}
         </Typography>
       </Fragment>
     )
@@ -68,7 +86,8 @@ const FilterDialog = (props) => {
     <Dialog
       disableBackdropClick
       disableEscapeKeyDown
-      maxWidth="sm"
+      maxWidth="md"
+      minWidth="md"
       onEntering={handleEntering}
       aria-labelledby="confirmation-dialog-title"
       open={open}
@@ -76,26 +95,47 @@ const FilterDialog = (props) => {
     >
       <DialogTitle id="confirmation-dialog-title">
         <Typography variant="h5" gutterBottom>
-          Фильтрация по опросам
+          Поиск по наименованию
         </Typography>
+      </DialogTitle>
+      <DialogContentText style={{ padding: '0 23px 0 23px' }}>
+        <TextField
+          style={{ marginTop: '-10px', paddingBottom: '10px' }}
+          autoFocus
+          fullWidth
+          margin="dense"
+          id="name"
+          label="Найти"
+          type="email"
+          onChange={handleInputSearch}
+        />
         <Typography variant="caption" display="block" gutterBottom>
           <Link href="#" onClick={selectAll} underline="none">
             выбрать все
           </Link>
         </Typography>
-      </DialogTitle>
+
+      </DialogContentText>
       <DialogContent dividers>
         <FormControl required component="fieldset" >
           <FormGroup>
-            {options.map((option) => (
-              <Fragment  key={option.value}>
-                <FormControlLabel
-                  control={<Checkbox checked={filter.includes(option.value)} onChange={() => handleChange(option.value)} />}
-                  label={<OptionTitle title={option.title} code={option.value} />}
-                />
-                <Divider />
-              </Fragment>
-            ))}
+            {filter.length ?
+              filter.map((option, index) => {
+                if (index < 10) {
+                  return (
+                    <Fragment key={option.item.id}>
+                      <FormControlLabel
+                        control={<Checkbox checked={filter.includes(option.item.id)} onChange={() => handleChange(option.item.id)} />}
+                        label={<OptionTitle title={option.item.title} poll={option.item.poll} />}
+                      />
+                      <Divider />
+                    </Fragment>
+                  )
+                }
+              })
+              :
+              <p>Начните поиск</p>
+            }
           </FormGroup>
         </FormControl>
       </DialogContent>
@@ -114,4 +154,4 @@ const FilterDialog = (props) => {
   );
 }
 
-export default FilterDialog
+export default FullSearch

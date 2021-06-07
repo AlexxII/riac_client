@@ -107,7 +107,8 @@ const Analytics = ({ id }) => {
       }, {
         trash: [],
         polls: []
-      }).polls.map(item => ({ value: item.code, title: item.title }))
+      }).polls.map(item => ({ value: item.code, title: item.title, date: item.dateOrder }))
+        .sort((a, b) => (a.date > b.date ? 1 : -1))
       setFilterOptions(uniqPollsPool)
 
       const uQuestions = pollData.poll.questions.map(question => {
@@ -238,7 +239,7 @@ const Analytics = ({ id }) => {
       setQuestions(
         initState.map(question => ({
           ...question,
-          similar: question.similar.filter(item => filters.includes(item.poll.code))
+          similar: question.similar ? question.similar.filter(item => filters.includes(item.poll.code)) : null
         }))
       )
     } else {

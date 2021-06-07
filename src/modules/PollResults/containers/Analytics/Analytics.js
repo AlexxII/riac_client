@@ -321,21 +321,11 @@ const Analytics = ({ id }) => {
                   />
                 )}
               />
-              <Badge
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
-                color="primary"
-                badgeContent={filter.length}
-              >
-                <Tooltip title="Сплошной поиск">
-                  <IconButton aria-label="filter" onClick={() => setSearchDialogOpen(true)} >
-                    <SearchIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Badge>
-
+              <Tooltip title="Сплошной поиск">
+                <IconButton aria-label="filter" onClick={() => setSearchDialogOpen(true)} >
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </div>
             <div className="analitics-main-content">
               <QuestionAnalytic

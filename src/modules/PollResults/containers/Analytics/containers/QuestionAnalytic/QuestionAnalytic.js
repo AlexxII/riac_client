@@ -15,7 +15,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { GET_QUESTION_RESULTS } from './queries'
 import { SAVE_DISTRIBUTION } from './mutaions'
 
-const MAX_VIEW = 5
+const MAX_VIEW = 6
 const DISTRIBUTION_INPUT = 6
 
 const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
@@ -112,7 +112,6 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
     }
   }, [answersResultsData])
 
-
   const loadAnswers = (id) => {
     getAnswersResults({
       variables: {
@@ -167,6 +166,56 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
                     answer: distrib[index].answerId,
                     type: 'new'
                   }
+                }
+              }
+            ))
+          }
+        }
+        return item
+      })
+      return uQuestions
+    })
+  }
+
+  const handleReset = () => {
+    setQuestions(prevState => {
+      const uQuestions = prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            answers: item.answers.map((answer, index) => (
+              {
+                ...answer,
+                distribution: {
+                  '0': null,
+                  '1': null,
+                  '2': null,
+                  '3': null,
+                  '4': null,
+                  '5': null
+                }
+              }
+            ))
+          }
+        }
+        return item
+      })
+      return uQuestions
+    })
+  }
+
+  const handleSingleDel = (index) => {
+    setQuestions(prevState => {
+      const uQuestions = prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            answers: item.answers.map((answer, i) => (
+              {
+                ...answer,
+                distribution: {
+                  ...answer.distribution,
+                  [index]: null
                 }
               }
             ))
@@ -278,55 +327,6 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
     // }]
   }
 
-  const handleSingleDel = (index) => {
-    setQuestions(prevState => {
-      const uQuestions = prevState.map(item => {
-        if (item.id === question.id) {
-          return {
-            ...item,
-            answers: item.answers.map((answer, i) => (
-              {
-                ...answer,
-                distribution: {
-                  ...answer.distribution,
-                  [index]: null
-                }
-              }
-            ))
-          }
-        }
-        return item
-      })
-      return uQuestions
-    })
-  }
-
-  const handleReset = () => {
-    setQuestions(prevState => {
-      const uQuestions = prevState.map(item => {
-        if (item.id === question.id) {
-          return {
-            ...item,
-            answers: item.answers.map((answer, index) => (
-              {
-                ...answer,
-                distribution: {
-                  '0': null,
-                  '1': null,
-                  '2': null,
-                  '3': null,
-                  '4': null,
-                  '5': null
-                }
-              }
-            ))
-          }
-        }
-        return item
-      })
-      return uQuestions
-    })
-  }
 
   return (
     <Fragment>

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useRef } from 'react';
 
 import Fuse from 'fuse.js'
 
@@ -16,11 +16,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import Grid from '@material-ui/core/Grid';
 
 
 const FullSearch = (props) => {
   const { onClose, options, mainFilter, saveChanges, question, open, ...other } = props;
   const [filter, setFilter] = useState([])
+  const inputRef = useRef(null)
 
   const fuseOptions = {
     includeScore: true,
@@ -69,6 +71,12 @@ const FullSearch = (props) => {
     }
   }
 
+  const loadQuestionTitle = () => {
+    console.log(question.title);
+    inputRef.current.value = question.title
+    setFilter(fuse.search(question.title))
+  }
+
   const OptionTitle = ({ title, poll }) => {
     return (
       <Fragment>
@@ -99,16 +107,24 @@ const FullSearch = (props) => {
         </Typography>
       </DialogTitle>
       <DialogContentText style={{ padding: '0 23px 0 23px' }}>
-        <TextField
-          style={{ marginTop: '-10px', paddingBottom: '10px' }}
-          autoFocus
-          fullWidth
-          margin="dense"
-          id="name"
-          label="Найти"
-          type="email"
-          onChange={handleInputSearch}
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={9}>
+            <TextField
+              style={{ marginTop: '-10px', paddingBottom: '10px' }}
+              autoFocus
+              fullWidth
+              margin="dense"
+              id="name"
+              label="Найти"
+              type="email"
+              inputRef={inputRef}
+              onChange={handleInputSearch}
+            />
+          </Grid>
+          <Grid item xs={1}>
+            <span onClick={loadQuestionTitle}>Сунуть</span>
+          </Grid>
+        </Grid>
         <Typography variant="caption" display="block" gutterBottom>
           <Link href="#" onClick={selectAll} underline="none">
             выбрать все

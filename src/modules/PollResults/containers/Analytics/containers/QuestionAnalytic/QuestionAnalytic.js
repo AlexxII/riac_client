@@ -244,7 +244,8 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
                       {
                         data: value,
                         poll: null,
-                        answer: null
+                        answer: null,
+                        type: 'new'
                       }
                       :
                       null
@@ -276,6 +277,7 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
     ))
     const resultsAnswers = answers.map(answer => {
       const distribution = answer.distribution
+      console.log(distribution);
       const distrib = []
       for (let index in distribution) {
         if (Object.hasOwnProperty.call(distribution, index) && distribution[index]) {
@@ -294,39 +296,15 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
         distribution: distrib
       }
     })
-
+    console.log(resultsAnswers);
+    return
     saveQuestionDistribution({
       variables: {
         poll,
         answers: resultsAnswers
       }
     })
-    // console.log(resultsAnswers);
-
-    /*
-    for (let i = 0; i < answers.length; i++) {
-      const distribution = answers[i].distribution
-
-      for (let index in distribution) {
-        if (Object.hasOwnProperty.call(item, index)) {
-          distrib.push({
-            data: item[index].data,
-            refPoll: item[index].poll,
-            refAnswer: item[index].answer
-          })
-        }
-      }
-    }
-    */
-    // [{
-    //   pollId: id,
-    //   parent: answerId,
-    //   refAnswer: similarAnswerId,
-    //   refPoll: 
-    //   order
-    // }]
   }
-
 
   return (
     <Fragment>

@@ -121,12 +121,12 @@ const Analytics = ({ id }) => {
           {
             ...answer,
             distribution: {
-              '0': answer?.distribution[0] ? answer?.distribution[0] : null,
-              '1': answer?.distribution[1] ? answer?.distribution[1] : null,
-              '2': answer?.distribution[2] ? answer?.distribution[2] : null,
-              '3': answer?.distribution[3] ? answer?.distribution[3] : null,
-              '4': answer?.distribution[4] ? answer?.distribution[4] : null,
-              '5': answer?.distribution[5] ? answer?.distribution[5] : null,
+              '1': answer?.distribution[1] ?? null,
+              '0': answer?.distribution[0] ?? null,
+              '2': answer?.distribution[2] ?? null,
+              '3': answer?.distribution[3] ?? null,
+              '4': answer?.distribution[4] ?? null,
+              '5': answer?.distribution[5] ?? null,
             }
           }
         ))

@@ -277,6 +277,7 @@ const Analytics = ({ id }) => {
               mainFilter={filter}
               saveChanges={saveFilterChanges}
             />
+            {/*
             <FullSearch
               open={searchDialogOpen}
               options={filterOptions}
@@ -285,6 +286,7 @@ const Analytics = ({ id }) => {
               saveChanges={() => { }}
               question={questions[resultCount - 1]}
             />
+            */}
             <div className="pagination-wrap">
               <Badge
                 anchorOrigin={{
@@ -321,11 +323,13 @@ const Analytics = ({ id }) => {
                   />
                 )}
               />
+              {/*
               <Tooltip title="Сплошной поиск">
                 <IconButton aria-label="filter" onClick={() => setSearchDialogOpen(true)} >
                   <SearchIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
+              */}
             </div>
             <div className="analitics-main-content">
               <QuestionAnalytic

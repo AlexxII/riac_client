@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useContext } from 'react'
+import React, { Fragment, useEffect, useContext, useState } from 'react'
 
 import Button from '@material-ui/core/Button';
 
@@ -119,6 +119,8 @@ const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMess
       }
     })
   }
+
+  //--------------------------------------------------------------------------------
 
   const setDistibution = (distrib) => {
     // если кол-во ответов не совпадает -> ручной ввод распределения

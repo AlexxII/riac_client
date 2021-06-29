@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import Container from '@material-ui/core/Container'
 import DriveLogic from "./components/DriveLogic";
 import Button from '@material-ui/core/Button';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 import { SysnotyContext } from '../../containers/App/notycontext'
 
@@ -31,7 +32,7 @@ const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const PollDrive = ({ pollId }) => {
   const [setNoti] = useContext(SysnotyContext);
-
+  const [resetAll, setResetAll] = useState(false)
   const client = useApolloClient();
   const { currentUser } = client.readQuery({
     query: gql`
@@ -174,7 +175,6 @@ const PollDrive = ({ pollId }) => {
   }
 
   const saveCity = ({ city, user }) => {
-    console.log(city, user);
     setCurrentCity(city)
     const configCities = logic.cities ? logic.cities : []
     let cityCode = ''
@@ -273,6 +273,31 @@ const PollDrive = ({ pollId }) => {
     setFinishDialog(false)
   }
 
+  const handleResetConfirm = () => {
+    // сброс всех результатов набиваемой анкеты
+    setResetAll(false)
+    let newResults = {}
+    for (let key in results) {
+      if (key !== 'pool') {
+        newResults = {
+          ...newResults,
+          [key]: {
+            ...results[key],
+            data: []
+          }
+        }
+      } else {
+        newResults = {
+          ...newResults,
+          pool: []
+        }
+      }
+    }
+    setResults(newResults)
+    setCount(0)
+    setFinish(false)
+  }
+
   const FinishNode = () => {
     return <Button onClick={() => setFinishDialog(true)} variant="contained" size="small" className="control-button">Финиш</Button>
   }
@@ -284,8 +309,23 @@ const PollDrive = ({ pollId }) => {
         message={() => {
           return userBack
             ? true
-            : "Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!"
+            : "Вы действительно хотите покинуть страницу ввода данных. Текущие данные будут потеряны!"
         }}
+      />
+      <ConfirmDialog
+        open={resetAll}
+        confirm={handleResetConfirm}
+        close={() => { setResetAll(false) }}
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Сбросить"
+        }}
+        data={
+          {
+            title: 'Сбросить результат?',
+            content: `Внимание! Введенные данные будут сброшены.`
+          }
+        }
       />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Loading />
@@ -306,6 +346,7 @@ const PollDrive = ({ pollId }) => {
           results={results}
           setResults={setResults}
           finish={finish}
+          resetDriveResults={() => setResetAll(true)}
           setFinish={setFinish}
           setFinishDialog={setFinishDialog}
           count={count}

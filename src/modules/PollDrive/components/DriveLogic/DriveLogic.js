@@ -34,7 +34,9 @@ const SET_RADIO_ANSWER = 3
 
 const DriveLogic = React.memo(props => {
   const {
-    poll, logic, cityCode, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode, update, resetDriveResults
+    poll, logic, cityCode, userSettings, results, setResults, setFinishDialog,
+    finish, setFinish, setCount, count, finishNode, update, resetDriveResults,
+    currentCity, user
   } = props
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
@@ -43,8 +45,6 @@ const DriveLogic = React.memo(props => {
   const [visibleCount, setVisibleCount] = useState(0)
   const [inlineMessage, setInlineMessage] = useState('')
   const [oldResults] = useState(results)
-
-  console.log(props);
 
   useEffect(() => {
     window.addEventListener(KEY_TYPE, keyUpHandler)
@@ -670,7 +670,7 @@ const DriveLogic = React.memo(props => {
           </Grid>
         </Hidden>
         <Grid item container xs={6} md={3} justify="flex-end">
-          <Tooltip title={"ddddddd"}>
+          <Tooltip title={<span>Место проведения: {currentCity?.title}<br/>Интервьюер: {user?.username}</span>}>
             <InfoOutlinedIcon className="informer" />
           </Tooltip>
           <p>Всего: <span><strong>{questionsLimit}</strong></span></p>

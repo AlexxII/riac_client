@@ -48,8 +48,8 @@ const PollDrive = ({ pollId }) => {
 
   const [userSettings] = useState({
     stepDelay: 0,
-    autoStep: true,                    // автоматический переход к другому вопросу
-    cityAgain: false                   // повтор вопроса с выбором города!!!!
+    autoStep: true,                                                 // автоматический переход к другому вопросу
+    cityAgain: false                                                // повтор вопроса с выбором города!!!!
   })
   const [count, setCount] = useState(0)
   const [userBack, setUserBack] = useState(false)
@@ -223,8 +223,8 @@ const PollDrive = ({ pollId }) => {
     saveResult({
       variables: {
         poll: poll.id,
-        city: currentCity,
-        user: user,
+        city: currentCity.id,
+        user: user.id,
         driveinUser: currentUser.id,
         data: result
       }
@@ -238,8 +238,8 @@ const PollDrive = ({ pollId }) => {
     saveResult({
       variables: {
         poll: poll.id,
-        city: currentCity,
-        user: user,
+        city: currentCity.id,
+        user: user.id,
         driveinUser: currentUser.id,
         pool: data.pool,
         data: result
@@ -279,11 +279,13 @@ const PollDrive = ({ pollId }) => {
     let newResults = {}
     for (let key in results) {
       if (key !== 'pool') {
-        newResults = {
-          ...newResults,
-          [key]: {
-            ...results[key],
-            data: []
+        if (results[key].count === 0) {
+          newResults = {
+            ...newResults,
+            [key]: {
+              ...results[key],
+              data: []
+            }
           }
         }
       } else {
@@ -342,6 +344,8 @@ const PollDrive = ({ pollId }) => {
           poll={poll}
           logic={logic}
           cityCode={cityCode}
+          currentCity={currentCity}
+          user={user}
           userSettings={userSettings}
           results={results}
           setResults={setResults}

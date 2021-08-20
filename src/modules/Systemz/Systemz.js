@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react'
 import Button from '@material-ui/core/Button';
+import { parseSmiFile } from 'modules/PollResults/lib/utils';
 
 const Systemz = () => {
   const handleRawInput = (e) => {
@@ -10,7 +11,8 @@ const Systemz = () => {
     if (file) {
       reader.onloadend = () => {
         const fileData = reader.result
-        console.log(fileData)
+        const parsedData = parseSmiFile(fileData)
+        console.log(parsedData)
       }
     }
     reader.readAsText(file, 'cp1251');

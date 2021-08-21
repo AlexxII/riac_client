@@ -38,8 +38,8 @@ const Systemz = () => {
         >
           Выбрать
         </Button>
-        {smiPool.map(smi => <p>{smi}</p>)}
       </label>
+      {smiPool.map(smi => <p>{smi}</p>)}
     </Fragment>
   )
 }

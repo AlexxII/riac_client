@@ -1,8 +1,9 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
 import Button from '@material-ui/core/Button';
 import { parseSmiFile } from 'modules/PollResults/lib/utils';
 
 const Systemz = () => {
+  const [smiPool, setSmiPool] = useState([])
   const handleRawInput = (e) => {
     e.preventDefault()
     if (!e.target.files[0]) return
@@ -12,7 +13,7 @@ const Systemz = () => {
       reader.onloadend = () => {
         const fileData = reader.result
         const parsedData = parseSmiFile(fileData)
-        console.log(parsedData)
+        setSmiPool(parsedData)
       }
     }
     reader.readAsText(file, 'cp1251');
@@ -37,6 +38,7 @@ const Systemz = () => {
         >
           Выбрать
         </Button>
+        {smiPool.map(smi => <p>{smi}</p>)}
       </label>
     </Fragment>
   )

@@ -1,6 +1,8 @@
 import React, { Fragment, useState } from 'react'
 import Button from '@material-ui/core/Button';
 import { parseSmiFile } from 'modules/PollResults/lib/utils';
+import { footer, header } from './utilz/temaplare_1';
+const iconvlite = require('iconv-lite')
 
 const Systemz = () => {
   const [smiPool, setSmiPool] = useState([])
@@ -20,6 +22,37 @@ const Systemz = () => {
     e.target.value = ""
   }
 
+  // преобразование кодировки
+  const utfToCP1251 = (data) => {
+    const buf = Buffer.from(data);
+    // const buff = iconvlite.decode(buf, 'utf8');
+    const result = iconvlite.encode(buf, 'cp1251')
+    return result
+  }
+
+
+  const downloadIt = () => {
+    const fileName = 'export.htm'
+    let data = `${header}`
+
+    console.log(smiPool)
+    smiPool.map((item, index) => {
+
+      data += item.mainText
+      data += `<br>`
+    })
+    data += `${footer}`
+
+    // преобразование кодировки
+    const cp1251Text = utfToCP1251(data)
+
+    const element = document.createElement('a')
+    const file = new Blob([cp1251Text], { type: 'text/html' });
+    element.href = URL.createObjectURL(file);
+    element.download = fileName;
+    document.body.appendChild(element);
+    element.click();
+  }
 
   return (
     <Fragment>
@@ -39,7 +72,17 @@ const Systemz = () => {
           Выбрать
         </Button>
       </label>
-      {smiPool.map(smi => <p>{smi}</p>)}
+      <Button
+        variant="contained"
+        color="primary"
+        component="span"
+        size="small"
+        onClick={downloadIt}
+      >
+        Сохранить
+      </Button>
+
+      {/* {smiPool.map(smi => <p>{smi.maintext}</p>)} */}
     </Fragment>
   )
 }

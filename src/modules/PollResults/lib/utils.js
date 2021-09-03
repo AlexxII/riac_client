@@ -201,8 +201,7 @@ const editDistance = (s1, s2) => {
 export const parseSmiFile = (fileData) => {
   const buf = Buffer.from(fileData);
   const utf8Text = iconvlite.decode(buf, 'utf8')
-  const allSmiBlock = /==([\s\S]+)===/gm // блок всех новостей
-  const smiCode = /(01\/)([\s\S]+?)\n/
+  const smiCode = /(01\/)([\s\S]+?)\n/                        // (01\/)(.+)\r?\n? c использванием жадного квантификатора
   const publicDateCode = /(02\/)([\s\S]+?)\n/
   const cityCode = /(03\/)([\s\S]+?)\n/
   const titleCode = /(07\/)([\s\S]+?)\n/
@@ -216,7 +215,7 @@ export const parseSmiFile = (fileData) => {
   // console.log(smiPool);
   const smiPoolLength = smiPool.length
   const outputArray = []
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < smiPoolLength; i++) {
     const smi = smiPool[i]
     if (smi) {
       const smiCodeText = smi.match(smiCode) ? smi.match(smiCode)[2] : null
@@ -226,11 +225,10 @@ export const parseSmiFile = (fileData) => {
       const eventText = smi.match(eventCode) ? smi.match(eventCode)[2] : null
       const inDate = smi.match(inDateCode) ? smi.match(inDateCode)[2] : null
       const mainText = smi.match(textCode) ? smi.match(textCode)[2] : null
-      
+
       let textDataP = ''
       if (mainText) {
         const textP = mainText.split('\r\n')
-        console.log(textP)
         textP.map((item, index) => {
           textDataP += `<p>${item}</p>`
         })
@@ -249,4 +247,16 @@ export const parseSmiFile = (fileData) => {
     }
   }
   return outputArray
+}
+
+export const parseClist = (fileData) => {
+  const buf = Buffer.from(fileData);
+  const utf8Text = iconvlite.decode(buf, 'utf8')
+  const rows = utf8Text.split('\r\n')
+  const result = rows.reduce((acum, item) => {
+    const itemSplit = item.split('~')
+    acum[itemSplit[0]] = itemSplit[1]
+    return acum
+  }, {})
+  return result
 }

@@ -72,8 +72,9 @@ const DriveLogic = React.memo(props => {
   }, [count])
 
   const keyUpHandler = ({ target, keyCode }) => {
+    console.log(target, keyCode)
     // для свободных ответов пропускаем логику
-    if (target.nodeName === 'INPUT' && target.type !== 'checkbox') return
+    if (target.nodeName === 'INPUT' && (target.type !== 'checkbox' && target.type !== 'radio')) return
     const nextStep = defineSelectedAnswer(keyCode)
     switch (nextStep.do) {
       case VALID_CODE: {
@@ -670,7 +671,7 @@ const DriveLogic = React.memo(props => {
           </Grid>
         </Hidden>
         <Grid item container xs={6} md={3} justify="flex-end">
-          <Tooltip title={<span>Место проведения: {currentCity?.title}<br/>Интервьюер: {user?.username}</span>}>
+          <Tooltip title={<span>Место проведения: {currentCity?.title}<br />Интервьюер: {user?.username}</span>}>
             <InfoOutlinedIcon className="informer" />
           </Tooltip>
           <p>Всего: <span><strong>{questionsLimit}</strong></span></p>

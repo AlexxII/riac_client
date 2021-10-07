@@ -72,7 +72,6 @@ const DriveLogic = React.memo(props => {
   }, [count])
 
   const keyUpHandler = ({ target, keyCode }) => {
-    console.log(target, keyCode)
     // для свободных ответов пропускаем логику
     if (target.nodeName === 'INPUT' && (target.type !== 'checkbox' && target.type !== 'radio')) return
     const nextStep = defineSelectedAnswer(keyCode)

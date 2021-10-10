@@ -20,8 +20,7 @@ import SystemNoti from '../../../../components/SystemNoti'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
-import { gql, useApolloClient, useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_ALL_CITIES_AND_ACTIVE } from './queries'
 import { SET_ACTIVE_CITIES, DELETE_CITY_FROM_ACTIVE } from './mutations'

@@ -12,8 +12,8 @@ import Divider from '@material-ui/core/Divider';
 
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
+import { useMutation } from '@apollo/client'
 import { useHistory } from "react-router-dom";
-import { useMutation } from '@apollo/react-hooks'
 
 import { DELETE_POLL } from './mutations'
 
@@ -115,11 +115,11 @@ const DeletePoll = ({ id, code }) => {
         <div className="info-zone">
           <Typography variant="body2" gutterBottom>
             Удаление всех данных. После удаления ОПРОСА пути назад уже не будет. Пожалуйста, будьте внимательны.
-        </Typography>
+          </Typography>
         </div>
         <Button variant="contained" color="secondary" onClick={deleteQuery}>
           Удалить опрос
-      </Button>
+        </Button>
       </div>
     </Fragment>
   )

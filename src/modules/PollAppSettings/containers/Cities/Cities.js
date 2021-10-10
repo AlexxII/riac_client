@@ -21,8 +21,7 @@ import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_CITITES_WITH_CATEGORIES } from './queries'
 import { CITY_SAVE_MUTATION, CITY_SAVE_MULTIPLE_MUTATION, CITY_EDIT_SAVE, DELETE_CITY } from './mutations'

@@ -12,8 +12,7 @@ import ErrorState from '../../components/ErrorState'
 
 import errorHandler from '../../lib/errorHandler'
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_ALL_ACTIVE_POLLS } from "./queries"
 import { ADD_NEW_POLL } from './mutations'

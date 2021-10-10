@@ -32,8 +32,7 @@ import BatchCharts from '../../components/BatchCharts'
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { parseOprFile, similarity } from '../../lib/utils'
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_FILTER_SELECTS, GET_POLL_DATA } from './queries'
 import { SAVE_BATCH_RESULT } from './mutaions'

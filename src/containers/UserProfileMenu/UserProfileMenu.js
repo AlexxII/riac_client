@@ -7,8 +7,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { gql, useApolloClient } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { gql, useApolloClient,useMutation } from '@apollo/client'
 import { useHistory } from "react-router-dom";
 
 import { LOGOUT_MUTATION } from './mutations'

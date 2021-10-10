@@ -9,8 +9,7 @@ import LoadingStatus from '../../components/LoadingStatus'
 
 import errorHandler from '../../lib/errorHandler';
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_ALL_USERS, GET_AUTH_SELECTS } from './queries'
 import { ADD_NEW_USER, UPDATE_USER, DELETE_USERS, RESET_PASSWORD } from './mutations'

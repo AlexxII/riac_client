@@ -12,8 +12,8 @@ import LoadingStatus from '../../components/LoadingStatus'
 
 import SystemNoti from '../../components/SystemNoti'
 
-import { useQuery } from '@apollo/react-hooks';
-import { useMutation } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { CURRENT_USER_QUERY } from './queries';
 import { SIGNIN_MUTATION } from './mutations';
 

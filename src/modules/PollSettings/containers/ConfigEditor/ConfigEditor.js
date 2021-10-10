@@ -11,8 +11,7 @@ import ErrorState from '../../../../components/ErrorState'
 import LoadingState from '../../../../components/LoadingState'
 import SystemNoti from '../../../../components/SystemNoti'
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 import { logicQuery } from "./queries"
 import { saveConfigChanges } from "./mutations"
 import { GET_POLL_DATA } from '../../containers/Common/queries'

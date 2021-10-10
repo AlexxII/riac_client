@@ -6,8 +6,7 @@ import Divider from '@material-ui/core/Divider';
 import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import SystemNoti from '../../../../components/SystemNoti'

@@ -35,8 +35,7 @@ import VirtMasonry from '../../../../components/VirtMasonry'
 import StyledBadge from '../../../../components/StyledBadge'
 
 import { useHistory } from "react-router-dom";
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import {

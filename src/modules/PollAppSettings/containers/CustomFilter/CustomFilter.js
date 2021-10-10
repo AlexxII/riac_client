@@ -13,8 +13,7 @@ import ConfirmDialog from '../../../../components/ConfirmDialog'
 
 import SortableEditList from '../../components/SortableEditList'
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_CUSTOM_FILTERS } from './queries'
 import {

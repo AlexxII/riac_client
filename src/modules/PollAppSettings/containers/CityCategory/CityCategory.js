@@ -12,8 +12,7 @@ import LoadingStatus from '../../../../components/LoadingStatus'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 import SortableEditList from '../../components/SortableEditList'
 
-import { useQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_CITIES_CATEGORIES } from './queries'
 import {

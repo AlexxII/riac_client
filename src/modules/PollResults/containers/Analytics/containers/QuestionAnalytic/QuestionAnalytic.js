@@ -9,8 +9,7 @@ import EmptyState from '../../components/EmptyState'
 import { SysnotyContext } from '../../../../../../containers/App/notycontext'
 import errorHandler from '../../../../../../lib/errorHandler'
 
-import { useLazyQuery } from '@apollo/client'
-import { useMutation } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation } from '@apollo/client'
 
 import { GET_QUESTION_RESULTS } from './queries'
 import { SAVE_DISTRIBUTION } from './mutaions'

@@ -14,17 +14,27 @@ const Systemz = () => {
     e.preventDefault()
     const file = e.target.files[0];
     const outPutData = []
-    JSZip.loadAsync(file)
-      .then(function (zip) {
-        Object.keys(zip.files).forEach(function (filename) {
-          zip.files[filename].async('string').then(function (fileData) {
-            console.log(fileData)
-            outPutData.push(fileData)
-            // const buf = Buffer.from(fileData);
-            // const utf8Text = iconvlite.decode(buf, 'utf8')
-          })
-        })
-      })
+    const zip = new JSZip()
+    zip.file(file.name).async('uint8array').then(function(u8) {
+      console.log(u8)
+    })
+
+    //   JSZip.loadAsync(file, {
+    //     decodeFileName: function (bytes) {
+    //       return iconvlite.decode(bytes, 'cp1251')
+    //     }
+    //   }).async("uint8array")
+    //     .then(function (zip) {
+    //       Object.keys(zip.files).forEach(function (filename) {
+    //         zip.files[filename].async('string').then(function (fileData) {
+    //           console.log(fileData)
+    //           outPutData.push(fileData)
+    //           const buf = Buffer.from(fileData);
+    //           const utf8Text = iconvlite.decode(buf, 'utf8')
+    //           console.log(utf8Text)
+    //         })
+    //       })
+    //     })
   }
 
   const handleRawInput = (e) => {
@@ -78,7 +88,7 @@ const Systemz = () => {
         const day = dd[3].replace(/^0+/, '')
         const month = dd[2].replace(/^0+/, '')
         const year = dd[1]
-        const monthText = monthPool[month]
+        const monthText = monthPool[month - 1]
 
         data += `<p style= 'text-transform: uppercase'><b><i>${item.titleText}</i></b></p>`
         data += item.mainText

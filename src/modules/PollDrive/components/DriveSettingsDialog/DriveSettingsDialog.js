@@ -28,8 +28,8 @@ const DriveSettingsDialog = ({ open, handleClose, save, cities, users, currentUs
 
   const handleSave = () => {
     save({
-      user,
-      city
+      user: users.filter(item => item.id === user)[0],
+      city: cities.filter(item => item.id === city)[0]
     })
   }
 

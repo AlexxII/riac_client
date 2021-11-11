@@ -197,3 +197,68 @@ const editDistance = (s1, s2) => {
   }
   return costs[s2.length];
 }
+
+export const parseSmiFile = (fileData) => {
+  const buf = Buffer.from(fileData);
+  const utf8Text = iconvlite.decode(buf, 'utf8')
+  const smiCode = /(01\/)([\s\S]+?)\n/                        // (01\/)(.+)\r?\n? c использванием жадного квантификатора
+  const publicDateCode = /(02\/)([\s\S]+?)\n/
+  const cityCode = /(03\/)([\s\S]+?)\n/
+  const titleCode = /(07\/)([\s\S]+?)\n/
+  const eventCode = /(08\/)([\s\S]+?)\n/
+  const inDateCode = /(11\/)([\s\S]+?)\n/
+  const textCode = /(06\/)([\s\S]+.)/
+
+  // const match = utf8Text.match(allSmiBlock)
+  // const smiArray = match[0]
+  const smiPool = utf8Text.split('==/СМИ');
+  // console.log(smiPool);
+  const smiPoolLength = smiPool.length
+  const outputArray = []
+  for (let i = 0; i < smiPoolLength; i++) {
+    const smi = smiPool[i]
+    if (smi) {
+      const smiCodeText = smi.match(smiCode) ? smi.match(smiCode)[2] : null
+      const publicDateText = smi.match(publicDateCode) ? smi.match(publicDateCode)[2] : null
+      const publicDateTimestamp = Date.parse(publicDateText)
+      const cityText = smi.match(cityCode) ? smi.match(cityCode)[2] : null
+      const titleText = smi.match(titleCode) ? smi.match(titleCode)[2] : null
+      const eventText = smi.match(eventCode) ? smi.match(eventCode)[2] : null
+      const inDate = smi.match(inDateCode) ? smi.match(inDateCode)[2] : null
+      const mainText = smi.match(textCode) ? smi.match(textCode)[2] : null
+
+      let textDataP = ''
+      if (mainText) {
+        const textP = mainText.split('\r\n')
+        textP.map((item, index) => {
+          textDataP += `<p>${item}</p>`
+        })
+
+      }
+
+      outputArray.push({
+        'smiCodeText': smiCodeText,
+        'publicDateText': publicDateText,
+        'publicDateTimestamp': publicDateTimestamp,
+        'cityText': cityText,
+        'titleText': titleText,
+        'eventText': eventText,
+        'inDate': inDate,
+        'mainText': textDataP
+      })
+    }
+  }
+  return outputArray
+}
+
+export const parseClist = (fileData) => {
+  const buf = Buffer.from(fileData);
+  const utf8Text = iconvlite.decode(buf, 'utf8')
+  const rows = utf8Text.split('\r\n')
+  const result = rows.reduce((acum, item) => {
+    const itemSplit = item.split('~')
+    acum[itemSplit[0]] = itemSplit[1]
+    return acum
+  }, {})
+  return result
+}

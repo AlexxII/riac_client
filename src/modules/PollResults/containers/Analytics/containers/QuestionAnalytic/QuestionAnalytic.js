@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useContext } from 'react'
+import React, { Fragment, useEffect, useContext, useState } from 'react'
 
 import Button from '@material-ui/core/Button';
 
@@ -14,10 +14,10 @@ import { useLazyQuery, useMutation } from '@apollo/client'
 import { GET_QUESTION_RESULTS } from './queries'
 import { SAVE_DISTRIBUTION } from './mutaions'
 
-const MAX_VIEW = 5
+const MAX_VIEW = 6
 const DISTRIBUTION_INPUT = 6
 
-const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
+const QuestionAnalytic = ({ poll, question, allSimilar, setAllSimilar, emptyMessage, setQuestions }) => {
   const [setNoty] = useContext(SysnotyContext)
 
   const [getAnswersResults, { loading: answersResultsLoading, data: answersResultsData }] = useLazyQuery(GET_QUESTION_RESULTS, {
@@ -34,7 +34,6 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       setNoty(errorHandler(graphQLErrors))
       console.log(graphQLErrors);
     },
-    
     // update: (cache, { data }) => {
     //   if (data.addPoll) {
     //     // const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
@@ -112,7 +111,6 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
     }
   }, [answersResultsData])
 
-
   const loadAnswers = (id) => {
     getAnswersResults({
       variables: {
@@ -120,6 +118,8 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
       }
     })
   }
+
+  //--------------------------------------------------------------------------------
 
   const setDistibution = (distrib) => {
     // если кол-во ответов не совпадает -> ручной ввод распределения
@@ -164,126 +164,9 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
                   [freeIndex]: {
                     data: distrib[index].distribution,
                     poll: distrib[index].poll.id,
-                    answer: distrib[index].answerId
+                    answer: distrib[index].answerId,
+                    type: 'new'
                   }
-                }
-              }
-            ))
-          }
-        }
-        return item
-      })
-      return uQuestions
-    })
-  }
-
-  const handleManualInput = (value, column, row) => {
-    setQuestions(prevState => {
-      const uQuestions = prevState.map(item => {
-        if (item.id === question.id) {
-          return {
-            ...item,
-            answers: item.answers.map((answer, j) => {
-              if (j === +row) {
-                return {
-                  ...answer,
-                  distribution: {
-                    ...answer.distribution,
-                    [column]: value !== ''
-                      ?
-                      {
-                        data: value,
-                        poll: null,
-                        answer: null
-                      }
-                      :
-                      null
-                  }
-                }
-              }
-              return answer
-            })
-          }
-        }
-        return item
-      })
-      return uQuestions
-    })
-  }
-
-  const handleSave = () => {
-    const answers = question.answers
-    setQuestions(prevState => (
-      prevState.map(item => {
-        if (item.id === question.id) {
-          return {
-            ...item,
-            saved: true
-          }
-        }
-        return item
-      })
-    ))
-    console.log(answers);
-
-    const resultsAnswers = answers.map(answer => {
-      const distribution = answer.distribution
-      const distrib = []
-      for (let index in distribution) {
-        if (Object.hasOwnProperty.call(distribution, index) && distribution[index]) {
-          distrib.push({
-            data: distribution[index].data,
-            refPoll: distribution[index].poll,
-            refAnswer: distribution[index].answer,
-            order: index
-          })
-        }
-      }
-      return {
-        id: answer.id,
-        distribution: distrib
-      }
-    })
-    console.log(resultsAnswers);
-
-    /*
-    for (let i = 0; i < answers.length; i++) {
-      const distribution = answers[i].distribution
-
-      for (let index in distribution) {
-        if (Object.hasOwnProperty.call(item, index)) {
-          distrib.push({
-            data: item[index].data,
-            refPoll: item[index].poll,
-            refAnswer: item[index].answer
-          })
-        }
-      }
-    }
-    */
-    // [{
-    //   pollId: id,
-    //   parent: answerId,
-    //   refAnswer: similarAnswerId,
-    //   refPoll: 
-    //   order
-    // }]
-
-
-  }
-
-  const handleSingleDel = (index) => {
-    setQuestions(prevState => {
-      const uQuestions = prevState.map(item => {
-        if (item.id === question.id) {
-          return {
-            ...item,
-            answers: item.answers.map((answer, i) => (
-              {
-                ...answer,
-                distribution: {
-                  ...answer.distribution,
-                  [index]: null
                 }
               }
             ))
@@ -319,6 +202,108 @@ const QuestionAnalytic = ({ question, allSimilar, setAllSimilar, emptyMessage, s
         return item
       })
       return uQuestions
+    })
+  }
+
+  const handleSingleDel = (index) => {
+    setQuestions(prevState => {
+      const uQuestions = prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            answers: item.answers.map((answer, i) => (
+              {
+                ...answer,
+                distribution: {
+                  ...answer.distribution,
+                  [index]: null
+                }
+              }
+            ))
+          }
+        }
+        return item
+      })
+      return uQuestions
+    })
+  }
+
+  const handleManualInput = (value, column, row) => {
+    setQuestions(prevState => {
+      const uQuestions = prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            answers: item.answers.map((answer, j) => {
+              if (j === +row) {
+                return {
+                  ...answer,
+                  distribution: {
+                    ...answer.distribution,
+                    [column]: value !== ''
+                      ?
+                      {
+                        data: value,
+                        poll: null,
+                        answer: null,
+                        type: 'new'
+                      }
+                      :
+                      null
+                  }
+                }
+              }
+              return answer
+            })
+          }
+        }
+        return item
+      })
+      return uQuestions
+    })
+  }
+
+  const handleSave = () => {
+    const answers = question.answers
+    setQuestions(prevState => (
+      prevState.map(item => {
+        if (item.id === question.id) {
+          return {
+            ...item,
+            saved: true
+          }
+        }
+        return item
+      })
+    ))
+    const resultsAnswers = answers.map(answer => {
+      const distribution = answer.distribution
+      console.log(distribution);
+      const distrib = []
+      for (let index in distribution) {
+        if (Object.hasOwnProperty.call(distribution, index) && distribution[index]) {
+          distrib.push({
+            id: distribution[index].id,
+            data: distribution[index].data + '',
+            refPoll: distribution[index].poll,
+            refAnswer: distribution[index].answer,
+            order: +index,
+            type: distribution[index].type
+          })
+        }
+      }
+      return {
+        id: answer.id,
+        distribution: distrib
+      }
+    })
+    console.log(resultsAnswers);
+    return
+    saveQuestionDistribution({
+      variables: {
+        poll,
+        answers: resultsAnswers
+      }
     })
   }
 

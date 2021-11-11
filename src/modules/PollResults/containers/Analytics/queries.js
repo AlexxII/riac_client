@@ -39,10 +39,24 @@ export const GET_POLL_DATA = gql`
           title
           order
           code
+          distribution {
+            id,
+            data
+            order
+          }
         }
       }
       logic {
         path
+      }
+    }
+    questions {
+      id
+      title
+      poll {
+        id
+        title
+        code
       }
     }
   }
@@ -62,6 +76,7 @@ export const GET_QUESTIONS_WITH_SAME_TOPICS = gql`
         id
         code
         title
+        dateOrder
       }
     }
   }

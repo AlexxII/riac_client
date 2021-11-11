@@ -15,7 +15,8 @@ import {
   UsersPage,
   UserProfilePage,
   NotFoundPage,
-  UpdateResultsPage
+  UpdateResultsPage,
+  SystemzPage
 } from '../../pages'
 
 const Router = () => {
@@ -36,6 +37,7 @@ const Router = () => {
         <Route path={"/poll-app-settings"} component={PollAppSettingsPage} />
         <Route path={"/tester"} component={TesterPage} />
         <Route path={"/update-result/:poll/:respondent"} component={UpdateResultsPage} />
+        <Route path={"/systemaz"} component={SystemzPage} />
         <Route component={NotFoundPage} />
       </Switch>
     </BrowserRouter>

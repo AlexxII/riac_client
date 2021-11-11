@@ -8,14 +8,19 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
-
+import FilterListIcon from '@material-ui/icons/FilterList';
+import IconButton from '@material-ui/core/IconButton';
+import Badge from '@material-ui/core/Badge';
 import LoadingState from '../../../../components/LoadingState'
 import ErrorState from '../../../../components/ErrorState'
 import LoadingStatus from '../../../../components/LoadingStatus'
 import errorHandler from '../../../../lib/errorHandler'
+import FilterDialog from './components/FilterDialog'
+import Tooltip from '@material-ui/core/Tooltip';
+import SearchIcon from '@material-ui/icons/Search';
 
+import FullSearch from './containers/FullSearch'
 import QuestionAnalytic from './containers/QuestionAnalytic'
-
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import { parseIni, normalizeLogic } from '../../../../modules/PollDrive/lib/utils'
@@ -36,6 +41,13 @@ const Analytics = ({ id }) => {
   const [logic, setLogic] = useState(false)
   const [processing, setProcessing] = useState(false)
 
+  const [filter, setFilter] = useState([])                                             // фильтрация по кодам опросов
+  const [filterOptions, setFilterOptions] = useState(false)
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false)
+
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false)
+
+  const [initState, setInitState] = useState(false)
   const [resultCount, setResultCount] = useState(1)
   const [emptyMessage, setEmptyMessage] = useState(null)
   const [questions, setQuestions] = useState(null)
@@ -90,17 +102,31 @@ const Analytics = ({ id }) => {
         acum[topicId].push(item)
         return acum
       }, {})
+      // получение уникальных опросов
+      const uniqPollsPool = sameQuestionsData.sameQuestions.reduce((acum, item) => {
+        if (acum.trash.indexOf(item.poll.code) === -1) {
+          acum.trash.push(item.poll.code)
+          acum.polls.push(item.poll)
+        }
+        return acum
+      }, {
+        trash: [],
+        polls: []
+      }).polls.map(item => ({ value: item.code, title: item.title, date: item.dateOrder }))
+        .sort((a, b) => (a.date > b.date ? 1 : -1))
+      setFilterOptions(uniqPollsPool)
+
       const uQuestions = pollData.poll.questions.map(question => {
         const answers = question.answers.map(answer => (
           {
             ...answer,
             distribution: {
-              '0': null,
-              '1': null,
-              '2': null,
-              '3': null,
-              '4': null,
-              '5': null
+              '1': answer?.distribution[1] ?? null,
+              '0': answer?.distribution[0] ?? null,
+              '2': answer?.distribution[2] ?? null,
+              '3': answer?.distribution[3] ?? null,
+              '4': answer?.distribution[4] ?? null,
+              '5': answer?.distribution[5] ?? null,
             }
           }
         ))
@@ -121,8 +147,8 @@ const Analytics = ({ id }) => {
           }
         }
       })
-      // console.log(uQuestions)
       setQuestions(uQuestions)
+      setInitState(uQuestions)
       // отобразим первый вопрос
       const currentQuestion = uQuestions[resultCount - 1]
       checkNotEmpty(currentQuestion)
@@ -200,7 +226,7 @@ const Analytics = ({ id }) => {
   }
 
   const Loading = () => {
-    if (processing) return <LoadingStatus />
+    if (processing || !filterOptions) return <LoadingStatus />
     return null
   }
 
@@ -208,6 +234,24 @@ const Analytics = ({ id }) => {
   const handleResultChange = (_, value) => {
     setResultCount(value)
     setAllSimilar(false)
+  }
+
+  const saveFilterChanges = (filters) => {
+    setProcessing(true)
+    setFilter(filters)
+    setFilterDialogOpen(false)
+    if (filters.length) {
+      setQuestions(
+        initState.map(question => ({
+          ...question,
+          similar: question.similar ? question.similar.filter(item => filters.includes(item.poll.code)) : null
+        }))
+      )
+    } else {
+      // восстанавливаем все вопросы снимая тем самым фильтрацию
+      setQuestions(initState)
+    }
+    setProcessing(false)
   }
 
   return (
@@ -226,11 +270,43 @@ const Analytics = ({ id }) => {
       <Grid>
         {questions &&
           <Fragment>
+            <FilterDialog
+              open={filterDialogOpen}
+              options={filterOptions}
+              onClose={() => setFilterDialogOpen(false)}
+              mainFilter={filter}
+              saveChanges={saveFilterChanges}
+            />
+            {/*
+            <FullSearch
+              open={searchDialogOpen}
+              options={filterOptions}
+              onClose={() => setSearchDialogOpen(false)}
+              mainFilter={pollData.questions}
+              saveChanges={() => { }}
+              question={questions[resultCount - 1]}
+            />
+            */}
             <div className="pagination-wrap">
+              <Badge
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+                color="primary"
+                badgeContent={filter.length}
+              >
+                <Tooltip title="Фильтрация">
+                  <IconButton aria-label="filter" onClick={() => setFilterDialogOpen(true)} >
+                    <FilterListIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Badge>
               <span className="pagination-wrap-title">
                 <strong>Вопросы:</strong>
               </span>
               <Pagination
+                className="pagination-bar"
                 count={pollData.poll.questions.length}
                 page={resultCount}
                 variant="outlined"
@@ -247,9 +323,17 @@ const Analytics = ({ id }) => {
                   />
                 )}
               />
+              {/*
+              <Tooltip title="Сплошной поиск">
+                <IconButton aria-label="filter" onClick={() => setSearchDialogOpen(true)} >
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              */}
             </div>
             <div className="analitics-main-content">
               <QuestionAnalytic
+                poll={id}
                 setAllSimilar={setAllSimilar}
                 allSimilar={allSimilar}
                 question={questions[resultCount - 1]}

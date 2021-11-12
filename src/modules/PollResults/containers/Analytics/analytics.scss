@@ -4,7 +4,7 @@
 @import "./components/SimilarQuestion/similarquestion.scss";
 
 .pagination-wrap-title {
-  padding: 5px 10px 0 0;
+  padding: 12px 10px 0 0;
 }
 .analitics-main-content {
   margin-top: 10px;
@@ -23,4 +23,7 @@
 .pagination-item-saved {
   background-color: #4caf50 !important;
   color: #fff !important;
+}
+.pagination-bar {
+  padding-top: 8px;
 }

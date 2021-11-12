@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import Container from '@material-ui/core/Container'
 import DriveLogic from "./components/DriveLogic";
 import Button from '@material-ui/core/Button';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 import { SysnotyContext } from '../../containers/App/notycontext'
 
@@ -31,7 +32,7 @@ const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const PollDrive = ({ pollId }) => {
   const [setNoti] = useContext(SysnotyContext);
-
+  const [resetAll, setResetAll] = useState(false)
   const client = useApolloClient();
   const { currentUser } = client.readQuery({
     query: gql`
@@ -47,8 +48,8 @@ const PollDrive = ({ pollId }) => {
 
   const [userSettings] = useState({
     stepDelay: 0,
-    autoStep: true,                    // автоматический переход к другому вопросу
-    cityAgain: false                   // повтор вопроса с выбором города!!!!
+    autoStep: true,                                                 // автоматический переход к другому вопросу
+    cityAgain: false                                                // повтор вопроса с выбором города!!!!
   })
   const [count, setCount] = useState(0)
   const [userBack, setUserBack] = useState(false)
@@ -174,7 +175,6 @@ const PollDrive = ({ pollId }) => {
   }
 
   const saveCity = ({ city, user }) => {
-    console.log(city, user);
     setCurrentCity(city)
     const configCities = logic.cities ? logic.cities : []
     let cityCode = ''
@@ -223,8 +223,8 @@ const PollDrive = ({ pollId }) => {
     saveResult({
       variables: {
         poll: poll.id,
-        city: currentCity,
-        user: user,
+        city: currentCity.id,
+        user: user.id,
         driveinUser: currentUser.id,
         data: result
       }
@@ -238,8 +238,8 @@ const PollDrive = ({ pollId }) => {
     saveResult({
       variables: {
         poll: poll.id,
-        city: currentCity,
-        user: user,
+        city: currentCity.id,
+        user: user.id,
         driveinUser: currentUser.id,
         pool: data.pool,
         data: result
@@ -273,6 +273,33 @@ const PollDrive = ({ pollId }) => {
     setFinishDialog(false)
   }
 
+  const handleResetConfirm = () => {
+    // сброс всех результатов набиваемой анкеты
+    setResetAll(false)
+    let newResults = {}
+    for (let key in results) {
+      if (key !== 'pool') {
+        if (results[key].count === 0) {
+          newResults = {
+            ...newResults,
+            [key]: {
+              ...results[key],
+              data: []
+            }
+          }
+        }
+      } else {
+        newResults = {
+          ...newResults,
+          pool: []
+        }
+      }
+    }
+    setResults(newResults)
+    setCount(0)
+    setFinish(false)
+  }
+
   const FinishNode = () => {
     return <Button onClick={() => setFinishDialog(true)} variant="contained" size="small" className="control-button">Финиш</Button>
   }
@@ -284,8 +311,23 @@ const PollDrive = ({ pollId }) => {
         message={() => {
           return userBack
             ? true
-            : "Вы действительно хотите покинуть страницу ввода данных. Сохраненные данные будут потеряны!"
+            : "Вы действительно хотите покинуть страницу ввода данных. Текущие данные будут потеряны!"
         }}
+      />
+      <ConfirmDialog
+        open={resetAll}
+        confirm={handleResetConfirm}
+        close={() => { setResetAll(false) }}
+        config={{
+          closeBtn: "Отмена",
+          confirmBtn: "Сбросить"
+        }}
+        data={
+          {
+            title: 'Сбросить результат?',
+            content: `Внимание! Введенные данные будут сброшены.`
+          }
+        }
       />
       <FinishDialog open={finishDialog} handleClose={cancelFinish} finishAll={finishThisPoll} confirm={confirmFinish} />
       <Loading />
@@ -302,10 +344,13 @@ const PollDrive = ({ pollId }) => {
           poll={poll}
           logic={logic}
           cityCode={cityCode}
+          currentCity={currentCity}
+          user={user}
           userSettings={userSettings}
           results={results}
           setResults={setResults}
           finish={finish}
+          resetDriveResults={() => setResetAll(true)}
           setFinish={setFinish}
           setFinishDialog={setFinishDialog}
           count={count}

@@ -6,9 +6,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Hidden from '@material-ui/core/Hidden';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 
 import QuestionCard from '../QuestionCard'
-
 import defineSelectedAnswer from '../../lib/defineSelectedAnswer'
 import questionFormationEx from '../../lib/questionFormationEx'
 
@@ -31,7 +34,9 @@ const SET_RADIO_ANSWER = 3
 
 const DriveLogic = React.memo(props => {
   const {
-    poll, logic, cityCode, userSettings, results, setResults, setFinishDialog, finish, setFinish, setCount, count, finishNode, update
+    poll, logic, cityCode, userSettings, results, setResults, setFinishDialog,
+    finish, setFinish, setCount, count, finishNode, update, resetDriveResults,
+    currentCity, user
   } = props
   const questionsLimit = poll.questions.length
   const [question, setQuestion] = useState(null)
@@ -68,7 +73,7 @@ const DriveLogic = React.memo(props => {
 
   const keyUpHandler = ({ target, keyCode }) => {
     // для свободных ответов пропускаем логику
-    if (target.nodeName === 'INPUT') return
+    if (target.nodeName === 'INPUT' && (target.type !== 'checkbox' && target.type !== 'radio')) return
     const nextStep = defineSelectedAnswer(keyCode)
     switch (nextStep.do) {
       case VALID_CODE: {
@@ -182,83 +187,85 @@ const DriveLogic = React.memo(props => {
     }
   }
 
-  // ОСНОВНЫЙ обработчик сброса ответов
+  // ОСНОВНОЙ обработчик сброса ответов
   const resetAnswers = () => {
-    const savedCodes = results[question.id].data.reduce((acum, val) => [...acum, val.answerCode], [])
-    // Сделано так, чтобы не ждать обновления СТЕЙТА с результатами
-    let newResults = {}
-    for (let key in results) {
-      if (key === question.id) {
-        newResults[question.id] = {
-          ...results[question.id],
-          data: []
-        }
-      } else {
-        if (key !== 'pool') {
-          newResults = {
-            ...newResults,
-            [key]: results[key]
+    if (results.pool.length) {
+      const savedCodes = results[question.id].data.reduce((acum, val) => [...acum, val.answerCode], [])
+      // Сделано так, чтобы не ждать обновления СТЕЙТА с результатами
+      let newResults = {}
+      for (let key in results) {
+        if (key === question.id) {
+          newResults[question.id] = {
+            ...results[question.id],
+            data: []
           }
         } else {
-          newResults = {
-            ...newResults,
-            pool: results.pool.filter(code => {
-              return savedCodes.includes(code) ? false : true
-            })
+          if (key !== 'pool') {
+            newResults = {
+              ...newResults,
+              [key]: results[key]
+            }
+          } else {
+            newResults = {
+              ...newResults,
+              pool: results.pool.filter(code => {
+                return savedCodes.includes(code) ? false : true
+              })
+            }
           }
         }
       }
-    }
-    setResults(newResults)
-    checkRespondentFinish(newResults)
-    setQuestion(prevState => ({
-      ...prevState,
-      selectedAnswer: '',
-      answers: prevState.answers.map(
-        answer => true ? {
-          ...answer,
-          selected: false,
-          showFreeAnswer: false,
-          text: '',                                       // сбрасываем свободный ответ
-          focus: true,                                    // чтобы фокус вернулся на свободеый ответ, т.к. он сброшен 
-          disabled: false
-        } : answer
-      ).map(
-        answer => {
-          let excludePool = []
-          // формирование пула кодов которые запрещены в результатах
-          for (let code in logic.criticalExclude) {
-            if (code === answer.code) {
-              excludePool = [
-                ...excludePool,
-                ...logic.criticalExclude[code]
-              ]
-            }
-            if (logic.criticalExclude[code].includes(answer.code)) {
-              excludePool = [
-                ...excludePool,
-                code
-              ]
-            }
-          }
-          for (let i = 0; i < excludePool.length; i++) {
-            if (newResults.pool.includes(excludePool[i])) {
-              return {
-                ...answer,
-                disabled: true,
-                excludeM: `противоречит коду ${excludePool[i]}`
+      setResults(newResults)
+      checkRespondentFinish(newResults)
+      setQuestion(prevState => ({
+        ...prevState,
+        selectedAnswer: '',
+        answers: prevState.answers.map(
+          answer => true ? {
+            ...answer,
+            selected: false,
+            showFreeAnswer: false,
+            text: '',                                       // сбрасываем свободный ответ
+            focus: true,                                    // чтобы фокус вернулся на свободеый ответ, т.к. он сброшен 
+            disabled: false
+          } : answer
+        ).map(
+          answer => {
+            let excludePool = []
+            // формирование пула кодов которые запрещены в результатах
+            for (let code in logic.criticalExclude) {
+              if (code === answer.code) {
+                excludePool = [
+                  ...excludePool,
+                  ...logic.criticalExclude[code]
+                ]
+              }
+              if (logic.criticalExclude[code].includes(answer.code)) {
+                excludePool = [
+                  ...excludePool,
+                  code
+                ]
               }
             }
+            for (let i = 0; i < excludePool.length; i++) {
+              if (newResults.pool.includes(excludePool[i])) {
+                return {
+                  ...answer,
+                  disabled: true,
+                  excludeM: `противоречит коду ${excludePool[i]}`
+                }
+              }
+            }
+            return {
+              ...answer,
+              disabled: false,
+              excludeM: ''
+            }
           }
-          return {
-            ...answer,
-            disabled: false,
-            excludeM: ''
-          }
-        }
-      )
-    }))
-    return newResults
+        )
+      }))
+      return newResults
+    }
   }
 
   // выбран новый ответ на вопрос
@@ -663,6 +670,9 @@ const DriveLogic = React.memo(props => {
           </Grid>
         </Hidden>
         <Grid item container xs={6} md={3} justify="flex-end">
+          <Tooltip title={<span>Место проведения: {currentCity?.title}<br />Интервьюер: {user?.username}</span>}>
+            <InfoOutlinedIcon className="informer" />
+          </Tooltip>
           <p>Всего: <span><strong>{questionsLimit}</strong></span></p>
         </Grid>
         <Hidden mdUp>
@@ -670,12 +680,17 @@ const DriveLogic = React.memo(props => {
             <InlineInformer />
           </Grid>
         </Hidden>
-        <Grid container direction="row" justify="center" alignItems="center" className="">
+        <Grid container direction="row" justify="center" alignItems="center" className="card-service-wrap">
           <Button onClick={goToPrevious} variant="contained" size="small" className="control-button">Назад</Button>
           <Button onClick={goToNext} variant="contained" size="small" className="control-button">Вперед</Button>
           {finish &&
             finishNode
           }
+          <Tooltip title="Сбросить все данные" aria-label="add">
+            <IconButton color="secondary" aria-label="reset surve" component="span" onClick={resetDriveResults} className="reset-all-btn">
+              <RotateLeftIcon />
+            </IconButton>
+          </Tooltip>
         </Grid>
         {question &&
           <QuestionCard

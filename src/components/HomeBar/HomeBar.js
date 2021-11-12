@@ -13,6 +13,8 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { useHistory } from "react-router-dom";
+
 import UserProfileMenu from '../../containers/UserProfileMenu'
 import ServiceMenu from '../ServiceMenu'
 
@@ -52,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 const HomeBar = ({ title }) => {
   const classes = useStyles();
+  const history = useHistory();
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false)
@@ -66,6 +69,10 @@ const HomeBar = ({ title }) => {
     setMobileMoreAnchorEl(null);
   };
 
+  const handleAppMenuClick = (app) => {
+    history.push(`${app}`);
+    handleAppMenuClose()
+  }
 
   const handleAppMenuClose = () => {
     setAppAnchorEl(null);
@@ -96,8 +103,8 @@ const HomeBar = ({ title }) => {
       open={isAppMenuOpen}
       onClose={handleAppMenuClose}
     >
-      <MenuItem onClick={handleAppMenuClose}>ПУСТО_1</MenuItem>
-      <MenuItem onClick={handleAppMenuClose}>ПУСТО_2</MenuItem>
+      <MenuItem onClick={() => handleAppMenuClick('')}>Опросы</MenuItem>
+      <MenuItem onClick={() => handleAppMenuClick('systemaz')}>Система-Z</MenuItem>
     </Menu>
   )
 

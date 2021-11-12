@@ -13,7 +13,6 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AanswerDistributionEx from '../../components/AnswerDitributionEx'
-import { Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -50,19 +49,23 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
     setTotal(qDistribCount)
   }, [question])
 
-
   const handleChange = (_, isExpanded) => {
     setExpanded(isExpanded);
   };
 
-  const inputCount = []
+  const handleResetEx = () => {
+    handleReset()
+  }
 
-  for (let i = 0; i < 6; i++) {
-    inputCount.push(
-      <div>
-        {total[i]}
-      </div>
-    )
+  const handleManualInputEx = (value, column, row) => {
+    handleManualInput(value, column, row)
+  }
+
+  const handleSingleDelEx = (index) => {
+    handleSingleDel(index)
+  }
+
+  const handleSaveEx = () => {
 
   }
 
@@ -107,10 +110,11 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
         <div style={{ display: 'block' }}>
           {question.answers &&
             question.answers.map((answer, index) => (
-              <AanswerDistributionEx key={answer.id}
+              <AanswerDistributionEx
+                key={answer.id}
                 answer={answer}
                 index={index}
-                handleManualInput={handleManualInput}
+                handleManualInput={handleManualInputEx}
               />
             ))
           }
@@ -120,14 +124,14 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
             <div className="column-two">
               {
                 [0, 1, 2, 3, 4, 5].map((_, index) => (
-                  <Fragment>
+                  <Fragment key={index}>
                     <div className="distr-reset">
                       <div className="count-wrap">
                         <div className={total[index] > 100.0001 ? "count-warning" : null} >
                           {total[index] > 0 ? total[index].toFixed(1) : null}
                         </div>
                       </div>
-                      <IconButton aria-label="delete" onClick={() => handleSingleDel(index)} size="small">
+                      <IconButton aria-label="delete" onClick={() => handleSingleDelEx(index)} size="small">
                         <HighlightOffIcon />
                       </IconButton>
                     </div>
@@ -140,8 +144,8 @@ const AnalyzedQuestion = ({ question, handleReset, handleManualInput, handleSing
       </AccordionDetails>
       <Divider />
       <AccordionActions>
-        <Button size="small" onClick={handleReset}>Сбросить</Button>
-        <Button size="small" color="primary" onClick={handleSave}>Сохранить</Button>
+        <Button size="small" onClick={handleResetEx}>Сбросить</Button>
+        <Button size="small" color="primary" onClick={handleSaveEx}>Сохранить</Button>
       </AccordionActions>
     </Accordion>
   )

@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 
 export const SAVE_DISTRIBUTION = gql`
 mutation ($poll: String!, $answers: [AnswerDistribution]) {
-  saveBatchResults(
+  saveAnswersDistribution(
     poll: $poll,
     answers: $answers
   ) {

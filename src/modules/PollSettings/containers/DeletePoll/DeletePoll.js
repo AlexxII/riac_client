@@ -13,12 +13,12 @@ import Divider from '@material-ui/core/Divider';
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import { useMutation } from '@apollo/client'
-import { useHistory } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 
 import { DELETE_POLL } from './mutations'
 
 const DeletePoll = ({ id, code }) => {
-  const history = useHistory();
+  const navigator = useNavigate();
   const [setNoti] = useContext(SysnotyContext);
   const [open, setOpen] = useState(false)
   const [incorrect, setIncorrect] = useState(true)
@@ -37,7 +37,7 @@ const DeletePoll = ({ id, code }) => {
       cache.gc()
     },
     onCompleted: () => {
-      history.goBack()
+      navigator.goBack()
       setNoti({
         type: 'success',
         text: 'Успех. Опрос удален.'

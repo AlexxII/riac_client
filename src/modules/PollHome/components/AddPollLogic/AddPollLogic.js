@@ -3,7 +3,7 @@ import React, { Fragment, useState, useRef } from 'react'
 import PollIcon from '@material-ui/icons/Poll';
 import CalendarTodayRoundedIcon from '@material-ui/icons/CalendarTodayRounded';
 
-import { useHistory } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 
 import AddPollForm from '../AddPollForm'
 import ConfirmDialog from '../../../../components/ConfirmDialog'
@@ -13,7 +13,7 @@ const iconvlite = require('iconv-lite')
 
 const AddPollLogic = ({ addPoll }) => {
   const formRef = useRef()
-  const history = useHistory()
+  const navigator = useNavigate()
   const [openDialog, setOpenDialog] = useState(false)
   const openPollDialog = () => {
     setOpenDialog(true)
@@ -184,7 +184,7 @@ const AddPollLogic = ({ addPoll }) => {
   // элементы для кнопки быстрого доступа
   const actions = [
     { icon: <PollIcon />, name: 'Новый опрос', click: () => openPollDialog() },
-    { icon: <CalendarTodayRoundedIcon />, name: 'Архив опросов', click: () => history.push("/poll-archive") }
+    { icon: <CalendarTodayRoundedIcon />, name: 'Архив опросов', click: () => navigator("/poll-archive") }
   ];
 
   return (

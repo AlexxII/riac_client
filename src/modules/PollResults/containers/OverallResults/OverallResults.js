@@ -34,7 +34,7 @@ import EditMenu from '../../components/EditMenu'
 import VirtMasonry from '../../../../components/VirtMasonry'
 import StyledBadge from '../../../../components/StyledBadge'
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
@@ -52,7 +52,7 @@ const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 // кол-во выделенных анкет
 
 const OverallResults = ({ id }) => {
-  const history = useHistory();
+  const navigator = useNavigate();
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
 
@@ -723,7 +723,7 @@ const OverallResults = ({ id }) => {
   }
 
   const updateSingleResult = (respondent) => {
-    history.push(`/update-result/${id}/${respondent.id}`);
+    navigator(`/update-result/${id}/${respondent.id}`);
   }
 
   return (

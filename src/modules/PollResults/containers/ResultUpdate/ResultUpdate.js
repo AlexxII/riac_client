@@ -11,7 +11,7 @@ import SystemNoti from '../../../../components/SystemNoti'
 
 import SaveUpdateDialog from '../../components/SaveUpdateDialog'
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_RESULTS } from "../OverallResults/queries"
@@ -32,7 +32,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     message: '',
     duration: 6000
   })
-  const history = useHistory();
+  const navigator = useNavigate();
   const [count, setCount] = useState(0)
   const [userBack, setUserBack] = useState(false)
   const [finish, setFinish] = useState(false)
@@ -68,7 +68,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     // обновляется автоматически т.к. возвращается респондент
     onCompleted: () => {
       setUserBack(true)
-      history.goBack()
+      navigator.goBack()
     }
   })
 

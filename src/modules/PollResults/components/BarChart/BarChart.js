@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import Chart from 'chart.js'
+import {Chart} from 'chart.js'
 
 const BarChart = ({ question }) => {
 

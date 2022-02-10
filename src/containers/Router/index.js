@@ -23,7 +23,7 @@ const Router = () => {
 
   return (
     <BrowserRouter>
-      <Switch>
+      <Route>
         <Route path={"/"} exact component={HomePage} />
         <Route path={"/poll-archive"} exact component={PollArchive} />
         <Route path={"/settings/users"} exact component={UsersPage} />
@@ -39,7 +39,7 @@ const Router = () => {
         <Route path={"/update-result/:poll/:respondent"} component={UpdateResultsPage} />
         <Route path={"/systemaz"} component={SystemzPage} />
         <Route component={NotFoundPage} />
-      </Switch>
+      </Route>
     </BrowserRouter>
   )
 }

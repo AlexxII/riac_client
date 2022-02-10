@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react'
 import Button from '@material-ui/core/Button';
-import { parseSmiFile, parseClist } from 'modules/PollResults/lib/utils';
+import { parseSmiFile, parseClist } from '../../modules/PollResults/lib/utils';
 import { footer, header } from './utilz/temaplare_1';
 
 const iconvlite = require('iconv-lite')

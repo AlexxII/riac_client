@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react'
-import { Prompt } from 'react-router-dom'
-import { useHistory } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
 import Container from '@material-ui/core/Container'
 import DriveLogic from "./components/DriveLogic";
@@ -44,7 +43,7 @@ const PollDrive = ({ pollId }) => {
     }
     `,
   })
-  const history = useHistory();
+  const history = useNavigate();
 
   const [userSettings] = useState({
     stepDelay: 0,
@@ -306,14 +305,6 @@ const PollDrive = ({ pollId }) => {
 
   return (
     <Fragment>
-      <Prompt
-        when={results.pool.length}
-        message={() => {
-          return userBack
-            ? true
-            : "Вы действительно хотите покинуть страницу ввода данных. Текущие данные будут потеряны!"
-        }}
-      />
       <ConfirmDialog
         open={resetAll}
         confirm={handleResetConfirm}

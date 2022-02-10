@@ -8,13 +8,13 @@ import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { gql, useApolloClient,useMutation } from '@apollo/client'
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { LOGOUT_MUTATION } from './mutations'
 import { CURRENT_USER_QUERY } from '../App/queries'
 
 const UserProfileMenu = ({ close }) => {
-  const history = useHistory();
+  const history = useNavigate();
   const client = useApolloClient();
   const { currentUser } = client.readQuery({
     query: gql`

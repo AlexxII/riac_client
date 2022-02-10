@@ -13,7 +13,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import UserProfileMenu from '../../containers/UserProfileMenu'
 import ServiceMenu from '../ServiceMenu'
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 const HomeBar = ({ title }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = uuseNavigate();
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false)
@@ -70,7 +70,7 @@ const HomeBar = ({ title }) => {
   };
 
   const handleAppMenuClick = (app) => {
-    history.push(`${app}`);
+    navigate(`${app}`);
     handleAppMenuClose()
   }
 

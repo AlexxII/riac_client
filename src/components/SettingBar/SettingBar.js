@@ -9,7 +9,7 @@ import Menu from '@material-ui/core/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SettingBar = ({ title, prevPage }) => {
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const isAppMenuOpen = Boolean(appAnchorEl);
 
@@ -81,7 +81,7 @@ const SettingBar = ({ title, prevPage }) => {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
-            onClick={history.goBack}
+            onClick={navigate.goBack}
           >
             <ArrowBackIcon className={classes.arrow} />
           </IconButton>

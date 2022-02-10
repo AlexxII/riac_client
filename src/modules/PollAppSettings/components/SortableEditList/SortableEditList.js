@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 
 import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
-import arrayMove from 'array-move';
+import {arrayMoveMutable} from 'array-move';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -158,7 +158,7 @@ const SortableEditList = ({ data, handleChangeActive, saveNewSort, handleCategor
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
-      const newArray = arrayMove(data, oldIndex, newIndex)
+      const newArray = arrayMoveMutable(data, oldIndex, newIndex)
       let deltaArray = []
       const newOrder = newArray.reduce((acum, val, index) => {
         if (val.order === index + 1) {

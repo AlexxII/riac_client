@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import uuid from "uuid";
+import { v4 } from "uuid";
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -278,7 +278,7 @@ const Import = ({ id }) => {
         setTimeout(() => {
           const fileData = reader.result
           const correctData = parseOprFile(fileData)
-          const updatedData = correctData.map(obj => ({ ...obj, id: uuid.v4() }))
+          const updatedData = correctData.map(obj => ({ ...obj, id: v4() }))
           const pollCities = pollData.poll.cities
           const limit = 0.6                                                            // порог вероятности совпадения
           const upResults = updatedData.map(result => {
@@ -627,7 +627,7 @@ const Import = ({ id }) => {
               size="small"
             >
               Выбрать
-          </Button>
+            </Button>
           </label>
           <Tooltip title="Сохранить в БД">
             <IconButton

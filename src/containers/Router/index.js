@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Routes} from 'react-router-dom'
 
 import {
   HomePage,
@@ -23,7 +23,7 @@ const Router = () => {
 
   return (
     <BrowserRouter>
-      <Route>
+      <Routes>
         <Route path={"/"} exact component={HomePage} />
         <Route path={"/poll-archive"} exact component={PollArchive} />
         <Route path={"/settings/users"} exact component={UsersPage} />
@@ -39,7 +39,7 @@ const Router = () => {
         <Route path={"/update-result/:poll/:respondent"} component={UpdateResultsPage} />
         <Route path={"/systemaz"} component={SystemzPage} />
         <Route component={NotFoundPage} />
-      </Route>
+      </Routes>
     </BrowserRouter>
   )
 }

@@ -49,10 +49,10 @@ export default function ServiceMenu({ open, close }) {
             <ListItemText primary="Тест интерфейса" />
           </ListItem>
         </NavLink> */}
-        <ListItem button key={2}>
+        {/* <ListItem button key={2}>
           <ListItemIcon><PhoneIcon /></ListItemIcon>
           <ListItemText primary="Генератор номеров" />
-        </ListItem>
+        </ListItem> */}
         <NavLink to='poll-app-settings'>
           <ListItem button key={3}>
             <ListItemIcon><SettingsIcon /></ListItemIcon>

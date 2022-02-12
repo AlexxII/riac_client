@@ -14,7 +14,7 @@ import { LOGOUT_MUTATION } from './mutations'
 import { CURRENT_USER_QUERY } from '../App/queries'
 
 const UserProfileMenu = ({ close }) => {
-  const history = useNavigate();
+  const navigator = useNavigate();
   const client = useApolloClient();
   const { currentUser } = client.readQuery({
     query: gql`
@@ -49,7 +49,8 @@ const UserProfileMenu = ({ close }) => {
     setAnchorEl(e.currentTarget)
   }
   const handleUserProfile = () => {
-    history.push("/settings/user-profile/" + currentUser.id);
+    // navigator.push("/settings/user-profile/" + currentUser.id);
+    navigator("/settings/user-profile/" + currentUser.id);
     handleMenuClose()
   }
 

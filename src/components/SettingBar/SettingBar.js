@@ -81,7 +81,7 @@ const SettingBar = ({ title, prevPage }) => {
             className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
-            onClick={navigate.goBack}
+            onClick={() => navigate(-1)}
           >
             <ArrowBackIcon className={classes.arrow} />
           </IconButton>

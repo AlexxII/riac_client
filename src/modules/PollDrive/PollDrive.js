@@ -43,7 +43,7 @@ const PollDrive = ({ pollId }) => {
     }
     `,
   })
-  const history = useNavigate();
+  const navigator = useNavigate();
 
   const [userSettings] = useState({
     stepDelay: 0,
@@ -195,7 +195,7 @@ const PollDrive = ({ pollId }) => {
 
   const closeDialog = () => {
     setOpenCityDialog(false)
-    history.push("/")
+    navigator("/")
   }
 
   const prepareResultData = (data) => {
@@ -228,7 +228,7 @@ const PollDrive = ({ pollId }) => {
         data: result
       }
     }).then(res => {
-      history.push("/")
+      navigator("/")
     })
   }
 

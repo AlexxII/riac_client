@@ -37,7 +37,7 @@ const DeletePoll = ({ id, code }) => {
       cache.gc()
     },
     onCompleted: () => {
-      navigator.goBack()
+      navigator(-1)
       setNoti({
         type: 'success',
         text: 'Успех. Опрос удален.'

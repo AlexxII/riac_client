@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
 
 const HomeBar = ({ title }) => {
   const classes = useStyles();
-  const navigate = uuseNavigate();
+  const navigate = useNavigate();
   const [appAnchorEl, setAppAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const [menuOpen, setMenuOpen] = React.useState(false)
@@ -119,14 +119,6 @@ const HomeBar = ({ title }) => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton color="inherit">
-          <Badge badgeContent={0} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Уведомления</p>
-      </MenuItem>
       <MenuItem onClick={handleAppsMenuOpen}>
         <IconButton
           aria-label="more apps"
@@ -162,11 +154,6 @@ const HomeBar = ({ title }) => {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
             <IconButton
               aria-label="apps"
               aria-controls={appsMenuId}

@@ -24,21 +24,21 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={"/"} exact component={HomePage} />
-        <Route path={"/poll-archive"} exact component={PollArchive} />
-        <Route path={"/settings/users"} exact component={UsersPage} />
-        <Route path={"/settings/user-profile/:id"} exact component={UserProfilePage} />
-        <Route path={"/results/:id/:code"} component={ResultsPage} />
-        <Route path={"/poll-settings/:id/:code"} component={SettingsPage} />
-        <Route path={"/drive/:id/:code"} component={DrivePage} />
-        <Route path={"/analyze"} component={AnalyzePage} />
-        <Route path={"/attachment/:id/:code"} component={AttachmentPage} />
-        <Route path={"/poll-wiki/:id/:code"} component={WikiPage} />
-        <Route path={"/poll-app-settings"} component={PollAppSettingsPage} />
-        <Route path={"/tester"} component={TesterPage} />
-        <Route path={"/update-result/:poll/:respondent"} component={UpdateResultsPage} />
-        <Route path={"/systemaz"} component={SystemzPage} />
-        <Route component={NotFoundPage} />
+        <Route path="/" element={<HomePage/>} />
+        <Route path="/poll-archive" element={<PollArchive/>} />
+        <Route path="/settings/users" element={<UsersPage/>} />
+        <Route path="/settings/user-profile/:id" element={<UserProfilePage/>} />
+        <Route path="/results/:id/:code" element={<ResultsPage/>} />
+        <Route path="/poll-settings/:id/:code" element={<SettingsPage/>} />
+        <Route path="/drive/:id/:code" element={<DrivePage/>} />
+        <Route path="/analyze" element={<AnalyzePage/>} />
+        <Route path="/attachment/:id/:code" element={<AttachmentPage/>} />
+        <Route path="/poll-wiki/:id/:code" element={<WikiPage/>} />
+        <Route path="/poll-app-settings" element={<PollAppSettingsPage/>} />
+        <Route path="/tester" element={<TesterPage/>} />
+        <Route path="/update-result/:poll/:respondent" element={<UpdateResultsPage/>} />
+        <Route path="/systemaz" element={<SystemzPage/>} />
+        <Route element={<NotFoundPage/>} />
       </Routes>
     </BrowserRouter>
   )

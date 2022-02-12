@@ -3,6 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const webpack = require('webpack');
 
 let mode = 'development';
 let target = 'web';
@@ -20,7 +21,15 @@ const plugins = [
   }),
   new Dotenv({
     path: './.env'
-  })
+  }),
+  // Work around for Buffer is undefined:
+  // https://github.com/webpack/changelog-v5/issues/10
+  new webpack.ProvidePlugin({
+    Buffer: ['buffer', 'Buffer'],
+  }),
+  new webpack.ProvidePlugin({
+    process: 'process/browser',
+  }),
 ];
 
 if (process.env.SERVE) {
@@ -28,6 +37,11 @@ if (process.env.SERVE) {
 }
 
 module.exports = {
+  resolve: {
+    fallback: {
+      buffer: require.resolve('buffer/'),
+    },
+  },
   mode,
   target,
   plugins,

@@ -68,7 +68,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     // обновляется автоматически т.к. возвращается респондент
     onCompleted: () => {
       setUserBack(true)
-      navigator.goBack()
+      navigator(-1)
     }
   })
 

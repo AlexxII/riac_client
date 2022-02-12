@@ -139,7 +139,7 @@ const Cities = () => {
         {!editting ?
           <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
             <Paper className="city-card">
-              <Typography variant="caption" display="block" gutterBotto>
+              <Typography variant="caption" display="block" gutterBottom>
                 {city.type ? city.type : ''}
               </Typography>
               <Typography variant="h6" gutterBottom>

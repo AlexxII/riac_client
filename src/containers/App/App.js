@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useReducer } from 'react';
+import React, {useState } from 'react';
 
 import './App.scss';
 import Router from '../Router'

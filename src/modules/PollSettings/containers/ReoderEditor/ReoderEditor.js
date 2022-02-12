@@ -5,7 +5,7 @@ import { useQuery, useMutation } from '@apollo/client'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import {arrayMoveMutable} from "array-move";
+import { arrayMoveMutable } from "array-move";
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import SystemNoti from '../../../../components/SystemNoti'
@@ -24,7 +24,7 @@ const ReoderEditor = ({ id }) => {
     onCompleted: () => {
       const questions = data.poll.questions
       setQuestions(questions.slice().sort((a, b) => (a.order > b.order) ? 1 : -1))
-    }
+    },
   })
   const [saveLimit, { loading: limitSaveLoading }] = useMutation(saveNewLimit, {
     onError: (e) => {

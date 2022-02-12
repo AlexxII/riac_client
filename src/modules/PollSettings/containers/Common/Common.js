@@ -168,13 +168,14 @@ const CommonSetting = ({ id }) => {
     data: pollData
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
+    errorPolicy: 'all',
     onCompleted: () => {
+      console.log(pollData)
       handleConfigFileAndUpdateCache(pollData.poll)
     }
   })
 
-
-  const handleConfigFileAndUpdateCache = (poll) => {
+const handleConfigFileAndUpdateCache = (poll) => {
     const filePath = poll.logic.path
     fetch(url + filePath)
       .then((r) => r.text())

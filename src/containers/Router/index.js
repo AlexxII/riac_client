@@ -38,7 +38,7 @@ const Router = () => {
         <Route path="/tester" element={<TesterPage/>} />
         <Route path="/update-result/:poll/:respondent" element={<UpdateResultsPage/>} />
         <Route path="/systemaz" element={<SystemzPage/>} />
-        <Route element={<NotFoundPage/>} />
+        <Route path="*" element={<NotFoundPage/>} />
       </Routes>
     </BrowserRouter>
   )

@@ -21,6 +21,7 @@ const LinearDistribution = ({ id }) => {
     loading: pollResultsLoading,
     error: pollResultsError
   } = useQuery(GET_POLL_WITH_RESULTS, {
+    fetchPolicy: "no-cache",
     variables: {
       id
     }

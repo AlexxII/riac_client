@@ -66,13 +66,15 @@ const PollDrive = ({ pollId }) => {
   const [currentCity, setCurrentCity] = useState(null)
   const [user, setUser] = useState(null)                                                        // пользователь, который проводил опрос
   const [cityCode, setCityCode] = useState(null)
-  const { loading, error, data } = useQuery(GET_POLL_DATA, {
-    variables: { id: pollId },
-    onCompleted: (_, __) => {
-      handleConfigFile(data.poll.logic.path)
-      setPoolOfCities(data.poll.cities)
-    }
-  })
+  const { loading, error, data } = useQuery(GET_POLL_DATA,
+    {
+      fetchPolicy: "no-cache",
+      variables: { id: pollId },
+      onCompleted: (_, __) => {
+        handleConfigFile(data.poll.logic.path)
+        setPoolOfCities(data.poll.cities)
+      }
+    })
   const handleConfigFile = (filePath) => {
     fetch(url + filePath)
       .then((r) => r.text())

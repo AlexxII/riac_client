@@ -22,6 +22,7 @@ const ReoderEditor = ({ id }) => {
   const [filters, setFilters] = useState(false)
 
   const { loading: pollFiltersLoading, error: pollFiltersError, data: pollFilters } = useQuery(GET_POLL_AND_ALL_FILTERS, {
+    fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: () => {
       const preparedFilters = prepareFilters(pollFilters)
@@ -216,7 +217,7 @@ const ReoderEditor = ({ id }) => {
           onClick={handleSave}
         >
           Сохранить
-      </Button>
+        </Button>
       </div>
       <Grid container xs={12}>
         <Typography variant="h6" gutterBottom className="header">Возраст</Typography>

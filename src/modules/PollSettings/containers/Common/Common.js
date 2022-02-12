@@ -167,6 +167,7 @@ const CommonSetting = ({ id }) => {
     error,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
+    fetchPolicy: "no-cache",
     variables: { id },
     errorPolicy: 'all',
     onCompleted: () => {
@@ -175,7 +176,7 @@ const CommonSetting = ({ id }) => {
     }
   })
 
-const handleConfigFileAndUpdateCache = (poll) => {
+  const handleConfigFileAndUpdateCache = (poll) => {
     const filePath = poll.logic.path
     fetch(url + filePath)
       .then((r) => r.text())

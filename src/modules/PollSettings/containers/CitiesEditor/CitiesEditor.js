@@ -48,6 +48,7 @@ const CitiesEditor = ({ id }) => {
     loading: citiesLoading,
     error: cititesError
   } = useQuery(GET_ALL_CITIES_AND_ACTIVE, {
+    fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: () => {
       const pollCities = citiesData.poll.cities

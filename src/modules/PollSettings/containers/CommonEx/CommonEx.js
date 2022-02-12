@@ -42,6 +42,7 @@ const CommonEx = ({ id }) => {
     error,
     data: pollData
   } = useQuery(GET_POLL_DATA, {
+    fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: (data) => {
       const topicsObj = data.poll.questions.reduce((acum, item) => {

@@ -33,7 +33,12 @@ const AgeCategory = () => {
     data: ageCategories,
     loading: ageCategoriesLoading,
     error: ageCategoriesError
-  } = useQuery(GET_AGE_CATEGORIES)
+  } = useQuery(
+    GET_AGE_CATEGORIES,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_AGE_CATEGORY_STATUS, {
     onError: (e) => {

@@ -27,6 +27,7 @@ const ConfigEditor = ({ id }) => {
   const [filePath, setFilePath] = useState(null)
   const textRef = useRef()
   const { loading, error, data } = useQuery(logicQuery, {
+    fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: () => {
       handleConfigFile(data.pollLogic.path)

@@ -20,12 +20,21 @@ const Users = () => {
     loading: dataLoading,
     error: dataError,
     data
-  } = useQuery(GET_ALL_USERS)
+  } = useQuery(
+    GET_ALL_USERS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
   const {
     loading: selectsLoading,
     error: selectsError,
     data: selects
-  } = useQuery(GET_AUTH_SELECTS)
+  } = useQuery(GET_AUTH_SELECTS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const [deleteUsers, { loading: deleteLoading }] = useMutation(DELETE_USERS,
     {

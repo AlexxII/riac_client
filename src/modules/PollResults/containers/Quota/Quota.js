@@ -18,6 +18,7 @@ const Quota = ({ id }) => {
     loading: pollResultsLoading,
     error: pollResultsError
   } = useQuery(GET_POLL_RESULTS_BY_USERS, {
+    fetchPolicy: "no-cache",
     variables: {
       id
     }

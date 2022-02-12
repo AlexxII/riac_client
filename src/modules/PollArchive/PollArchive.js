@@ -21,7 +21,12 @@ const PollArchive = () => {
     loading: pollsLoading,
     error: pollsError,
     data: pollsData
-  } = useQuery(GET_ARCHIVE_POLLS)
+  } = useQuery(
+    GET_ARCHIVE_POLLS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   if (pollsLoading) return (
     <LoadingState />

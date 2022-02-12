@@ -32,7 +32,12 @@ const CityCategory = () => {
     data: customFilters,
     loading: customFiltersLoading,
     error: customFiltersError
-  } = useQuery(GET_CUSTOM_FILTERS)
+  } = useQuery(
+    GET_CUSTOM_FILTERS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const [changeFilterStatus, { loading: changeFilterStatusLoading }] = useMutation(CHANGE_FILTER_STATUS, {
     onError: (e) => {

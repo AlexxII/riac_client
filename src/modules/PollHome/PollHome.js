@@ -24,7 +24,12 @@ const PollHome = () => {
     loading: pollsLoading,
     error: pollsError,
     data: pollsData
-  } = useQuery(GET_ALL_ACTIVE_POLLS)
+  } = useQuery(
+    GET_ALL_ACTIVE_POLLS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const [addPoll, {
     loading: addLoading

@@ -79,13 +79,19 @@ const OverallResults = ({ id }) => {
     data: filtersResults,
     loading: filtersResultsLoading,
     error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS)
+  } = useQuery(
+    GET_FILTER_SELECTS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const {
     data: pollResults,
     loading: pollResultsLoading,
     error: pollResultsError
   } = useQuery(GET_POLL_RESULTS, {
+    fetchPolicy: "no-cache",
     variables: {
       id
     },
@@ -873,7 +879,7 @@ const OverallResults = ({ id }) => {
                   :
                   <Typography variant="button" display="block" gutterBottom id="blink-text">
                     Анализ дублей
-                </Typography>
+                  </Typography>
               }
             </Box>
           </Grid>

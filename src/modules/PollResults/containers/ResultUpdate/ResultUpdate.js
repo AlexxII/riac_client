@@ -52,6 +52,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     }
   )
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
+    fetchPolicy: "no-cache",
     variables: { id: pollId },
     onCompleted: (_, __) => {
       handleConfigFile(data.poll.logic.path)
@@ -77,6 +78,7 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     loading: pollResultsLoading,
     error: pollResultsError
   } = useQuery(GET_RESPONDENT_RESULT, {
+    fetchPolicy: "no-cache",
     variables: {
       id: respondentId
     },

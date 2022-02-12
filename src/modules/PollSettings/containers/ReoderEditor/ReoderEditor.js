@@ -20,6 +20,7 @@ const ReoderEditor = ({ id }) => {
   const [questions, setQuestions] = useState(null)
   const [prevOrder, setPrevOrder] = useState(null)
   const { loading: pollLoading, error: pollError, data } = useQuery(pollQuery, {
+    fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: () => {
       const questions = data.poll.questions

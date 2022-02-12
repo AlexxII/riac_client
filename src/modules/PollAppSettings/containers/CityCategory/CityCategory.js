@@ -30,7 +30,12 @@ const CityCategory = () => {
     data: citiesCategories,
     loading: citiesCategoriesLoading,
     error: citiesCategoriesError
-  } = useQuery(GET_CITIES_CATEGORIES)
+  } = useQuery(
+    GET_CITIES_CATEGORIES,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_CATEGORY_STATUS, {
     onError: (e) => {

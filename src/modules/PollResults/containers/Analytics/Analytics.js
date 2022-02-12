@@ -65,6 +65,7 @@ const Analytics = ({ id }) => {
     loading: pollDataLoading,
     error: pollDataError
   } = useQuery(GET_POLL_DATA, {
+    fetchPolicy: "no-cache",
     variables: {
       id
     },

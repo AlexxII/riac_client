@@ -37,7 +37,12 @@ const Cities = () => {
     data: citiesData,
     loading: citiesLoading,
     error: citiesError
-  } = useQuery(GET_CITITES_WITH_CATEGORIES)
+  } = useQuery(
+    GET_CITITES_WITH_CATEGORIES,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const [saveCity, { loading: saveCityLoading }] = useMutation(CITY_SAVE_MUTATION, {
     onError: (e) => {
@@ -269,7 +274,7 @@ const Cities = () => {
               disabled={!edit}
             >
               Save
-          </Button>
+            </Button>
           </form>
         </Paper>
       </Grid>

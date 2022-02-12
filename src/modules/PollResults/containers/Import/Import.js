@@ -199,13 +199,19 @@ const Import = ({ id }) => {
     data: filtersResults,
     loading: filtersResultsLoading,
     error: filtersResultsError
-  } = useQuery(GET_FILTER_SELECTS)
+  } = useQuery(
+    GET_FILTER_SELECTS,
+    {
+      fetchPolicy: "no-cache"
+    }
+  )
 
   const {
     data: pollData,
     loading: pollDataLoading,
     error: pollDataError
   } = useQuery(GET_POLL_DATA, {
+    fetchPolicy: "no-cache",
     variables: {
       id
     },

@@ -21,6 +21,7 @@ const Generation = ({ id }) => {
   const [logic, setLogic] = useState(null)
   const [count, setCount] = useState(null)
   const { loading, data } = useQuery(GET_POLL_DATA, {
+    fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: () => {
       setPoll({

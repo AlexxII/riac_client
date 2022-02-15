@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const GET_CITIES_CATEGORIES = gql`
-query {
+query queryCityCategory{
   cityCategoriesAll {
     id
     title

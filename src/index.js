@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { ApolloClient, ApolloProvider } from '@apollo/client'
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import * as serviceWorker from './serviceWorker';
 import { cache } from './cache'
 
@@ -12,7 +12,8 @@ const url = process.env.NODE_ENV !== 'production' ? 'http://localhost:4000' : pr
 
 const client = new ApolloClient({
   uri: url + '/graphql',
-  cache,
+  // cache,
+  cache: new InMemoryCache(),
   credentials: 'include',
   connectToDevTools: true
 })

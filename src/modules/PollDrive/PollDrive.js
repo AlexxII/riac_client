@@ -173,6 +173,7 @@ const PollDrive = ({ pollId }) => {
   }
 
   const saveCity = ({ city, user }) => {
+    console.log(user);
     setCurrentCity(city)
     const configCities = logic.cities ? logic.cities : []
     let cityCode = ''

@@ -90,6 +90,7 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: (data) => {
+      console.log(data);
       setActiveWorksheets(data.poll.results)
       const filePath = data.poll.logic.path
       fetch(url + filePath)
@@ -98,6 +99,7 @@ const OverallResults = ({ id }) => {
           const normalizedLogic = normalizeLogic(parseIni(text))
           setLogic(normalizedLogic)
         })
+      console.log('ddddddddddd');
       setQuota({
         // распределение ответов по людям
         users: data.poll.results.reduce((acum, item) => {
@@ -191,16 +193,17 @@ const OverallResults = ({ id }) => {
     onCompleted: (data) => {
       // обновление вью
       const repondents = data.updateResultCity
-      console.log(repondents)
       const respondentIdPool = repondents.reduce((acum, item) => {
         acum[item.id] = item
         return acum
       }, {})
-      setActiveWorksheets(activeWorksheets.map(
+      const newActiveWorksheets = activeWorksheets.map(
         result => respondentIdPool[result.id] ? respondentIdPool[result.id] : result
-      ))
+      )
+      setActiveWorksheets(newActiveWorksheets);
       // фильтруем
-      const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      // const results = duplicateAnalyueMode ? newActiveWorksheet : pollResults.poll.results
+      const results = newActiveWorksheets
       const newResult = doFiltration(results)
       setActiveWorksheets(newResult)
       setQuota({
@@ -230,16 +233,27 @@ const OverallResults = ({ id }) => {
         acum[item.id] = item
         return acum
       }, {})
-      setActiveWorksheets(activeWorksheets.map(
+      const newActiveWorksheet = activeWorksheets.map(
         result => respondentIdPool[result.id] ? respondentIdPool[result.id] : result
-      ))
+      )
+      setActiveWorksheets(newActiveWorksheet);
       // фильтруем
-      const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      // const results = duplicateAnalyzeMode ? activeWorksheets : pollResults.poll.results
+      const results = newActiveWorksheet;
       const newResult = doFiltration(results)
       setActiveWorksheets(newResult)
       setQuota({
         ...quota,
-        users: handleUserQuotaData(pollResults.poll.results)
+        users: pollResults.poll.results.reduce((acum, item) => {
+          if (item.user) {
+            if (!acum[item.user.id]) {
+              acum[item.user.id] = 1
+            } else {
+              acum[item.user.id] = acum[item.user.id] + 1
+            }
+          }
+          return acum
+        }, {})
       })
     }
   })
@@ -275,7 +289,6 @@ const OverallResults = ({ id }) => {
   }, [activeFilters])
 
   const doFiltration = (results) => {
-    console.log(activeFilters);
     if (!activeFilters) {
       const newResult = results.map(item => item);
       return newResult;
@@ -669,7 +682,6 @@ const OverallResults = ({ id }) => {
 
   const saveNewUser = (data) => {
     const user = data.id
-    console.log(user);
     updateRespondentUser({
       variables: {
         results: selectPool,

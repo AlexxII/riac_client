@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const GET_ALL_ACTIVE_POLLS = gql`
-  query {
+  query getAllActivePolls{
     polls {
       id
       title

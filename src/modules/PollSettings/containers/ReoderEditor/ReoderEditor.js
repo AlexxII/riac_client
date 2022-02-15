@@ -21,7 +21,7 @@ const ReoderEditor = ({ id }) => {
   const [prevOrder, setPrevOrder] = useState(null)
   const { loading: pollLoading, error: pollError, data } = useQuery(pollQuery, {
     variables: { id },
-    onCompleted: () => {
+    onCompleted: (data) => {
       const questions = data.poll.questions
       setQuestions(questions.slice().sort((a, b) => (a.order > b.order) ? 1 : -1))
     },

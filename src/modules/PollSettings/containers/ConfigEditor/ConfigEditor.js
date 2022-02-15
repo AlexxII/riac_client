@@ -28,8 +28,14 @@ const ConfigEditor = ({ id }) => {
   const textRef = useRef()
   const { loading, error, data } = useQuery(logicQuery, {
     variables: { id },
-    onCompleted: () => {
-      handleConfigFile(data.pollLogic.path)
+    onCompleted: (data) => {
+    const filePath = data.pollLogic.path;
+    setFilePath(filePath)
+    fetch(url + filePath)
+      .then((r) => r.text())
+      .then(text => {
+        setConfig(text)
+      })
     },
   })
 

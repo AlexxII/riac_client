@@ -49,7 +49,7 @@ const CitiesEditor = ({ id }) => {
     error: cititesError
   } = useQuery(GET_ALL_CITIES_AND_ACTIVE, {
     variables: { id },
-    onCompleted: () => {
+    onCompleted: (citiesData) => {
       const pollCities = citiesData.poll.cities
       setAllCitites(citiesData.cities)
       setAvailableCities(citiesData.cities.filter(

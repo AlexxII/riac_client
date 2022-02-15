@@ -44,6 +44,7 @@ const CommonEx = ({ id }) => {
   } = useQuery(GET_POLL_DATA, {
     variables: { id },
     onCompleted: (data) => {
+      console.log(data);
       const topicsObj = data.poll.questions.reduce((acum, item) => {
         if (acum[item.topic.id] === undefined) {
           acum[item.topic.id] = {
@@ -207,7 +208,6 @@ const CommonEx = ({ id }) => {
                   variant="outlined"
                   color="primary"
                   size="small"
-                  // onDelete={() => { }}
                   deleteIcon={<InfoOutlinedIcon />}
                   label={(topic.title ? topic.title : '-') + ' - ' + topic.questions.length}
                 />
@@ -215,7 +215,6 @@ const CommonEx = ({ id }) => {
             </div>
           </Grid>
         </Grid>
-
         <FormControlLabel
           style={{ marginLeft: '0px' }}
           label="Активный"

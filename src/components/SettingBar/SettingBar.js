@@ -89,7 +89,7 @@ const SettingBar = ({ title, prevPage }) => {
             {title}
           </Typography>
           <div className={classes.grow} />
-          <div className={classes.sectionDesktop}>
+          {/* <div className={classes.sectionDesktop}>
             <IconButton
               edge="end"
               aria-label="apps"
@@ -99,10 +99,10 @@ const SettingBar = ({ title, prevPage }) => {
               color="inherit">
               <AppsIcon />
             </IconButton>
-          </div>
+          </div> */}
         </Toolbar>
       </AppBar>
-      {renderAppsMenu}
+      {/* {renderAppsMenu} */}
     </div>
   );
 }

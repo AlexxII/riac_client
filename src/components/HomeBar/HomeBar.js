@@ -9,7 +9,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import AppsIcon from '@material-ui/icons/Apps';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -103,7 +102,7 @@ const HomeBar = ({ title }) => {
       open={isAppMenuOpen}
       onClose={handleAppMenuClose}
     >
-      <MenuItem onClick={() => handleAppMenuClick('')}>Опросы</MenuItem>
+      <MenuItem onClick={() => handleAppMenuClick('/')}>Опросы</MenuItem>
       <MenuItem onClick={() => handleAppMenuClick('systemaz')}>Система-Z</MenuItem>
     </Menu>
   )
@@ -153,7 +152,6 @@ const HomeBar = ({ title }) => {
             {title}
           </Typography>
           <div className={classes.grow} />
-          <div className={classes.sectionDesktop}>
             <IconButton
               aria-label="apps"
               aria-controls={appsMenuId}
@@ -165,8 +163,7 @@ const HomeBar = ({ title }) => {
               </Badge>
             </IconButton>
             <UserProfileMenu />
-          </div>
-          <div className={classes.sectionMobile}>
+          {/* <div className={classes.sectionMobile}>
             <IconButton
               aria-label="show more"
               aria-controls={mobileMenuId}
@@ -176,11 +173,11 @@ const HomeBar = ({ title }) => {
             >
               <MoreIcon />
             </IconButton>
-          </div>
+          </div> */}
         </Toolbar>
       </AppBar>
       <ServiceMenu open={menuOpen} close={closeServiceMenu} />
-      {renderMobileMenu}
+      {/* {renderMobileMenu} */}
       {renderAppsMenu}
     </div>
   );

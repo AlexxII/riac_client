@@ -22,27 +22,24 @@ const Generation = ({ id }) => {
   const [count, setCount] = useState(null)
   const { loading, data } = useQuery(GET_POLL_DATA, {
     variables: { id },
-    onCompleted: () => {
+    onCompleted: (data) => {
       setPoll({
         id: data.poll.id,
         title: data.poll.title,
         questionsCount: data.poll.questionsCount,
         answersCount: data.poll.answersCount
       })
-      handleConfigFile(data.poll.logic.path)
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const logic = parseIni(text)
+          // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
+          const mainLogic = normalizeLogic(logic)
+          setLogic(mainLogic)
+        })
     }
   })
-
-  const handleConfigFile = (filePath) => {
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const mainLogic = normalizeLogic(logic)
-        setLogic(mainLogic)
-      })
-  }
 
   useEffect(() => {
     if (logic) {

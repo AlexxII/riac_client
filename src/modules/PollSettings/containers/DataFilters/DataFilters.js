@@ -23,7 +23,7 @@ const ReoderEditor = ({ id }) => {
 
   const { loading: pollFiltersLoading, error: pollFiltersError, data: pollFilters } = useQuery(GET_POLL_AND_ALL_FILTERS, {
     variables: { id },
-    onCompleted: () => {
+    onCompleted: (pollFilters) => {
       const preparedFilters = prepareFilters(pollFilters)
       setFilters(preparedFilters)
     }

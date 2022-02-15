@@ -16,10 +16,6 @@ import ErrorState from '../../../../components/ErrorState'
 import SystemNoti from '../../../../components/SystemNoti'
 import LoadingStatus from '../../../../components/LoadingStatus'
 
-import { useQuery, useMutation } from '@apollo/client'
-
-import { GET_USER_SETTINGS } from './queries'
-
 const UserPollSettings = ({ id }) => {
   const [noti, setNoti] = useState(false)
   const [city, setCity] = useState(false)

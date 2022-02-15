@@ -209,8 +209,16 @@ const Import = ({ id }) => {
     variables: {
       id
     },
-    onCompleted: () => {
-      handleConfigFile(pollData.poll.logic.path)
+    onCompleted: (data) => {
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const logic = parseIni(text)
+          // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
+          const normLogic = normalizeLogic(logic)
+          setLogic(normLogic)
+        })
     }
   });
 
@@ -254,17 +262,6 @@ const Import = ({ id }) => {
       console.log(('saved'));
     }
   })
-
-  const handleConfigFile = (filePath) => {
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const normLogic = normalizeLogic(logic)
-        setLogic(normLogic)
-      })
-  }
 
   const handleRawInput = (e) => {
     e.preventDefault()

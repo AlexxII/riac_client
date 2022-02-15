@@ -170,9 +170,7 @@ const CommonSetting = ({ id }) => {
     variables: { id },
     errorPolicy: 'all',
     onCompleted: (data) => {
-      console.log(data)
       const filePath = data.poll.logic.path
-
       fetch(url + filePath)
         .then((r) => r.text())
         .then(text => {

@@ -89,53 +89,41 @@ const OverallResults = ({ id }) => {
     variables: {
       id
     },
-    onCompleted: () => {
-      setActiveWorksheets(pollResults.poll.results)
-      handleConfigFileAndUpdateCache(pollResults.poll)
+    onCompleted: (data) => {
+      setActiveWorksheets(data.poll.results)
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const normalizedLogic = normalizeLogic(parseIni(text))
+          setLogic(normalizedLogic)
+        })
       setQuota({
-        users: handleUserQuotaData(pollResults.poll.results),
-        cities: handleCityQuotaData(pollResults.poll.results)
+        // распределение ответов по людям
+        users: data.poll.results.reduce((acum, item) => {
+          if (item.user) {
+            if (!acum[item.user.id]) {
+              acum[item.user.id] = 1
+            } else {
+              acum[item.user.id] = acum[item.user.id] + 1
+            }
+          }
+          return acum
+        }, {}),
+        // распределение ответов по городам
+        cities: data.poll.results.reduce((acum, item) => {
+          if (item.city) {
+            if (!acum[item.city.id]) {
+              acum[item.city.id] = 1
+            } else {
+              acum[item.city.id] = acum[item.city.id] + 1
+            }
+          }
+          return acum
+        }, {})
       })
     }
   });
-
-  const handleConfigFileAndUpdateCache = (poll) => {
-    const filePath = poll.logic.path
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const normalizedLogic = normalizeLogic(parseIni(text))
-        setLogic(normalizedLogic)
-      })
-  }
-
-  // распределение ответов по людям
-  const handleUserQuotaData = (data) => {
-    return data.reduce((acum, item) => {
-      if (item.user) {
-        if (!acum[item.user.id]) {
-          acum[item.user.id] = 1
-        } else {
-          acum[item.user.id] = acum[item.user.id] + 1
-        }
-      }
-      return acum
-    }, {})
-  }
-
-  // распределение ответов по городам
-  const handleCityQuotaData = (data) => {
-    return data.reduce((acum, item) => {
-      if (item.city) {
-        if (!acum[item.city.id]) {
-          acum[item.city.id] = 1
-        } else {
-          acum[item.city.id] = acum[item.city.id] + 1
-        }
-      }
-      return acum
-    }, {})
-  }
 
   const [
     deleteResult,
@@ -203,6 +191,7 @@ const OverallResults = ({ id }) => {
     onCompleted: (data) => {
       // обновление вью
       const repondents = data.updateResultCity
+      console.log(repondents)
       const respondentIdPool = repondents.reduce((acum, item) => {
         acum[item.id] = item
         return acum
@@ -216,7 +205,16 @@ const OverallResults = ({ id }) => {
       setActiveWorksheets(newResult)
       setQuota({
         ...quota,
-        cities: handleCityQuotaData(pollResults.poll.results)
+        cities: pollResults.poll.results.reduce((acum, item) => {
+          if (item.city) {
+            if (!acum[item.city.id]) {
+              acum[item.city.id] = 1
+            } else {
+              acum[item.city.id] = acum[item.city.id] + 1
+            }
+          }
+          return acum
+        }, {})
       })
     }
   })
@@ -277,6 +275,11 @@ const OverallResults = ({ id }) => {
   }, [activeFilters])
 
   const doFiltration = (results) => {
+    console.log(activeFilters);
+    if (!activeFilters) {
+      const newResult = results.map(item => item);
+      return newResult;
+    }
     const newResult = results
       .filter(result => {
         return activeFilters.cities ? result.city ? activeFilters.cities.includes(result.city.id) : false : true
@@ -873,7 +876,7 @@ const OverallResults = ({ id }) => {
                   :
                   <Typography variant="button" display="block" gutterBottom id="blink-text">
                     Анализ дублей
-                </Typography>
+                  </Typography>
               }
             </Box>
           </Grid>

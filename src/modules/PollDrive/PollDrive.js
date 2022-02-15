@@ -68,21 +68,20 @@ const PollDrive = ({ pollId }) => {
   const [cityCode, setCityCode] = useState(null)
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
     variables: { id: pollId },
-    onCompleted: (_, __) => {
-      handleConfigFile(data.poll.logic.path)
+    onCompleted: (data) => {
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const logic = parseIni(text)
+          // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
+          const normLogic = normalizeLogic(logic)
+          setPollLogic(normLogic)
+        })
       setPoolOfCities(data.poll.cities)
     }
   })
-  const handleConfigFile = (filePath) => {
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const normLogic = normalizeLogic(logic)
-        setPollLogic(normLogic)
-      })
-  }
+
   const [saveResult, { loading: saveLoading, data: saveResultData }] = useMutation(SAVE_NEW_RESULT, {
     onError: ({ graphQLErrors }) => {
       if (graphQLErrors.length) {

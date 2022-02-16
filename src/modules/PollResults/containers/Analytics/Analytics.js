@@ -69,10 +69,24 @@ const Analytics = ({ id }) => {
     variables: {
       id
     },
-    onCompleted: () => {
+    onCompleted: (data) => {
       setProcessing(true)
-      handleConfigFile(pollData.poll.logic.path)
-      gettingSimilarQuestions(pollData)
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const logic = parseIni(text)
+          // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
+          const normLogic = normalizeLogic(logic)
+          setLogic(normLogic)
+        })
+      const uniqueTopics = [...new Set(data.poll.questions.map(questions => questions.topic.id))]
+      getSameQuestions({
+        variables: {
+          topics: uniqueTopics,
+          poll: id
+        }
+      })
     }
   });
 
@@ -82,16 +96,6 @@ const Analytics = ({ id }) => {
       console.log(graphQLErrors);
     }
   });
-
-  const gettingSimilarQuestions = (pollData) => {
-    const uniqueTopics = [...new Set(pollData.poll.questions.map(questions => questions.topic.id))]
-    getSameQuestions({
-      variables: {
-        topics: uniqueTopics,
-        poll: id
-      }
-    })
-  }
 
   useEffect(() => {
     if (sameQuestionsData && !sameQuestionsLoading) {
@@ -202,14 +206,6 @@ const Analytics = ({ id }) => {
   }
 
   const handleConfigFile = (filePath) => {
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const normLogic = normalizeLogic(logic)
-        setLogic(normLogic)
-      })
   }
 
   if (pollDataLoading) return (

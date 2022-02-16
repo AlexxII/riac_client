@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const pollQuery = gql`
-  query pollQuery($id: ID!) {
+  query queryPollForReoder($id: ID!) {
     poll(id: $id) {
       id
       title

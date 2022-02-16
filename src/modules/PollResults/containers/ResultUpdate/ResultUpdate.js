@@ -54,8 +54,16 @@ const ResultUpdate = ({ pollId, respondentId }) => {
   const { loading, error, data } = useQuery(GET_POLL_DATA, {
     fetchPolicy: "no-cache",
     variables: { id: pollId },
-    onCompleted: (_, __) => {
-      handleConfigFile(data.poll.logic.path)
+    onCompleted: (data) => {
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const logic = parseIni(text)
+          // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
+          const normLogic = normalizeLogic(logic)
+          setPollLogic(normLogic)
+        })
     }
   })
 
@@ -82,59 +90,47 @@ const ResultUpdate = ({ pollId, respondentId }) => {
     variables: {
       id: respondentId
     },
-    onCompleted: () => {
-      prepareSavedData(pollResults.respondent)
-    }
-  });
+    onCompleted: (data) => {
+      const respData = data.respondent
+      const pool = respData.result.map(result =>
+        result.code
+      )
+      const dd = respData.result.reduce((acum, item) => {
+        acum[item.question.id] = {
+          count: item.question.order - 1,
+          codesPool: item.question.codesPool,
+          data: acum[item.question.id] ?
+            [
+              ...acum[item.question.id].data,
+              {
+                answerCode: item.code,
+                answerId: item.answer.id,
+                freeAnswer: item.text !== '',
+                freeAnswerText: item.text
+              }
 
-  const handleConfigFile = (filePath) => {
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const normLogic = normalizeLogic(logic)
-        setPollLogic(normLogic)
-      })
-  }
-
-  // подготовить ранее сохраненные результаты
-  const prepareSavedData = (data) => {
-    console.log(data);
-    const pool = data.result.map(result =>
-      result.code
-    )
-    const dd = data.result.reduce((acum, item) => {
-      acum[item.question.id] = {
-        count: item.question.order - 1,
-        codesPool: item.question.codesPool,
-        data: acum[item.question.id] ?
-          [
-            ...acum[item.question.id].data,
-            {
+            ]
+            :
+            [{
               answerCode: item.code,
               answerId: item.answer.id,
               freeAnswer: item.text !== '',
               freeAnswerText: item.text
-            }
 
-          ]
-          :
-          [{
-            answerCode: item.code,
-            answerId: item.answer.id,
-            freeAnswer: item.text !== '',
-            freeAnswerText: item.text
+            }]
+        }
+        return acum
+      }, {})
+      setResults({
+        pool,
+        ...dd
+      })
+    }
+  });
 
-          }]
-      }
-      return acum
-    }, {})
-    setResults({
-      pool,
-      ...dd
-    })
+  const handleConfigFile = (filePath) => {
   }
+
 
   useEffect(() => {
     if (logic) {

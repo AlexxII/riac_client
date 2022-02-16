@@ -29,8 +29,14 @@ const ConfigEditor = ({ id }) => {
   const { loading, error, data } = useQuery(logicQuery, {
     fetchPolicy: "no-cache",
     variables: { id },
-    onCompleted: () => {
-      handleConfigFile(data.pollLogic.path)
+    onCompleted: (data) => {
+    const filePath = data.pollLogic.path;
+    setFilePath(filePath)
+    fetch(url + filePath)
+      .then((r) => r.text())
+      .then(text => {
+        setConfig(text)
+      })
     },
   })
 

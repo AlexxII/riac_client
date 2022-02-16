@@ -66,25 +66,22 @@ const PollDrive = ({ pollId }) => {
   const [currentCity, setCurrentCity] = useState(null)
   const [user, setUser] = useState(null)                                                        // пользователь, который проводил опрос
   const [cityCode, setCityCode] = useState(null)
-  const { loading, error, data } = useQuery(GET_POLL_DATA,
-    {
-      fetchPolicy: "no-cache",
-      variables: { id: pollId },
-      onCompleted: (_, __) => {
-        handleConfigFile(data.poll.logic.path)
-        setPoolOfCities(data.poll.cities)
-      }
-    })
-  const handleConfigFile = (filePath) => {
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const logic = parseIni(text)
-        // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
-        const normLogic = normalizeLogic(logic)
-        setPollLogic(normLogic)
-      })
-  }
+  const { loading, error, data } = useQuery(GET_POLL_DATA, {
+    variables: { id: pollId },
+    onCompleted: (data) => {
+      const filePath = data.poll.logic.path
+      fetch(url + filePath)
+        .then((r) => r.text())
+        .then(text => {
+          const logic = parseIni(text)
+          // Нормализация ЛОГИКИ - здесь формируется ЛОГИКА опроса, на основании конфиг файла !!!
+          const normLogic = normalizeLogic(logic)
+          setPollLogic(normLogic)
+        })
+      setPoolOfCities(data.poll.cities)
+    }
+  })
+
   const [saveResult, { loading: saveLoading, data: saveResultData }] = useMutation(SAVE_NEW_RESULT, {
     onError: ({ graphQLErrors }) => {
       if (graphQLErrors.length) {
@@ -176,6 +173,7 @@ const PollDrive = ({ pollId }) => {
   }
 
   const saveCity = ({ city, user }) => {
+    console.log(user);
     setCurrentCity(city)
     const configCities = logic.cities ? logic.cities : []
     let cityCode = ''

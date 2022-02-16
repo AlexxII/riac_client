@@ -22,7 +22,7 @@ const ReoderEditor = ({ id }) => {
   const { loading: pollLoading, error: pollError, data } = useQuery(pollQuery, {
     fetchPolicy: "no-cache",
     variables: { id },
-    onCompleted: () => {
+    onCompleted: (data) => {
       const questions = data.poll.questions
       setQuestions(questions.slice().sort((a, b) => (a.order > b.order) ? 1 : -1))
     },

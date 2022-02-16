@@ -71,6 +71,11 @@ module.exports = {
         ],
       },
       {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader',
+      },
+      {
         test: /\.(png|jpe?g|gif|svg|webp|ico)$/i,
         type: mode === 'production' ? 'asset' : 'asset/resource',
       },

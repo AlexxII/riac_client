@@ -16,16 +16,27 @@ import { ADD_NEW_USER, UPDATE_USER, DELETE_USERS, RESET_PASSWORD } from './mutat
 
 const Users = () => {
   const [noti, setNoti] = useState(false)
+  const [error, setError] = useState(false)
   const {
     loading: dataLoading,
     error: dataError,
     data
+<<<<<<< HEAD
   } = useQuery(
     GET_ALL_USERS,
     {
       fetchPolicy: "no-cache"
     }
   )
+=======
+  } = useQuery(GET_ALL_USERS, {
+    onError: ({ graphQLErrors }) => {
+      setError(graphQLErrors);
+      console.log(graphQLErrors);
+    }
+  })
+
+>>>>>>> 13bb3ee3f9902dc6b323ded484136053c938667f
   const {
     loading: selectsLoading,
     error: selectsError,
@@ -48,7 +59,7 @@ const Users = () => {
       update: (cache, { data: { deleteUsers } }) => cache.writeQuery({
         query: GET_ALL_USERS,
         data: {
-          users: data.users.filter(user => {
+          protectedUsersInfo: data.protectedUsersInfo.filter(user => {
             for (let i = 0; i < deleteUsers.length; i++) {
               if (deleteUsers[i].id === user.id) return false
             }
@@ -73,8 +84,8 @@ const Users = () => {
       update: (cache, { data: { addNewUser } }) => cache.writeQuery({
         query: GET_ALL_USERS,
         data: {
-          users: [
-            ...data.users,
+          protectedUsersInfo: [
+            ...data.protectedUsersInfo,
             addNewUser
           ]
         }
@@ -94,7 +105,7 @@ const Users = () => {
       update: (cache, { data: { updateUser } }) => cache.writeQuery({
         query: GET_ALL_USERS,
         data: {
-          users: data.users.map(user => user.id === updateUser.id ? updateUser : user)
+          protectedUsersInfo: data.protectedUsersInfo.map(user => user.id === updateUser.id ? updateUser : user)
         }
       })
     }
@@ -104,6 +115,26 @@ const Users = () => {
   if (dataLoading || selectsLoading) return (
     <LoadingState />
   )
+
+  if (error) {
+    const errorType = error[0].extensions.type;
+    if (errorType === '000501') {
+      return (
+        <ErrorState
+          title="Отказано в доступе"
+          description="Только администраторы системы могут просматривать данную страницу"
+        />
+      )
+    }
+    else {
+      return (
+        <ErrorState
+          title="Что-то пошло не так"
+          description="Не удалось загрузить критические данные. Смотрите консоль"
+        />
+      )
+    }
+  }
 
   if (dataError || selectsError) {
     return (
@@ -166,7 +197,7 @@ const Users = () => {
       <Loading />
 
       <UsersTable
-        users={data.users}
+        users={data.protectedUsersInfo}
         selects={selects}
         addNewUser={addNewUser}
         deleteUsers={handleUsersDelete}

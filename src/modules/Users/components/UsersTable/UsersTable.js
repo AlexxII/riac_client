@@ -159,7 +159,7 @@ const EnhancedTableToolbar = (props) => {
           </Tooltip>
         )
       }
-    </Toolbar >
+    </Toolbar>
   );
 };
 

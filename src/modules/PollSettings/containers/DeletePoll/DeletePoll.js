@@ -13,7 +13,7 @@ import Divider from '@material-ui/core/Divider';
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
 import { useMutation } from '@apollo/client'
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { DELETE_POLL } from './mutations'
 
@@ -23,12 +23,19 @@ const DeletePoll = ({ id, code }) => {
   const [open, setOpen] = useState(false)
   const [incorrect, setIncorrect] = useState(true)
   const [delPoll, { poll }] = useMutation(DELETE_POLL, {
-    onError: (e) => {
+    onError: ({ graphQLErrors }) => {
+      const errorType = graphQLErrors[0].extensions.type;
+      let text = ''
+      if (errorType == '000501') {
+        text = 'Отказано в доступе'
+      } else {
+        text = 'Удалить не удалось. Смотрите консоль.'
+      }
       setNoti({
         type: 'error',
-        text: 'Удалить не удалось. Смотрите консоль.'
+        text: text
       })
-      console.log(e)
+      console.log(graphQLErrors)
       setOpen(false)
     },
     update: (cache, { data }) => {

@@ -14,10 +14,10 @@ const PollAppSettings = () => {
       label: 'Города',
       component: <Cities />
     },
-    {
-      label: 'Выборка',
-      component: <Sample />
-    },
+    // {
+    //   label: 'Выборка',
+    //   component: <Sample />
+    // },
     {
       label: 'Фильтр',
       component: <CustomFilter />

@@ -24,99 +24,97 @@ const ReoderEditor = ({ id }) => {
   const { loading: pollFiltersLoading, error: pollFiltersError, data: pollFilters } = useQuery(GET_POLL_AND_ALL_FILTERS, {
     fetchPolicy: "no-cache",
     variables: { id },
-    onCompleted: (pollFilters) => {
-      const preparedFilters = prepareFilters(pollFilters)
+    onCompleted: (result) => {
+      const prepareIt = (result) => {
+        const pollFilters = result.poll.filters
+
+        let ageDeff = {}
+        let sexDeff = {}
+        let customDeff = {}
+
+        if (pollFilters) {
+          ageDeff = pollFilters.age ? pollFilters.age.reduce((acum, item) => {
+            acum[item.id] = {
+              code: item.code,
+              active: item.active
+            }
+            return acum
+          }, {}) : {}
+          sexDeff = pollFilters.sex ? pollFilters.sex.reduce((acum, item) => {
+            acum[item.id] = {
+              code: item.code,
+              active: item.active
+            }
+            return acum
+          }, {}) : {}
+          customDeff = pollFilters.custom ? pollFilters.custom.reduce((acum, item) => {
+            acum[item.id] = {
+              code: item.code,
+              active: item.active
+            }
+            return acum
+          }, {}) : {}
+        }
+
+        // вытащить все фильтры, которые определены в настройках опроса
+        const age = result.ageCategories.length ?
+          result.ageCategories.map(obj => {
+            if (ageDeff[obj.id] !== undefined) {
+              return {
+                ...obj,
+                ...ageDeff[obj.id]
+              }
+            } else {
+              return {
+                ...obj,
+                code: '',
+                active: false
+              }
+            }
+          })
+          : []
+        const sex = result.sex.length ?
+          result.sex.map(obj => {
+            if (sexDeff[obj.id] !== undefined) {
+              return {
+                ...obj,
+                ...sexDeff[obj.id]
+              }
+            } else {
+              return {
+                ...obj,
+                code: '',
+                active: false
+              }
+            }
+          })
+          : []
+        const custom = result.customFilters.length ?
+          result.customFilters.map(obj => {
+            if (customDeff[obj.id] !== undefined) {
+              return {
+                ...obj,
+                ...customDeff[obj.id]
+              }
+            } else {
+              return {
+                ...obj,
+                code: '',
+                active: false
+              }
+            }
+          })
+          : []
+        return {
+          age,
+          sex,
+          custom
+        }
+      }
+      const preparedFilters = prepareIt(result)
       setFilters(preparedFilters)
     }
   })
-
-  // проверяем какие фильтры уже сохранены с опросом
-  const prepareFilters = (result) => {
-    const pollFilters = result.poll.filters
-
-    let ageDeff = {}
-    let sexDeff = {}
-    let customDeff = {}
-
-    if (pollFilters) {
-      ageDeff = pollFilters.age ? pollFilters.age.reduce((acum, item) => {
-        acum[item.id] = {
-          code: item.code,
-          active: item.active
-        }
-        return acum
-      }, {}) : {}
-      sexDeff = pollFilters.sex ? pollFilters.sex.reduce((acum, item) => {
-        acum[item.id] = {
-          code: item.code,
-          active: item.active
-        }
-        return acum
-      }, {}) : {}
-      customDeff = pollFilters.custom ? pollFilters.custom.reduce((acum, item) => {
-        acum[item.id] = {
-          code: item.code,
-          active: item.active
-        }
-        return acum
-      }, {}) : {}
-    }
-
-    // вытащить все фильтры, которые определены в настройках опроса
-    const age = result.ageCategories.length ?
-      result.ageCategories.map(obj => {
-        if (ageDeff[obj.id] !== undefined) {
-          return {
-            ...obj,
-            ...ageDeff[obj.id]
-          }
-        } else {
-          return {
-            ...obj,
-            code: '',
-            active: false
-          }
-        }
-      })
-      : []
-    const sex = result.sex.length ?
-      result.sex.map(obj => {
-        if (sexDeff[obj.id] !== undefined) {
-          return {
-            ...obj,
-            ...sexDeff[obj.id]
-          }
-        } else {
-          return {
-            ...obj,
-            code: '',
-            active: false
-          }
-        }
-      })
-      : []
-    const custom = result.customFilters.length ?
-      result.customFilters.map(obj => {
-        if (customDeff[obj.id] !== undefined) {
-          return {
-            ...obj,
-            ...customDeff[obj.id]
-          }
-        } else {
-          return {
-            ...obj,
-            code: '',
-            active: false
-          }
-        }
-      })
-      : []
-    return {
-      age,
-      sex,
-      custom
-    }
-  }
 
   const [saveFilterData, { loading: saveDataLoading }] = useMutation(SAVE_FILTER_DATA, {
     onError: (e) => {
@@ -240,5 +238,4 @@ const ReoderEditor = ({ id }) => {
     </Fragment>
   )
 }
-
 export default ReoderEditor

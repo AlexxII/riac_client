@@ -87,7 +87,6 @@ const V = ({ data, selectPool, setSelectPool, showDetails, updateSingle }) => {
     } else {
        width = (document.documentElement.clientWidth || document.body.clientWidth) - 200;
     }
-    console.log(document.documentElement.clientWidth);
     const height = window.innerHeight - 270;
     const columns = Math.floor((width - 40) / COLUMN_WIDTH);
 

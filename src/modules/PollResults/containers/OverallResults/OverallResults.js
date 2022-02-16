@@ -90,7 +90,6 @@ const OverallResults = ({ id }) => {
       id
     },
     onCompleted: (data) => {
-      console.log(data);
       setActiveWorksheets(data.poll.results)
       const filePath = data.poll.logic.path
       fetch(url + filePath)
@@ -99,7 +98,6 @@ const OverallResults = ({ id }) => {
           const normalizedLogic = normalizeLogic(parseIni(text))
           setLogic(normalizedLogic)
         })
-      console.log('ddddddddddd');
       setQuota({
         // распределение ответов по людям
         users: data.poll.results.reduce((acum, item) => {

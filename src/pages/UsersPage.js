@@ -12,7 +12,7 @@ const UsersPage = () => {
           <Users />
         </Container>
       </div>
-    </Fragment >
+    </Fragment>
   )
 }
 

@@ -185,20 +185,6 @@ const CommonSetting = ({ id }) => {
     }
   })
 
-<<<<<<< HEAD
-  const handleConfigFileAndUpdateCache = (poll) => {
-    const filePath = poll.logic.path
-    fetch(url + filePath)
-      .then((r) => r.text())
-      .then(text => {
-        const parsedText = parseIni(text)
-        const normalizedLogic = normalizeLogic(parsedText)
-        const updatedQuestions = modulateQuestionsWithLogic(normalizedLogic)
-        setQuestions(updatedQuestions.sort((a, b) => (a.order > b.order) ? 1 : -1))
-        setReady(true)
-      })
-  }
-=======
   // const handleConfigFileAndUpdateCache = (poll) => {
   //   const filePath = poll.logic.path
   //   fetch(url + filePath)
@@ -211,7 +197,6 @@ const CommonSetting = ({ id }) => {
   //       setReady(true)
   //     })
   // }
->>>>>>> 972f281dde53edd4d963a5ff89f310d9958730c4
 
   const modulateQuestionsWithLogic = (logic) => {
     const modQuestions = pollData.poll.questions.map(question => {

@@ -21,14 +21,6 @@ const Users = () => {
     loading: dataLoading,
     error: dataError,
     data
-<<<<<<< HEAD
-  } = useQuery(
-    GET_ALL_USERS,
-    {
-      fetchPolicy: "no-cache"
-    }
-  )
-=======
   } = useQuery(GET_ALL_USERS, {
     onError: ({ graphQLErrors }) => {
       setError(graphQLErrors);
@@ -36,7 +28,6 @@ const Users = () => {
     }
   })
 
->>>>>>> 13bb3ee3f9902dc6b323ded484136053c938667f
   const {
     loading: selectsLoading,
     error: selectsError,

@@ -5,7 +5,7 @@ import { useQuery, useMutation } from '@apollo/client'
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import { arrayMoveMutable } from "array-move";
+import {  arrayMoveImmutable,arrayMoveMutable } from "array-move";
 
 import LoadingStatus from '../../../../components/LoadingStatus'
 import SystemNoti from '../../../../components/SystemNoti'
@@ -90,7 +90,8 @@ const ReoderEditor = ({ id }) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
     setPrevOrder({ ...questions })
     if (oldIndex !== newIndex) {
-      const newArray = arrayMoveMutable(questions, oldIndex, newIndex)
+      const newArray = arrayMoveImmutable(questions, oldIndex, newIndex)
+      console.log(newArray)
       let deltaArray = []
       const newOrder = newArray.reduce((acum, val, index) => {
         if (val.order === index + 1) {

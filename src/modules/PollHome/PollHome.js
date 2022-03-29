@@ -36,7 +36,6 @@ const PollHome = () => {
   }] = useMutation(ADD_NEW_POLL, {
     onError: ({ graphQLErrors }) => {
       setNoty(errorHandler(graphQLErrors))
-      console.log(graphQLErrors);
     },
     update: (cache, { data }) => {
       if (data.addPoll) {

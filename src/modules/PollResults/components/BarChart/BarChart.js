@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import {Chart} from 'chart.js'
+import { Chart, LinearScale, BarController, CategoryScale, BarElement } from 'chart.js'
 
 const BarChart = ({ question }) => {
 
@@ -17,6 +17,7 @@ const BarChart = ({ question }) => {
   useEffect(() => {
     const myChartRef = chartRef.current.getContext("2d")
 
+    Chart.register(LinearScale, BarController, CategoryScale, BarElement)
     new Chart(myChartRef, {
       type: "bar",
       data: {
@@ -41,11 +42,9 @@ const BarChart = ({ question }) => {
           }
         },
         scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true
-            }
-          }]
+          y: {
+            beginAtZero: true
+          }
         }
       }
     });

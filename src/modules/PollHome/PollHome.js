@@ -31,12 +31,7 @@ const PollHome = () => {
     }
   )
 
-  const [addPoll, {
-    loading: addLoading
-  }] = useMutation(ADD_NEW_POLL, {
-    onError: ({ graphQLErrors }) => {
-      setNoty(errorHandler(graphQLErrors))
-    },
+  const [addPoll, {error}] = useMutation(ADD_NEW_POLL, {
     update: (cache, { data }) => {
       if (data.addPoll) {
         const { polls } = cache.readQuery({ query: GET_ALL_ACTIVE_POLLS })
@@ -48,6 +43,8 @@ const PollHome = () => {
       }
     }
   })
+
+  if (error) console.log(error)
 
   if (pollsLoading) return (
     <LoadingState />
@@ -61,8 +58,8 @@ const PollHome = () => {
   );
 
   const Loading = () => {
-    if (addLoading)
-      return <LoadingStatus />
+    // if (addLoading)
+      // return <LoadingStatus />
     return null
   }
 

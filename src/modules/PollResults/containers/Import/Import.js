@@ -32,7 +32,7 @@ import BatchCharts from '../../components/BatchCharts'
 import { parseIni, normalizeLogic } from '../../../PollDrive/lib/utils'
 import { parseOprFile, similarity } from '../../lib/utils'
 
-import { useQuery, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_FILTER_SELECTS, GET_POLL_DATA } from './queries'
 import { SAVE_BATCH_RESULT } from './mutaions'
@@ -44,6 +44,8 @@ const devUrl = process.env.REACT_APP_GQL_SERVER_DEV
 const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 
 const Import = ({ id }) => {
+  const [currentUser, setCurrentUser] = useState()
+  const [denied, setDenied] = useState(false)
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
   const [delOpen, setDelOpen] = useState(false)
@@ -68,7 +70,7 @@ const Import = ({ id }) => {
   const [dateNull, setDateNull] = useState(false)
 
   const [] = useState(false)
-
+  const client = useApolloClient();
 
   // процесс фильтрации данных в зависимости от выбора пользователя
   useEffect(() => {
@@ -160,6 +162,39 @@ const Import = ({ id }) => {
       setActiveWorksheets(newResult)
     }
   }, [activeFilters])
+
+  useEffect(() => {
+    const userQueryData = client.readQuery({
+      query: gql`
+        query queryCurrentUser{
+          currentUser {
+            id
+            username
+            rights {
+              id
+              title
+            }
+          }
+        }
+      `
+    })
+    console.log(userQueryData)
+    setCurrentUser(userQueryData)
+  }, [])
+
+  useEffect(() => {
+    if (currentUser) {
+      const user = currentUser.currentUser
+      if (Object.keys(user.rights).length) {
+        if (user.rights.title == 'Администратор' || user.rights.title == 'Суперадмин') {
+          setDenied(false)
+        }
+        else {
+          setDenied(true)
+        }
+      }
+    }
+  }, [currentUser])
 
   // распределение ответов по людям
   const handleUserQuotaData = (data) => {
@@ -407,6 +442,14 @@ const Import = ({ id }) => {
   if (!activeWorksheets || pollDataLoading || filtersResultsLoading) return (
     <LoadingState type="card" />
   )
+
+  if (denied) return (
+    <ErrorState
+      title="Отказано в доступе"
+      description="Только администраторы системы могут просматривать данную страницу"
+    />
+  )
+
 
   const deleteComplitely = () => {
     // необходимо удалить из данных, подготовленных для загрузки и из данных уже сохраненных в БД

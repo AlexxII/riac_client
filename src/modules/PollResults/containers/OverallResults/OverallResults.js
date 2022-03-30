@@ -35,7 +35,7 @@ import VirtMasonry from '../../../../components/VirtMasonry'
 import StyledBadge from '../../../../components/StyledBadge'
 
 import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from '@apollo/client'
+import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
 
 import { GET_POLL_RESULTS, GET_FILTER_SELECTS } from './queries'
 import {
@@ -52,6 +52,8 @@ const url = process.env.NODE_ENV !== 'production' ? devUrl : productionUrl
 // кол-во выделенных анкет
 
 const OverallResults = ({ id }) => {
+  const [currentUser, setCurrentUser] = useState(false)
+  const [denied, setDenied] = useState(false)
   const navigator = useNavigate();
   const [noti, setNoti] = useState(false)
   const [loadingMsg, setLoadingMsg] = useState()
@@ -85,6 +87,39 @@ const OverallResults = ({ id }) => {
       fetchPolicy: "no-cache"
     }
   )
+  const client = useApolloClient()
+
+  useEffect(() => {
+    const userQueryData = client.readQuery({
+      query: gql`
+        query queryCurrentUser{
+          currentUser {
+            id
+            username
+            rights {
+              id
+              title
+            }
+          }
+        }
+      `
+    })
+    setCurrentUser(userQueryData)
+  }, [])
+
+  useEffect(() => {
+    if (currentUser) {
+      const user = currentUser.currentUser
+      if (Object.keys(user.rights).length) {
+        if (user.rights.title == 'Администратор' || user.rights.title == 'Суперадмин') {
+          setDenied(false)
+        }
+        else {
+          setDenied(true)
+        }
+      }
+    }
+  }, [currentUser])
 
   const {
     data: pollResults,
@@ -386,7 +421,6 @@ const OverallResults = ({ id }) => {
   )
 
   if (pollResultsError || filtersResultsError) {
-    console.log(JSON.stringify(pollResultsError));
     return (
       <ErrorState
         title="Что-то пошло не так"
@@ -645,7 +679,6 @@ const OverallResults = ({ id }) => {
   }
 
   const showOneResultDetails = (respondent) => {
-    console.log(respondent);
     setSelectPool([respondent.id])
     setBatchOpen(true)
   }
@@ -831,7 +864,7 @@ const OverallResults = ({ id }) => {
               </IconButton>
             </Tooltip>
             <EditMenu
-              visible={!selectPool.length}
+              visible={!selectPool.length || denied}
               handleStatus={handleStatusChange}
               handleCityChange={handleCityChange}
               handleUserChange={handleUserChange}
@@ -848,10 +881,11 @@ const OverallResults = ({ id }) => {
             </Tooltip>
             <Tooltip title="Удалить">
               <IconButton
+
                 color="secondary"
                 component="span"
                 onClick={() => setDelOpen(true)}
-                disabled={!selectPool.length}
+                disabled={!selectPool.length || denied}
               >
                 <DeleteIcon />
               </IconButton>

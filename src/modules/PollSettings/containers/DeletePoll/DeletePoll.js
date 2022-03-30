@@ -9,6 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import LoadingStatus from '../../../../components/LoadingStatus'
 
 import { SysnotyContext } from '../../../../containers/App/notycontext'
 
@@ -22,7 +23,7 @@ const DeletePoll = ({ id, code }) => {
   const [setNoti] = useContext(SysnotyContext);
   const [open, setOpen] = useState(false)
   const [incorrect, setIncorrect] = useState(true)
-  const [delPoll, { poll }] = useMutation(DELETE_POLL, {
+  const [delPoll, { loading: delLoading, poll }] = useMutation(DELETE_POLL, {
     onError: ({ graphQLErrors }) => {
       const errorType = graphQLErrors[0].extensions.type;
       let text = ''
@@ -57,11 +58,18 @@ const DeletePoll = ({ id, code }) => {
   };
 
   const handlePollDel = (id) => {
+    setOpen(false)
     delPoll({
       variables: {
         id
       }
     })
+  }
+
+  const Loading = () => {
+    if (delLoading)
+      return <LoadingStatus />
+    return null
   }
 
   const handleChange = (e) => {
@@ -84,6 +92,7 @@ const DeletePoll = ({ id, code }) => {
 
   return (
     <Fragment>
+      <Loading />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Удаление</DialogTitle>
         <DialogContent>

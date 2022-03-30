@@ -45,7 +45,6 @@ const CommonEx = ({ id }) => {
     fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: (data) => {
-      console.log(data);
       const topicsObj = data.poll.questions.reduce((acum, item) => {
         if (acum[item.topic.id] === undefined) {
           acum[item.topic.id] = {

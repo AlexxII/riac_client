@@ -53,11 +53,18 @@ module.exports = {
   },
 
   output: {
+    filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),
     assetModuleFilename: 'assets/[hash][ext][query]',
     clean: true,
   },
-
+  optimization: {
+    minimize: true,
+    splitChunks: {
+      chunks: 'all',
+      minChunks: Infinity
+    },
+  },
   module: {
     rules: [
       { test: /\.(html)$/, use: ['html-loader'] },

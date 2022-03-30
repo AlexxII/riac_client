@@ -181,7 +181,6 @@ const CommonSetting = ({ id }) => {
           setQuestions(updatedQuestions.sort((a, b) => (a.order > b.order) ? 1 : -1))
           setReady(true)
         })
-      // handleConfigFileAndUpdateCache(data.poll)
     }
   })
 

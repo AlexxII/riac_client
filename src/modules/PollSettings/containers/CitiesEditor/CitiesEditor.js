@@ -20,24 +20,14 @@ import SystemNoti from '../../../../components/SystemNoti'
 
 import ConfirmDialog from '../../../../components/ConfirmDialog'
 
-import { gql, useApolloClient, useQuery, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 
 import { GET_ALL_CITIES_AND_ACTIVE } from './queries'
 import { SET_ACTIVE_CITIES, DELETE_CITY_FROM_ACTIVE } from './mutations'
 
 const CitiesEditor = ({ id }) => {
   const [noti, setNoti] = useState(false)
-  // const client = useApolloClient();
-  // const { currentUser } = client.readQuery({
-  //   query: gql`
-  //   query {
-  //     currentUser {
-  //       id
-  //       username
-  //     }
-  //   }
-  //   `,
-  // })
+
   const [clear, setClear] = useState(0)
   const [delId, setDelId] = useState(false)
   const [allCities, setAllCitites] = useState()
@@ -48,7 +38,7 @@ const CitiesEditor = ({ id }) => {
     loading: citiesLoading,
     error: cititesError
   } = useQuery(GET_ALL_CITIES_AND_ACTIVE, {
-    fetchPolicy: "no-cache",
+    // fetchPolicy: "no-cache",
     variables: { id },
     onCompleted: (citiesData) => {
       const pollCities = citiesData.poll.cities

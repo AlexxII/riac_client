@@ -24,19 +24,12 @@ const PollHome = () => {
     loading: pollsLoading,
     error: pollsError,
     data: pollsData
-  } = useQuery(
-    GET_ALL_ACTIVE_POLLS,
-    {
-      fetchPolicy: "no-cache"
-    }
-  )
+  } = useQuery(GET_ALL_ACTIVE_POLLS)
 
-  const [addPoll, {
-    loading: addLoading
-  }] = useMutation(ADD_NEW_POLL, {
-    onError: ({ graphQLErrors }) => {
+  const [addPoll, { loading: addLoading }] = useMutation(ADD_NEW_POLL, {
+    onError: ({graphQLErrors}) => {
       setNoty(errorHandler(graphQLErrors))
-      console.log(graphQLErrors);
+      console.log(graphQLErrors)
     },
     update: (cache, { data }) => {
       if (data.addPoll) {

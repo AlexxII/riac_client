@@ -59,6 +59,7 @@ const OverallResults = ({ id }) => {
   const [loadingMsg, setLoadingMsg] = useState()
 
   const [delOpen, setDelOpen] = useState(false)
+  const [exportLimit, setExportLimit] = useState(false)
   const [activeWorksheets, setActiveWorksheets] = useState([])                           // отображаемые анкеты
   const [duplicateResults, setDuplicateResults] = useState(null)
   const [duplicateAnalyzeMode, setDuplicateAnalyze] = useState(false)
@@ -480,7 +481,7 @@ const OverallResults = ({ id }) => {
       const intervs = cityData.map(obj => obj.user.username)                                        // все интервьюеры
       const dietIntervs = [...new Set(intervs)]                                                     // остаются только уникальные
       exportData[city] = {
-        data: prepareResultsDataToExport(results),
+        data: prepareResultsDataToExport(results, exportLimit),
         date: cityData[0].created.replace(dateRegExp, `$1$2$4`),                                    // дата в шапку
         city: cityData[0].city ? cityCategoryName(cityData[0].city.type + " " + city) : '-',        // город
         interviewer: `${dietIntervs}`
@@ -562,7 +563,7 @@ const OverallResults = ({ id }) => {
     const resultsPool = activeWorksheets
       .filter(result => selectPool.includes(result.id))
       .map(obj => obj.result)
-    const allResults = prepareResultsDataToExport(resultsPool)
+    const allResults = prepareResultsDataToExport(resultsPool, exportLimit)
     const outDataCp866 = utfToCP866(allResults)
     downloadIt(outDataCp866, 'allData.txt')
   }
@@ -792,7 +793,9 @@ const OverallResults = ({ id }) => {
         data={pollResults.poll.results}
         selectPool={selectPool}
         open={briefOpen}
-        close={() => setBrifOpen(false)} />
+        close={() => setBrifOpen(false)}
+        charsLimit={exportLimit}
+      />
       <ResultView
         // просмотр результатов
         workSheets={activeWorksheets}
@@ -881,13 +884,22 @@ const OverallResults = ({ id }) => {
             </Tooltip>
             <Tooltip title="Удалить">
               <IconButton
-
                 color="secondary"
                 component="span"
                 onClick={() => setDelOpen(true)}
                 disabled={!selectPool.length || denied}
               >
                 <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={exportLimit ? "Перенос строк ВКЛ" : "Перенос строк ВЫКЛ"}>
+              <IconButton
+                color={exportLimit ? "primary" : "secondary"}
+                component="span"
+                onClick={() => setExportLimit(!exportLimit)}
+              // disabled={exportLimit}
+              >
+                80
               </IconButton>
             </Tooltip>
             <StyledBadge badgeContent={selectPool.length ? selectPool.length : null} color="primary" max={9999}>
@@ -900,7 +912,7 @@ const OverallResults = ({ id }) => {
                     indeterminate={Boolean(selectPool.length > 0 & !selectAll)}
                   />
                 }
-                label="Выделить все"
+                label="ВСЕ"
               />
             </StyledBadge>
           </Box>

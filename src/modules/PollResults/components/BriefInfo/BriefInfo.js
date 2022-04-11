@@ -5,7 +5,7 @@ import LoadingState from '../../../../components/LoadingState'
 
 import { prepareResultsDataToExport } from '../../lib/utils'
 
-const BriefInfo = ({ data, selectPool, open, close }) => {
+const BriefInfo = ({ data, selectPool, open, close, charsLimit }) => {
   const [selectedData, setSelectedData] = useState([])
   const [groupedData, setGroupedData] = useState([])
 
@@ -26,7 +26,7 @@ const BriefInfo = ({ data, selectPool, open, close }) => {
       for (let city in groupedObj) {
         const cityData = groupedObj[city]
         const results = cityData.map(obj => obj.result)
-        const data = prepareResultsDataToExport(results).split('\n')
+        const data = prepareResultsDataToExport(results, charsLimit).split('\n')
         shownLine = [
           ...shownLine,
           city,

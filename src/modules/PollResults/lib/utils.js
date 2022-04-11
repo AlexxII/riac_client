@@ -21,7 +21,8 @@ export const rusToLatin = (str) => {
   return n_str.join('');
 }
 
-export const prepareResultsDataToExport = (resultsPool) => {
+export const prepareResultsDataToExport = (resultsPool, charsLimit) => {
+  const chLimit = charsLimit ? 80 : 999999
   const regExp = /,/gi
   const lResults = resultsPool.length
   let allResults = ''
@@ -39,7 +40,7 @@ export const prepareResultsDataToExport = (resultsPool) => {
     let counter = 0
     for (let j = 0; j < rLength; j++) {
       tempResult += details[j] + ','
-      if (tempResult.length - counter > 80) {
+      if (tempResult.length - counter > chLimit) {
         tempResult += '\n'
         counter = tempResult.length
       }

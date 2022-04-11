@@ -425,6 +425,7 @@ const DriveLogic = React.memo(props => {
 
   // функция сохранения выбранного ответа
   const storeSelectedResult = (selectedAnswer, newResults) => {
+    console.log(selectedAnswer)
     const freshResults = newResults ? newResults : results
     const result = {
       answerCode: selectedAnswer.code,

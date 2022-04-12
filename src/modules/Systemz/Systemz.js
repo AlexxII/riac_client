@@ -10,6 +10,7 @@ const Systemz = () => {
   const [smiPool, setSmiPool] = useState([])
   const [clistPool, setClistPool] = useState(false)
 
+  // zip add from system-m - not working fun with win1251 encoding
   const handleZipAdd = (e) => {
     e.preventDefault()
     const file = e.target.files[0];

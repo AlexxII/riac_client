@@ -45,13 +45,14 @@ module.exports = {
   mode,
   target,
   plugins,
-  devtool: 'source-map',
+  // devtool: 'source-map',
+  devtool: false,
+  cache: true,
   entry: './src/index.js',
   devServer: {
     static: './dist',
     hot: true,
   },
-
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'dist'),

@@ -892,7 +892,7 @@ const OverallResults = ({ id }) => {
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={exportLimit ? "Перенос строк ВКЛ" : "Перенос строк ВЫКЛ"}>
+            <Tooltip title={exportLimit ? "Перенос строк - ВКЛ" : "Перенос строк - ВЫКЛ"}>
               <IconButton
                 color={exportLimit ? "primary" : "secondary"}
                 component="span"

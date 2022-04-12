@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,53 +14,18 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
 }));
-
-const YearsList = ({ polls }) => {
+  
+const YearsList = ({years, checked, handleToggle}) => {
   const classes = useStyles();
-  const [checked, setChecked] = useState([0]);
-  const [years, setYears] = useState(false)
-
-  useState(() => {
-    const years = polls.archivePolls.reduce((acum, item) => {
-      const pollYear = item.startDate.slice(-4)
-      if (!acum.hasOwnProperty(pollYear)) {
-        acum[pollYear] = []
-      }
-      acum[pollYear].push({
-        id: item.id,
-        count: item.resultsCount
-      })
-      return acum
-    }, {})
-    const yearsPool = []
-    for (let key in years) {
-      yearsPool.push({
-        title: key,
-        data: years[key]
-      })
-    }
-    setYears(yearsPool)
-  }, [])
-
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-    setChecked(newChecked);
-  };
 
   if (!years) return null
 
   return (
     <List className={classes.root}>
-      {years.map((value) => {
+      {years.map((value, index) => {
         const labelId = `checkbox-list-label-${value.title}`;
         return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+          <ListItem key={index} role={undefined} dense button onClick={handleToggle(value)}>
             <ListItemIcon>
               <Checkbox
                 edge="start"

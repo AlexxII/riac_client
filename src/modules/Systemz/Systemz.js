@@ -19,7 +19,6 @@ const Systemz = () => {
       .then(function (zip) {
         Object.keys(zip.files).forEach(function (filename) {
           zip.files[filename].async('string').then(function (fileData) {
-            console.log(fileData)
             outPutData.push(fileData)
             // const buf = Buffer.from(fileData);
             // const utf8Text = iconvlite.decode(buf, 'utf8')
@@ -37,9 +36,7 @@ const Systemz = () => {
       reader.onloadend = () => {
         const fileData = reader.result
         const parsedData = parseSmiFile(fileData)
-        console.log(parsedData)
         const sortedData = parsedData.sort((a, b) => (a.publicDateTimestamp < b.publicDateTimestamp) ? -1 : 1)
-        console.log(sortedData)
         setSmiPool(parsedData)
       }
     }
@@ -73,8 +70,6 @@ const Systemz = () => {
   const downloadIt = () => {
     const fileName = 'export.htm'
     let data = `${header}`
-
-    console.log(smiPool)
     smiPool.map((item, index) => {
       if (item.mainText) {
         const smiTitle = clistPool[item.smiCodeText]
@@ -82,7 +77,7 @@ const Systemz = () => {
         const day = dd[3].replace(/^0+/, '')
         const month = dd[2].replace(/^0+/, '')
         const year = dd[1]
-        const monthText = monthPool[month]
+        const monthText = monthPool[month - 1]
 
         data += `<p style= 'text-transform: uppercase'><b><i>${item.titleText}</i></b></p>`
         data += item.mainText
@@ -115,7 +110,6 @@ const Systemz = () => {
         const fileData = reader.result
         const parsedData = parseClist(fileData)
         setClistPool(parsedData)
-        // console.log(parseClist(fileData))
       }
     }
     reader.readAsText(file, 'cp1251');

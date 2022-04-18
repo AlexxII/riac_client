@@ -37,6 +37,7 @@ const Systemz = () => {
         const fileData = reader.result
         const parsedData = parseSmiFile(fileData)
         const sortedData = parsedData.sort((a, b) => (a.publicDateTimestamp < b.publicDateTimestamp) ? -1 : 1)
+        console.log(parsedData)
         setSmiPool(parsedData)
       }
     }

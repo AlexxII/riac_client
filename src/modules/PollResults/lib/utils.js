@@ -210,10 +210,7 @@ export const parseSmiFile = (fileData) => {
   const inDateCode = /(11\/)([\s\S]+?)\n/
   const textCode = /(06\/)([\s\S]+.)/
 
-  // const match = utf8Text.match(allSmiBlock)
-  // const smiArray = match[0]
   const smiPool = utf8Text.split('==/СМИ');
-  // console.log(smiPool);
   const smiPoolLength = smiPool.length
   const outputArray = []
   for (let i = 0; i < smiPoolLength; i++) {

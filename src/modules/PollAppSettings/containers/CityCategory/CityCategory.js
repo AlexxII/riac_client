@@ -32,9 +32,6 @@ const CityCategory = () => {
     error: citiesCategoriesError
   } = useQuery(
     GET_CITIES_CATEGORIES,
-    {
-      fetchPolicy: "no-cache"
-    }
   )
 
   const [changeActiveStatus, { loading: changeActiveStatusLoading }] = useMutation(CHANGE_CATEGORY_STATUS, {
@@ -161,6 +158,7 @@ const CityCategory = () => {
   }
 
   const changeActive = (category) => {
+    console.log("try to change")
     changeActiveStatus({
       variables: {
         id: category.id,

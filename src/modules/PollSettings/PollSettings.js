@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react'
-
 import AdaptiveTabs from '../../components/AdaptiveTabs'
 
 import CommonSetting from './containers/Common'

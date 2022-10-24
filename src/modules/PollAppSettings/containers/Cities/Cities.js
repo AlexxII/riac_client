@@ -39,9 +39,6 @@ const Cities = () => {
     error: citiesError
   } = useQuery(
     GET_CITITES_WITH_CATEGORIES,
-    {
-      fetchPolicy: "no-cache"
-    }
   )
 
   const [saveCity, { loading: saveCityLoading }] = useMutation(CITY_SAVE_MUTATION, {
